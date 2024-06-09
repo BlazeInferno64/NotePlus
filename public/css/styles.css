@@ -27,6 +27,7 @@ body{
     justify-content: center;
     background: rgba(30,30,30);
     overflow:hidden ;
+    height: 100vh;
 }
 .file{
     display: none;
