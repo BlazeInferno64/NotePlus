@@ -12,6 +12,7 @@ View it live here at -
 https://blazeinferno64.github.io/NotePlus
 ```
 </a>
+
 # Info
 Please read the following point carefully -
 
