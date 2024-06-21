@@ -16,8 +16,6 @@ https://blazeinferno64.github.io/NotePlus
 # Info
 Please read the following point carefully -
 
-<br>
-
 Since it is in the early stages of development so some features might not work as intended in mobile devices, but it would be improve upon future updates! So if you spot any such issues then feel free to open up an issue
 |-----|
 
