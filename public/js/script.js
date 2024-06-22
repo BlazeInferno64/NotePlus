@@ -1,3 +1,4 @@
+// Main File of the Text Editor!
 const textInput = document.querySelector(".text");
 
 const browserName = document.querySelector("#browser");
@@ -84,11 +85,11 @@ document.addEventListener("DOMContentLoaded", (e) => {
     browserName.innerText = name;
     wordsCount.innerText = `Total Words: ${textInput.innerText.length}`;
     textInput.focus();
+    if(!window.showSaveFilePicker()){
+        console.warn(`Your browser doesn't currently supportts the Web File System Api\nPlease check https://developer.mozilla.org/en-US/docs/Web/API/Window/showSaveFilePicker#browser_compatibility for more info\nIf you believe this is a bug then\nPlease open up an issue at https://github.com/blazeinfeno64/NotePlus`);
+        return alert(`Your browser currently doesn't supports the Web File System Api\nSo some features might not work as intended \nBut in future it might be compatible\nPlease check browser console for more info regarding this issue!!`);
+    }
     return console.log(`Welcome to NotePlus text editor :)\nIt's an free open source text editor based on Notepad which is a text editor that comes pre-installed with windows!\nVisit https://github.com/blazeinferno64/NotePlus for more amazing info regarding this project!`)
-})
-
-window.addEventListener("load", (e) => {
-
 })
 
 mainElement.addEventListener("click", (e) => {
@@ -268,6 +269,10 @@ saveAsBtn.addEventListener("click", async (e) => {
     }
 
     try {
+        if(!window.showSaveFilePicker()){
+            console.warn(`Your browser doesn't currently supportts the Web File System Api\nPlease check https://developer.mozilla.org/en-US/docs/Web/API/Window/showSaveFilePicker#browser_compatibility for more info\nIf you believe this is a bug then\nPlease open up an issue at https://github.com/blazeinfeno64/NotePlus`)
+            throw "Your browser currently doesn't supports the Web File System Api\nSo Save as Button will not work\nTry using the Save Button instead!\nAlso, please check browser console for more info regarding this issue";
+        }
         const handle = await window.showSaveFilePicker({
             suggestedName: filename,
             types: [
@@ -326,7 +331,7 @@ saveBtn.addEventListener("click", (e) => {
     const blob = new Blob([text], { type: "text/plain" });
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
-    link.download = `${activeFileName.innerText}`;
+    link.download = `${activeFileName.innerText} File`;
     link.click();
     URL.revokeObjectURL(link.href);
     link.remove();
@@ -354,7 +359,7 @@ versionInfoBtn.addEventListener("click", (e) => {
     // Any further changes to NotePlus in future will be updated here
     const about = {
         Name: "NotePlus",
-        Version: 1,
+        Version: 2,
         Developer: "BlazeInferno64",
         Platform: detectBrowser()
     }
