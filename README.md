@@ -6,6 +6,15 @@ Free and open source browser based text editor
 
 View it live here at -
 
+Test the web app using vercel 
+<a href="https://note-plus-mu.vercel.app/">
+
+```
+https://note-plus-mu.vercel.app/
+```
+</a>
+
+or with GitHub Pages (whichever you prefer)
 <a href="https://blazeinferno64.github.io/NotePlus">
 
 ```
