@@ -81,6 +81,7 @@ document.addEventListener("DOMContentLoaded", (e) => {
     if (!window.showSaveFilePicker) {
         console.warn(`Your browser doesn't currently supports the Web File System API. Please check browser compatibility at https://developer.mozilla.org/en-US/docs/Web/API/Window/showSaveFilePicker#browser_compatibility.`);
         alert(`Your browser currently doesn't supports the Web File System API. Some features may not work as intended. Please check the browser console for more information!`);
+        textInput.focus();
     }
 
     console.log(`Welcome to NotePlus text editor :)`);
