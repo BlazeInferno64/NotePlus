@@ -63,10 +63,8 @@ const replaceWord = (string, oldWord, newWord) => {
 
     const regex = new RegExp(`\\b${oldWord}\\b`, `g`);
     const matches = textInput.innerText.match(regex);
-    if(matches) {
-        resultMatch.innerText = `${matches.length} matches found!`;
-        wordsCount.innerText = `Total Words: ${textInput.innerText.length}`;
-    }
+    wordsCount.innerText = `Total Words: ${textInput.innerText.length}`;
+    resultMatch.innerText = `Replaced ${matches.length} occurences`;
     return string.replace(regex, newWord);
 }
 
