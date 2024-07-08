@@ -476,6 +476,9 @@ document.addEventListener("keydown", (e) => {
     if (e.ctrlKey){
         isCtrlPressed = true;
     }
+    else{
+        isCtrlPressed = false;
+    }
 });
 
 document.addEventListener("keyup", (e) => {
