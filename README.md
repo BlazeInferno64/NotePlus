@@ -24,6 +24,15 @@ https://blazeinferno64.github.io/NotePlus
 ```
 </a>
 
+# Patch Notes
+NotePlus Version: 3.5
+
+1. Increased Optimization for various platforms
+2. Added Search & Replace text functioon, which is accessible by clicking on the 'Edit' Button
+3. Improved Browser/Platform detection for better stability
+4. Made some bug fixes
+
+
 # Info
 Please read the following point carefully -
 
