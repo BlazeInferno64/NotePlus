@@ -489,7 +489,7 @@ document.addEventListener("keyup", (e) => {
     if(e.key === "b" && isCtrlPressed){
         openBtn.click();
     }
-    if(e.key === "i" && isCtrlPressed){
+    if(e.key === "x" && isCtrlPressed){
         saveAsBtn.click();
     }
 })
