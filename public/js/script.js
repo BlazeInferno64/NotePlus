@@ -39,6 +39,16 @@ const images = document.querySelectorAll(".img");
 const noScriptTag = document.querySelector("#no-script");
 const appBody = document.querySelector(".app");
 
+const versionP = document.querySelector("#ver");
+
+const searchBtn = document.querySelector("#srch");
+const searchCard = document.querySelector(".srch-card");
+const searchBg = document.querySelector(".srch-bg");
+const replaceBtn = document.querySelector(".replace");
+const closeSearchCardBtn = document.querySelector("#close-srch")
+
+const resultMatch = document.querySelector(".res");
+
 // Hide noscript message and show app body
 noScriptTag.classList.add("none");
 appBody.classList.remove("none");
@@ -50,23 +60,44 @@ const detectBrowser = () => {
     let browserInfo = navigator.userAgent;
     let browser;
 
-    if (browserInfo.includes("Opera") || browserInfo.includes("OPR")) {
-        browser = "Opera";
-    } else if (browserInfo.includes("Edg") || browserInfo.includes("Edge")) {
-        browser = "Edge";
-    } else if (browserInfo.includes("Chrome")) {
-        browser = "Chrome";
-    } else if (browserInfo.includes("Safari")) {
-        browser = "Safari";
-    } else if (browserInfo.includes("Firefox")) {
-        browser = "Firefox";
-    } else if (browserInfo.includes("Brave")) {
-        browser = "Brave";
-    } else if (browserInfo.includes("PostmanRuntime")) {
-        browser = "PostmanRuntime";
-    } else {
-        browser = "Unknown";
+    if (typeof acquireVsCodeApi !== 'undefined') {
+        return "VSCode";
     }
+
+    // Check for Tor Browser based on user agent and additional properties
+    if (browserInfo.includes("TorBrowser")) {
+        browser = "Tor Browser";
+    } else if (typeof window !== 'undefined' && window.history.length === 1 && window.location.hostname.includes(".onion")) {
+        // Check if the hostname is a .onion address and history.length is 1 (indicating a new circuit in Tor)
+        browser = "Tor Browser";
+    } else if (navigator.languages && navigator.languages.includes("und")) {
+        // Check if navigator.languages includes "und" (undetermined language) which is common in Tor Browser
+        browser = "Tor Browser";
+    } else {
+        // Other browser detection logic as before
+        if (browserInfo.includes("Opera") || browserInfo.includes("OPR")) {
+            browser = "Opera";
+        } else if (browserInfo.includes("Edg") || browserInfo.includes("Edge")) {
+            browser = "Edge";
+        } else if (browserInfo.includes("Chrome")) {
+            browser = "Chrome";
+        } else if (browserInfo.includes("Safari")) {
+            browser = "Safari";
+        } else if (browserInfo.includes("Firefox")) {
+            browser = "Firefox";
+        } else if (browserInfo.includes("Brave")) {
+            browser = "Brave";
+        } else if (browserInfo.includes("SamsungBrowser")) {
+            browser = "Samsung Internet";
+        } else if (browserInfo.includes("PostmanRuntime")) {
+            browser = "Postman";
+        } else if (browserInfo.includes("Insomnia")) {
+            browser = "Insomnia";
+        } else {
+            browser = "Unknown";
+        }
+    }
+    
     return browser;
 }
 
@@ -79,9 +110,8 @@ document.addEventListener("DOMContentLoaded", (e) => {
 
     // Check if browser supports Web File System API
     if (!window.showSaveFilePicker) {
-        console.warn(`Your browser doesn't currently supports the Web File System API. Please check browser compatibility at https://developer.mozilla.org/en-US/docs/Web/API/Window/showSaveFilePicker#browser_compatibility.`);
-        alert(`Your browser currently doesn't supports the Web File System API. Some features may not work as intended. Please check the browser console for more information!`);
-        textInput.focus();
+        console.warn(`Your browser doesn't currently support the Web File System API. Please check browser compatibility at https://developer.mozilla.org/en-US/docs/Web/API/Window/showSaveFilePicker#browser_compatibility.`);
+        alert(`Your browser currently doesn't support the Web File System API. Some features may not work as intended. Please check the browser console for more information.`);
     }
 
     console.log(`Welcome to NotePlus text editor :)`);
@@ -134,6 +164,18 @@ fileBtn.addEventListener("click", (e) => {
     helpBtn.classList.remove("active");
     editBtn.classList.remove("active");
     hideActionList();
+
+    editBtn.classList.remove("active");
+    editList.classList.add("hide");
+    setTimeout(() => {
+        editList.classList.add("up");
+    }, 100);
+
+    helpBtn.classList.remove("active");
+    helpList.classList.add("hide");
+    setTimeout(() => {
+        helpList.classList.add("up");
+    }, 100);
 });
 
 // Event listener for editBtn click
@@ -142,6 +184,17 @@ editBtn.addEventListener("click", (e) => {
     helpBtn.classList.remove("active");
     editBtn.classList.toggle("active");
     hideEditList();
+
+    fileBtn.classList.remove("active");
+    actionList.classList.add("hide");
+    setTimeout(() => {
+        actionList.classList.add("up");
+    }, 100);
+    helpBtn.classList.remove("active");
+    helpList.classList.add("hide");
+    setTimeout(() => {
+        helpList.classList.add("up");
+    }, 100);
 });
 
 // Event listener for helpBtn click
@@ -150,6 +203,18 @@ helpBtn.addEventListener("click", (e) => {
     helpBtn.classList.toggle("active");
     editBtn.classList.remove("active");
     hideHelpList();
+
+    fileBtn.classList.remove("active");
+    actionList.classList.add("hide");
+    setTimeout(() => {
+        actionList.classList.add("up");
+    }, 100);
+
+    editBtn.classList.remove("active");
+    editList.classList.add("hide");
+    setTimeout(() => {
+        editList.classList.add("up");
+    }, 100);
 });
 
 // Event listener to close action, edit, and help lists when clicking outside
@@ -176,7 +241,12 @@ document.addEventListener("click", (e) => {
             helpList.classList.add("up");
         }, 100);
 
-        textInput.focus();
+        if(searchBg.className == "srch-bg hide"){
+            textInput.focus();
+        }
+        else{
+            return;
+        }
     }
 });
 
@@ -197,6 +267,7 @@ const readFile = (file) => {
         console.warn(`If any issues occur try to refresh this page.`);
         textInput.innerText = result;
         wordsCount.innerText = `Total Words: ${textInput.innerText.length}`;
+        return textInput.focus();
     });
 
     fileReader.addEventListener("error", (e) => {
@@ -292,17 +363,20 @@ reportIssuesBtn.addEventListener("click", async (e) => {
     }, 2000);
 });
 
+// Any further changes to NotePlus in future will be updated here
+const about = {
+    Name: "NotePlus",
+    Version: '3.5',
+    Developer: "BlazeInferno64",
+    Platform: detectBrowser()
+}
+
 // Event listener for versionInfoBtn click
 versionInfoBtn.addEventListener("click", (e) => {
-    // Any further changes to NotePlus in future will be updated here
-    const about = {
-        Name: "NotePlus",
-        Version: 3,
-        Developer: "BlazeInferno64",
-        Platform: detectBrowser()
-    }
     alert(`Name: ${about.Name}\nVersion: ${about.Version}\nDeveloper: ${about.Developer}\nPlatform: ${about.Platform}`);
 })
+
+versionP.innerText = about.Version;
 
 // Event listener for copyAllBtn click
 copyAllBtn.addEventListener("click", async () => {

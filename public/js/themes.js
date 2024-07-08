@@ -24,6 +24,7 @@ const switchThemes = () => {
     actionList.classList.toggle("dark");
     editList.classList.toggle("dark");
     helpList.classList.toggle("dark");
+    searchCard.classList.toggle("dark");
 }
 
 themeBtn.addEventListener("click", (e) =>{
