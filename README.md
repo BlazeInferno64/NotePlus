@@ -31,6 +31,7 @@ NotePlus Version: 3.5
 2. Added Search & Replace text functioon, which is accessible by clicking on the 'Edit' Button
 3. Improved Browser/Platform detection for better stability
 4. Made some bug fixes
+5. Press `Ctrl X` on your keyboard to save files to your device!
 
 
 # Info
