@@ -25,14 +25,15 @@ https://blazeinferno64.github.io/NotePlus
 </a>
 
 # Patch Notes
-NotePlus Version: 3.5
+NotePlus Version: 3.7
 
 1. Increased Optimization for various platforms
 2. Added Search & Replace text functioon, which is accessible by clicking on the 'Edit' Button
 3. Improved Browser/Platform detection for better stability
 4. Made some bug fixes
-5. Press `Ctrl X` on your keyboard to save files to your device!
-
+5. Press `Ctrl` + `X` on your keyboard to save files to your device!
+6. Improved Drag & Drop functionality to the app
+7. Enhanced Dark Mode & Light mode detection, Now it will switch according to your system's default theme
 
 # Info
 Please read the following point carefully -
