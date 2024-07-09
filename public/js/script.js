@@ -57,56 +57,68 @@ let hasUnsavedChanges = false;
 
 // Function to detect the current browser
 const detectBrowser = () => {
-    let browserInfo = navigator.userAgent;
-    let browser;
-
+    const userAgent = navigator.userAgent;
+    
+    // Check if the environment provides VSCode API
     if (typeof acquireVsCodeApi !== 'undefined') {
         return "VSCode";
     }
 
-    // Check for Tor Browser based on user agent and additional properties
-    if (browserInfo.includes("TorBrowser")) {
-        browser = "Tor Browser";
-    } else if (typeof window !== 'undefined' && window.history.length === 1 && window.location.hostname.includes(".onion")) {
-        // Check if the hostname is a .onion address and history.length is 1 (indicating a new circuit in Tor)
-        browser = "Tor Browser";
-    } else if (navigator.languages && navigator.languages.includes("und")) {
-        // Check if navigator.languages includes "und" (undetermined language) which is common in Tor Browser
-        browser = "Tor Browser";
-    } else {
-        // Other browser detection logic as before
-        if (browserInfo.includes("Opera") || browserInfo.includes("OPR")) {
-            browser = "Opera";
-        } else if (browserInfo.includes("Edg") || browserInfo.includes("Edge")) {
-            browser = "Edge";
-        } else if (browserInfo.includes("Chrome")) {
-            browser = "Chrome";
-        } else if (browserInfo.includes("Safari")) {
-            browser = "Safari";
-        } else if (browserInfo.includes("Firefox")) {
-            browser = "Firefox";
-        } else if (browserInfo.includes("Brave")) {
-            browser = "Brave";
-        } else if (browserInfo.includes("SamsungBrowser")) {
-            browser = "Samsung Internet";
-        } else if (browserInfo.includes("PostmanRuntime")) {
-            browser = "Postman";
-        } else if (browserInfo.includes("Insomnia")) {
-            browser = "Insomnia";
-        } else {
-            browser = "Unknown";
-        }
+    // Tor Browser detection
+    if (userAgent.includes("TorBrowser")) {
+        return "Tor Browser";
     }
     
-    return browser;
-}
+    // Check for .onion address and Tor-like properties
+    if (window.history.length === 1 && window.location.hostname.includes(".onion")) {
+        return "Tor Browser";
+    }
+
+    // Check for undetermined language (common in Tor Browser)
+    if (navigator.languages && navigator.languages.includes("und")) {
+        return "Tor Browser";
+    }
+
+    // Standard browser detection based on user agent string
+    if (userAgent.includes("Opera") || userAgent.includes("OPR")) {
+        return "Opera";
+    }
+    if (userAgent.includes("Edg") || userAgent.includes("Edge")) {
+        return "Edge";
+    }
+    if (userAgent.includes("Chrome")) {
+        return "Chrome";
+    }
+    if (userAgent.includes("Safari")) {
+        return "Safari";
+    }
+    if (userAgent.includes("Firefox")) {
+        return "Firefox";
+    }
+    if (userAgent.includes("Brave")) {
+        return "Brave";
+    }
+    if (userAgent.includes("SamsungBrowser")) {
+        return "Samsung Internet";
+    }
+    if (userAgent.includes("PostmanRuntime")) {
+        return "Postman";
+    }
+    if (userAgent.includes("Insomnia")) {
+        return "Insomnia";
+    }
+    
+    // Fallback for unknown browsers
+    return "Unknown";
+};
+
 
 // Event listener when DOM content is loaded
 document.addEventListener("DOMContentLoaded", (e) => {
     const name = detectBrowser();
     browserName.innerText = name;
     wordsCount.innerText = `Total Words: ${textInput.innerText.length}`;
-    textInput.focus();
+    //textInput.focus();
 
     // Check if browser supports Web File System API
     if (!window.showSaveFilePicker) {
@@ -252,34 +264,50 @@ document.addEventListener("click", (e) => {
 
 // Event listener for openBtn click
 openBtn.addEventListener("click", async (e) => {
-    await fileInput.click();
+// Event listener for openBtn click
+openBtn.addEventListener("click", async (e) => {
+    try {
+        await fileInput.click();
+    } catch (error) {
+        console.error(`Error while handling file input click:`, error);
+        alert(`An error occurred while opening file.`);
+    }
+})
 });
 
 // Function to read file content
 const readFile = (file) => {
-    const fileReader = new FileReader();
-    fileReader.readAsText(file);
+    try {
+        const fileReader = new FileReader();
+        fileReader.readAsText(file);
+        
+        fileReader.addEventListener("load", async (e) => {
+            let result = await fileReader.result;
+            if(!result){
+                throw new Error(`Oops! It seems like the ${file.name} doesn't contain any data!`);
+            }
+            hasUnsavedChanges = true;
+            console.log(`File reading has been successfully completed!`);
+            console.warn(`If any issues occur try to refresh this page.`);
+            textInput.innerText = result;
+            wordsCount.innerText = `Total Words: ${textInput.innerText.length}`;
+            return textInput.focus();
+        });
     
-    fileReader.addEventListener("load", async (e) => {
-        let result = await fileReader.result;
-        hasUnsavedChanges = true;
-        console.log(`File reading has been successfully completed!`);
-        console.warn(`If any issues occur try to refresh this page.`);
-        textInput.innerText = result;
-        wordsCount.innerText = `Total Words: ${textInput.innerText.length}`;
-        return textInput.focus();
-    });
-
-    fileReader.addEventListener("error", (e) => {
-        console.error(e);
-        alert(`Oops! There was an error reading the file. Please check Browser Console for more information.`);
-    });
-
-    fileReader.addEventListener("abort", (e) => {
-        console.error(`File reading was aborted!`);
-        console.warn(`If you believe this is a bug, please file an issue at https://github.com/blazeinferno64/NotePlus`);
-        alert(`The file reading was aborted!`);
-    });
+        fileReader.addEventListener("error", (e) => {
+            console.error(e.target.error);
+            return alert(`Oops! There was an error reading the file. Please check Browser Console for more information.`);
+        });
+    
+        fileReader.addEventListener("abort", (e) => {
+            console.error(`File reading was aborted!`);
+            console.warn(`If you believe this is a bug, please file an issue at https://github.com/blazeinferno64/NotePlus`);
+            return alert(`The file reading was aborted!`);
+        });
+    } catch (error) {
+        console.error(`Error while reading file: ${error.message}`);
+        return alert(error.message);
+    }
 };
 
 // Event listener for fileInput change
@@ -322,11 +350,14 @@ saveAsBtn.addEventListener("click", async (e) => {
         await writable.write(blob);
         await writable.close();
         console.log(`File has been successfully saved!`);
+        alert(`Successfully saved file to the device!`);
     } catch (err) {
         console.error(`Saving Failed: ${err}`);
         // Handle specific errors
         if (err.name === 'NotAllowedError') {
             alert(`Saving failed: File system access not allowed. Please check your browser settings.`);
+        } else if(err.name = "AbortError"){
+            alert(`Saving failed: You aborted the request.`);
         } else {
             alert(`Saving failed: ${err.message}`);
         }
@@ -343,7 +374,7 @@ saveBtn.addEventListener("click", (e) => {
     link.click();
     URL.revokeObjectURL(link.href);
     link.remove();
-    alert(`File has been saved to the device.`);
+    alert(`File has been saved to the device. Please check your downloads folder.`);
 });
 
 // Event listener for exitBtn click
@@ -366,7 +397,7 @@ reportIssuesBtn.addEventListener("click", async (e) => {
 // Any further changes to NotePlus in future will be updated here
 const about = {
     Name: "NotePlus",
-    Version: '3.5',
+    Version: '3.7',
     Developer: "BlazeInferno64",
     Platform: detectBrowser()
 }
@@ -450,28 +481,47 @@ const handleDrop = (event) => {
 };
 
 Body.addEventListener("dragover", (event) => {
+    textInput.focus();
     event.preventDefault();
+});
+
+Body.addEventListener("dragleave", (event) => {
+    event.preventDefault();
+    textInput.blur();
 });
 
 Body.addEventListener("drop", handleDrop);
 
 mainElement.addEventListener("dragover", (event) => {
+    textInput.focus();
     event.preventDefault();
+});
+
+mainElement.addEventListener("dragleave", (event) => {
+    event.preventDefault();
+    textInput.blur();
 });
 
 mainElement.addEventListener("drop", handleDrop);
 
 textInput.addEventListener("dragover", (event) => {
+    textInput.focus();
     event.preventDefault();
+});
+
+textInput.addEventListener("dragleave", (event) => {
+    event.preventDefault();
+    textInput.blur();
 });
 
 textInput.addEventListener("drop", handleDrop);
 
 // Additional drag and drop listeners for other elements if needed
 
-
+// Ctrl Key value
 let isCtrlPressed = false;
 
+// Check if the key pressed is Ctrl key or not
 document.addEventListener("keydown", (e) => {
     if (e.ctrlKey){
         isCtrlPressed = true;
@@ -480,7 +530,7 @@ document.addEventListener("keydown", (e) => {
         isCtrlPressed = false;
     }
 });
-
+// Check what other key is pressed with Ctrl key
 document.addEventListener("keyup", (e) => {
     if (e.key === "m" && isCtrlPressed) {
         saveBtn.click();

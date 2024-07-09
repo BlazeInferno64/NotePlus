@@ -5,8 +5,7 @@ const footer = document.querySelector(".footer");
 const mainBg = document.querySelector(".main");
 
 const themeBtn = document.querySelector("#theme");
-
-const prefersDarkMode = window.matchMedia('(prefers-color-scheme: dark');
+const prefersDarkMode = window.matchMedia('(prefers-color-scheme: dark)');
 
 const switchThemes = () => {
     app.classList.toggle("dark");
@@ -25,35 +24,30 @@ const switchThemes = () => {
     editList.classList.toggle("dark");
     helpList.classList.toggle("dark");
     searchCard.classList.toggle("dark");
-}
+};
 
-themeBtn.addEventListener("click", (e) =>{
-    const modeName = e.target.innerText;
-    if(modeName == "Light Mode"){
-        switchThemes();
-        e.target.innerText = `Dark Mode`;
+const updateThemeButtonText = () => {
+    if (themeBtn.innerText === "Light Mode") {
+        themeBtn.innerText = "Dark Mode";
+    } else {
+        themeBtn.innerText = "Light Mode";
     }
-    else{
-        switchThemes();
-        e.target.innerText = `Light Mode`;
-    }
-})
+};
 
-if(prefersDarkMode.matches){
-    console.log(`You have enabled dark mode!`);
+themeBtn.addEventListener("click", () => {
     switchThemes();
-}
-else{
-    console.log(`You haven't enabled dark mode!`)
-    switchThemes();
-}
+    updateThemeButtonText();
+});
 
-prefersDarkMode.addEventListener("change", (e) => {
-    if(e.matches){
+const applyDarkMode = (e) => {
+    if (e.matches) {
         switchThemes();
-        console.log(`Dark mode is enabled now!`);
+        updateThemeButtonText();
+        console.log("Dark mode is enabled now!");
+    } else {
+        console.log("Dark mode isn't enabled now!");
     }
-    else{
-        console.log(`Dark mode isn't enabled now!`)
-    }
-})
+};
+
+prefersDarkMode.addListener(applyDarkMode);
+applyDarkMode(prefersDarkMode); // Initial check

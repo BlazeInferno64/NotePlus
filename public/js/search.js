@@ -2,12 +2,11 @@ const searchWordInput = document.querySelector(".srch");
 const replaceWordInput = document.querySelector(".rep");
 
 searchCard.addEventListener("input", (e) => {
-    if(replaceWordInput.value.length <= 0) return replaceBtn.classList.add("no");
-    else{
-        return replaceBtn.classList.remove("no")
+    if (replaceWordInput.value.length <= 0) return replaceBtn.classList.add("no");
+    else {
+        return replaceBtn.classList.remove("no");
     }
-})
-
+});
 
 const openSearchMenu = () => {
     searchBg.style.display = 'flex';
@@ -19,7 +18,7 @@ const openSearchMenu = () => {
         searchCard.classList.remove("up");
         searchWordInput.focus();
     }, 500);
-}
+};
 
 const closeSearchMenu = () => {
     searchCard.classList.add("down");
@@ -39,79 +38,94 @@ const closeSearchMenu = () => {
         searchCard.classList.remove("ani");
         searchBg.style.display = 'none';
     }, 1200);
-}
+};
 
 searchBtn.addEventListener("click", (e) => {
     try {
-        if(textInput.innerText.length <= 0) throw "There isn't any text available to search!\nTry Entering some text for this to work!"
+        if (textInput.innerText.length <= 0) {
+            throw new Error("There isn't any text available to search!\nTry entering some text for this to work!");
+        }
         openSearchMenu();
     } catch (error) {
-        alert(error);
+        alert(error.message);
         console.error(error);
     }
-})
+});
 
 closeSearchCardBtn.addEventListener("click", (e) => {
     closeSearchMenu();
-})
-
+});
 
 const replaceWord = (string, oldWord, newWord) => {
-    if(!string) return console.error(`No string input provided!`);
-    if(!oldWord) return console.error(`No word supplied for checking!`);
-    if(!newWord) return console.error(`No word supplied for replacing!`);
+    if (!string) {
+        throw new Error("No string input provided!");
+    }
+    if (!oldWord) {
+        throw new Error("No word supplied for checking!");
+    }
+    if (!newWord) {
+        throw new Error("No word supplied for replacing!");
+    }
 
     const regex = new RegExp(`\\b${oldWord}\\b`, `g`);
-    const matches = textInput.innerText.match(regex);
-    wordsCount.innerText = `Total Words: ${textInput.innerText.length}`;
-    resultMatch.innerText = `Replaced ${matches.length} occurences`;
+    const matches = string.match(regex);
+    if (!matches) {
+        throw new Error(`No matches found for the word '${oldWord}' in the text!`);
+    }
+
+    wordsCount.innerText = `Total Words: ${string.length}`;
+    resultMatch.innerText = `Replaced ${matches.length} occurrences`;
     return string.replace(regex, newWord);
-}
+};
 
 const searchString = (string, word) => {
-    if(!string) throw new Error(`No value available to replace!`);
-    if(!word) return console.error(`No word supplied for checking!`)
+    if (!string) {
+        throw new Error("No value available to search!");
+    }
+    if (!word) {
+        throw new Error("No word supplied for checking!");
+    }
 
     const regex = new RegExp(`\\b${word}\\b`, `g`);
-    const matches = textInput.innerText.match(regex);
-    if(matches) {
+    const matches = string.match(regex);
+    if (matches) {
         resultMatch.classList.add("ok");
         resultMatch.classList.remove("err");
-        return resultMatch.innerText = `${matches.length} matches found!`;
-    }
-    else{
+        resultMatch.innerText = `${matches.length} matches found!`;
+    } else {
         resultMatch.classList.remove("ok");
         resultMatch.classList.add("err");
-        return resultMatch.innerText = `No matches found!`;
+        resultMatch.innerText = `No matches found!`;
     }
-}
+};
 
-replaceBtn.addEventListener("click", async(e) => {
+replaceBtn.addEventListener("click", async (e) => {
     try {
-        if(!textInput.innerText.includes(searchWordInput.value)){
-            throw Error(`No match found for the word: ${replaceWordInput.value} in the active document!`);
+        if (!textInput.innerText.includes(searchWordInput.value)) {
+            throw new Error(`No match found for the word '${searchWordInput.value}' in the active document!`);
         }
-        else{
-            let output = replaceWord(textInput.innerText, searchWordInput.value, replaceWordInput.value);
-            textInput.innerText = output;
-        }
+
+        const output = replaceWord(textInput.innerText, searchWordInput.value, replaceWordInput.value);
+        textInput.innerText = output;
     } catch (error) {
-        alert(error);
+        alert(error.message);
         console.error(error);
     }
-})
+});
 
 searchWordInput.addEventListener("input", (e) => {
     try {
-        if(e.target.value.length <= 0) return;
+        if (e.target.value.length <= 0) return;
+
         resultMatch.classList.remove("ok");
         resultMatch.classList.remove("err");
         resultMatch.innerText = `Searching...`;
+
         setTimeout(() => {
             searchString(textInput.innerText, searchWordInput.value);
         }, 1000);
     } catch (error) {
-        alert(error);
+        alert(error.message);
         console.error(error);
     }
-})
+});
