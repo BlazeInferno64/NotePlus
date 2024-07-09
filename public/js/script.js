@@ -118,7 +118,7 @@ document.addEventListener("DOMContentLoaded", (e) => {
     const name = detectBrowser();
     browserName.innerText = name;
     wordsCount.innerText = `Total Words: ${textInput.innerText.length}`;
-    //textInput.focus();
+    textInput.focus();
 
     // Check if browser supports Web File System API
     if (!window.showSaveFilePicker) {

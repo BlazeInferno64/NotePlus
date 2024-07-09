@@ -28,9 +28,9 @@ const switchThemes = () => {
 
 const updateThemeButtonText = () => {
     if (themeBtn.innerText === "Light Mode") {
-        themeBtn.innerText = "Dark Mode";
+        return themeBtn.innerText = "Dark Mode";
     } else {
-        themeBtn.innerText = "Light Mode";
+        return themeBtn.innerText = "Light Mode";
     }
 };
 
@@ -43,9 +43,11 @@ const applyDarkMode = (e) => {
     if (e.matches) {
         switchThemes();
         updateThemeButtonText();
-        console.log("Dark mode is enabled now!");
+        console.log("Your system uses Dark Mode");
+        themeBtn.innerText = `Light Mode`
     } else {
-        console.log("Dark mode isn't enabled now!");
+        console.log("Your system uses Light Mode");
+        themeBtn.innerText = `Dark Mode`;
     }
 };
 
