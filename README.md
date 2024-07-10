@@ -28,7 +28,7 @@ https://blazeinferno64.github.io/NotePlus
 NotePlus Version: 3.7
 
 1. Increased Optimization for various platforms
-2. Added Search & Replace text functioon, which is accessible by clicking on the 'Edit' Button
+2. Added Search & Replace text function, which is accessible by clicking on the 'Edit' Button
 3. Improved Browser/Platform detection for better stability
 4. Made some bug fixes
 5. Press `Ctrl` + `X` on your keyboard to save files to your device!
