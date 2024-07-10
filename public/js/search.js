@@ -129,3 +129,10 @@ searchWordInput.addEventListener("input", (e) => {
         console.error(error);
     }
 });
+
+
+replaceWordInput.addEventListener("keydown", (e) => {
+    if(e.keyCode === 13) {
+        return replaceBtn.click();
+    }
+})
