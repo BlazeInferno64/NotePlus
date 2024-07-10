@@ -28,12 +28,12 @@
         <div class="app-options">
             <ul>
                 <li id="file">
-                    <p class="fl">
+                    <p class="fl" title="File options tab">
                         File
                     </p>
                     <div class="action-list up hide">
                         <ul>
-                            <li id="open-file">
+                            <li id="open-file" title="Opens a file">
                                 <p>
                                     <i class="fa-regular fa-file"></i> Open
                                 </p>
@@ -41,7 +41,7 @@
                                     Ctrl + B
                                 </p>
                             </li>
-                            <li id="sv">
+                            <li id="sv" title="Directly saves a copy of the current active file to your device">
                                 <p>
                                     <i class="fa-solid fa-floppy-disk"></i> Save
                                 </p>
@@ -49,7 +49,7 @@
                                     Ctrl + M
                                 </p>
                             </li>
-                            <li id="sv-as">
+                            <li id="sv-as" title="Saves the file to the device using the Web File Sytem Api, Browser compatibility might be limited">
                                 <p>
                                     <i class="fa-solid fa-floppy-disk"></i>  Save as
                                 </p>
@@ -57,7 +57,7 @@
                                     Ctrl + X
                                 </p>
                             </li>
-                            <li id="ex">
+                            <li id="ex" title="Exits the file tab">
                                 <p>
                                     <i class="fa-solid fa-arrow-right-from-bracket"></i> Exit
                                 </p>
@@ -65,28 +65,28 @@
                         </ul>
                     </div>
                 </li>
-                <li id="edit">
+                <li id="edit" title="Edit options tab">
                     <p  class="ed">
                         Edit
                     </p>
                     <div class="edit-list up hide">
                         <ul>
-                            <li id="srch">
+                            <li id="srch" title="Search and Replace words across the document">
                                 <p>
                                     <i class="fa fa-search"></i>  Search
                                 </p>
                             </li>
-                            <li id="sel-all">
+                            <li id="sel-all" title="Selects all the text present inside the active document">
                                 <p>
                                     <i class="fa-solid fa-arrow-pointer"></i> Select All
                                 </p>
                             </li>
-                            <li id="copy-all">
+                            <li id="copy-all" title="Copies all the text present inside the active document to the clipboard">
                                 <p>
                                     <i class="fa-regular fa-copy"></i> Copy
                                 </p>
                             </li>
-                            <li id="pst-all">
+                            <li id="pst-all" title="Pastes text from the clipboard, Requires: Clipboard Permission">
                                 <p>
                                     <i class="fa-regular fa-clipboard"></i> Paste
                                 </p>
@@ -95,23 +95,23 @@
                     </div>
                 </li>
                 <li id="help" class="">
-                    <p class="he">
+                    <p class="he" title="Help options tab">
                         Help
                     </p>
                     <div class="help-list up hide">
                         <ul>
-                            <li id="ab">
+                            <li id="ab" title="Know more about NotePlus">
                                 <p>
                                     <img class="img" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAACXBIWXMAAAsTAAALEwEAmpwYAAABV0lEQVR4nO1ZwUrDQBDdn8ipntT6C/ZWdvRXmp/RT2ihaAYJpf/QW8WDPVaweu3FQCM72FtkKy1CWxR3mklkHsxpSGbezLzNsDFGoSgPk+nzw+N0di/lD8bkaVZ4k/L/Ge1bOrLoBusAgLTT+PxueInLJl/yCWWt7mIToNXLt4Jz+21CGfSpEUzAV94HOL6abwKcXM+3EjiIP3FpMAFAel8HSMcvRTp+3ZsAt98mtOAg8NXiXr4K4l9+3t0xAgfyGy4CUmaUAGoHCh2hEOyrXhSPiqjDZ1C2iGtPAPQYJdnvAOf4RLGEBupOAFQDVF0N1GKZi+pOAFQDpB3QEYISdGAkTqHQDRSUwDfoMYr/QAPw0zNxxdfpShIAXSVIV4lfwSLlUuNjea7X3VCMALpBMIGLu+WZRXoTqH7Wvvk4DSaw6kKfGv53TxnjZJFyX3m25BUKhak0PgFPsVTws4faFAAAAABJRU5ErkJggg==">
                                     About
                                 </p>
                             </li>
-                            <li id="rp">
+                            <li id="rp" title="Report Issues and Bugs related to NotePlus">
                                <p>
                                 <i class="fa-solid fa-bug"></i> Report Issues/Bugs
                                </p>
                             </li>
-                            <li id="vr">
+                            <li id="vr" title="Get some info regarding the current version of NotePlus">
                                 <p>
                                     <i class="fa-solid fa-code-compare"></i> Version
                                 </p>
@@ -122,20 +122,20 @@
                     </div>
                 </li>
             </ul>
-            <p id="theme" class="set">
+            <p id="theme" class="set" title="Toggle between Light & Dark theme">
                 Light Mode
             </p>
         </div>
         <div class="main">
-            <div class="text" id="text" contenteditable="true"></div>
+            <div class="text" id="text" contenteditable="true" title="Write some nice text here :)"></div>
             <div class="footer">
-                <p class="count">
+                <p class="count" title="Shows how many words the current active document consists of">
                     Total Words: 0
                 </p>
                 <div class="info">
-                    <p id="browser">
+                    <p id="browser" title="Displays your current browser">
                     </p>
-                    <p id="encoding">
+                    <p id="encoding" title="Encoding type">
                         UTF-8
                     </p>
                 </div>
@@ -149,7 +149,7 @@
                 <p>
                     Search Words
                 </p>
-                <span id="close-srch">
+                <span id="close-srch" title="Close Search Menu">
                     &times;
                 </span>
             </div>
@@ -158,18 +158,18 @@
                     <label for="search">
                         Word to search:
                     </label>
-                    <input type="text" class="srch" placeholder="Enter word to search..." />
+                    <input type="text" title="The word you want to search across the document" class="srch" placeholder="Enter word to search..." />
                 </div>
                 <div class="in">
                     <label for="replace">
                         Word to replace:
                     </label>
-                    <input type="text" class="rep" placeholder="Enter word to replace..." />
+                    <input title="The word you want to replace with" type="text" class="rep" placeholder="Enter word to replace..." />
                 </div>
                 <p class="res">
                     No results found!
                 </p>
-                <button class="replace no">
+                <button class="replace no" title="Replace the word">
                     Replace
                 </button>
             </div>

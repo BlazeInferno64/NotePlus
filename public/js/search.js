@@ -130,6 +130,15 @@ searchWordInput.addEventListener("input", (e) => {
     }
 });
 
+searchWordInput.addEventListener("keydown", (e) => {
+    try {
+        if(e.target.value.length <= 0) return;
+        if(e.keyCode === 13) return replaceWordInput.focus();
+    } catch (error) {
+        
+    }
+})
+
 
 replaceWordInput.addEventListener("keydown", (e) => {
     if(e.keyCode === 13) {
