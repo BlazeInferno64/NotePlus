@@ -22,10 +22,10 @@ https://blazeinferno64.github.io/NotePlus
 </a>
 
 # Status
-NotePlus version 3.8 is out now
+NotePlus Version: 3.9 is under development, would be released soon! Meanwhile if you have feature requests suggestion please open up an issue here!
 
 # Patch Notes
-NotePlus Version: 3.8
+NotePlus Version: 3.8 is here!!!
 
 1. Increased Optimization for various platforms: Improved overall performance by increasing optimization for various platforms.
 2. Optimized file reading: Now NotePlus can read your files chunk by chunk, which implies that it is now more memory friendly.
@@ -36,7 +36,7 @@ NotePlus Version: 3.8
                                                two input `true` and `false`. Your URL will look something like this https://note-plus-mu.vercel.app/?text=ok&save=true , here NotePlus will automatically extract 
                                                the text present inside the `text` param ('ok' in this case), and save it your device as an .txt file.
 4. Improved Dark & Light theme detection: NotePlus can now automatically switch to the theme prefered by your system.
-
+5. Optimized Drag & Drop: Drag & Drop feature has been highly improved and optimized.
 # Info
 Please read the following point carefully -
 
