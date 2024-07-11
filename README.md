@@ -24,6 +24,9 @@ https://blazeinferno64.github.io/NotePlus
 ```
 </a>
 
+# Status
+NotePlus version 3.8 is under development and would be released soon
+
 # Patch Notes
 NotePlus Version: 3.7
 
