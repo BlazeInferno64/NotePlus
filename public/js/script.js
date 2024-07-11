@@ -58,7 +58,7 @@ let hasUnsavedChanges = false;
 // Function to detect the current browser
 const detectBrowser = () => {
     const userAgent = navigator.userAgent;
-    
+
     // Check if the environment provides VSCode API
     if (typeof acquireVsCodeApi !== 'undefined') {
         return "VSCode";
@@ -68,7 +68,7 @@ const detectBrowser = () => {
     if (userAgent.includes("TorBrowser")) {
         return "Tor Browser";
     }
-    
+
     // Check for .onion address and Tor-like properties
     if (window.history.length === 1 && window.location.hostname.includes(".onion")) {
         return "Tor Browser";
@@ -107,11 +107,79 @@ const detectBrowser = () => {
     if (userAgent.includes("Insomnia")) {
         return "Insomnia";
     }
-    
+
     // Fallback for unknown browsers
     return "Unknown";
 };
 
+// Function to save file
+const saveFile = () => {
+    const text = textInput.innerText;
+    const blob = new Blob([text], { type: "text/plain" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = `${activeFileName.innerText}.txt`;
+    link.click();
+    URL.revokeObjectURL(link.href);
+    link.remove();
+    alert(`File has been saved to the device. Please check your downloads folder.`);
+}
+
+// Function to detect search query 
+const detectSearchQuery = () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const text = urlParams.get('text');
+    const saveText = urlParams.get('save');
+
+    if (urlParams.has('text') === false && urlParams.toString() === "" && urlParams.has('save') === false) {
+        return;
+    } else {
+        if (text === "") {
+            alert(`Error: Text search query is present, but it doesn't have any value!`)
+            console.log(`Text search query is present, but it doesn't have any value!`);
+        }
+        if (saveText === "") {
+            if (text !== null) {
+                textInput.innerText = text;
+                hasUnsavedChanges = true;
+            }
+            alert(`Error: Save query is present, but the value is empty!`)
+            console.log(`Save query is present, but the value is empty!`)
+        }
+        else if (text !== null && saveText === null) {
+            console.log(`Found text query: ${text}`);
+            textInput.innerText = text;
+            return hasUnsavedChanges = true
+        }
+        else if (text === null && saveText !== null) {
+            alert(`Error: Save query is present, but failed to save file as there isn't any text query`);
+            return console.warn(`Save query is present, but failed to save file as there isn't any text query`)
+        }
+        else if (text !== null && saveText !== null) {
+            textInput.innerText = text;
+            hasUnsavedChanges = true;
+            if (saveText === "true") {
+                saveFile();
+            }
+            else if (saveText === "false") {
+                hasUnsavedChanges = true;
+                if (text !== null) {
+                    alert(`Error: Text query is present, but didn't got saved as the save query is set to false`)
+                    console.warn(`Text query is present, but didn't got saved as the save query is set to false`);
+                }
+                else {
+                    alert(`Error: Text search query is absent`)
+                    return console.warn(`Text query is absent!`);
+                }
+            }
+            else {
+                alert(`Error: Invalid save query provided: ${saveText}`)
+                console.error(`Invalid save query provided: ${saveText}`)
+                return hasUnsavedChanges = true;
+            }
+        }
+    }
+}
 
 // Event listener when DOM content is loaded
 document.addEventListener("DOMContentLoaded", (e) => {
@@ -128,6 +196,7 @@ document.addEventListener("DOMContentLoaded", (e) => {
 
     console.log(`Welcome to NotePlus text editor :)`);
     console.log(`NotePlus is a free open-source text editor based on Notepad. Visit https://github.com/blazeinferno64/NotePlus for more information.`);
+    return detectSearchQuery();
 });
 
 // Event listener for mainElement clicks
@@ -146,27 +215,14 @@ textInput.addEventListener("input", (e) => {
     hasUnsavedChanges = true;
 });
 
-// Function to toggle action list visibility
-const hideActionList = () => {
-    actionList.classList.toggle("hide");
-    setTimeout(() => {
-        actionList.classList.toggle("up");
-    }, 100);
-};
+// Function to toggle visibility of action, edit, and help lists
+const toggleListVisibility = (list) => {
+    actionList.classList.toggle("hide", list !== actionList);
+    editList.classList.toggle("hide", list !== editList);
+    helpList.classList.toggle("hide", list !== helpList);
 
-// Function to toggle edit list visibility
-const hideEditList = () => {
-    editList.classList.toggle("hide");
     setTimeout(() => {
-        editList.classList.toggle("up");
-    }, 100);
-};
-
-// Function to toggle help list visibility
-const hideHelpList = () => {
-    helpList.classList.toggle("hide");
-    setTimeout(() => {
-        helpList.classList.toggle("up");
+        list.classList.toggle("up");
     }, 100);
 };
 
@@ -175,19 +231,7 @@ fileBtn.addEventListener("click", (e) => {
     fileBtn.classList.toggle("active");
     helpBtn.classList.remove("active");
     editBtn.classList.remove("active");
-    hideActionList();
-
-    editBtn.classList.remove("active");
-    editList.classList.add("hide");
-    setTimeout(() => {
-        editList.classList.add("up");
-    }, 100);
-
-    helpBtn.classList.remove("active");
-    helpList.classList.add("hide");
-    setTimeout(() => {
-        helpList.classList.add("up");
-    }, 100);
+    toggleListVisibility(actionList);
 });
 
 // Event listener for editBtn click
@@ -195,18 +239,7 @@ editBtn.addEventListener("click", (e) => {
     fileBtn.classList.remove("active");
     helpBtn.classList.remove("active");
     editBtn.classList.toggle("active");
-    hideEditList();
-
-    fileBtn.classList.remove("active");
-    actionList.classList.add("hide");
-    setTimeout(() => {
-        actionList.classList.add("up");
-    }, 100);
-    helpBtn.classList.remove("active");
-    helpList.classList.add("hide");
-    setTimeout(() => {
-        helpList.classList.add("up");
-    }, 100);
+    toggleListVisibility(editList);
 });
 
 // Event listener for helpBtn click
@@ -214,20 +247,8 @@ helpBtn.addEventListener("click", (e) => {
     fileBtn.classList.remove("active");
     helpBtn.classList.toggle("active");
     editBtn.classList.remove("active");
-    hideHelpList();
-
-    fileBtn.classList.remove("active");
-    actionList.classList.add("hide");
-    setTimeout(() => {
-        actionList.classList.add("up");
-    }, 100);
-
-    editBtn.classList.remove("active");
-    editList.classList.add("hide");
-    setTimeout(() => {
-        editList.classList.add("up");
-    }, 100);
-});
+    toggleListVisibility(helpList);
+})
 
 // Event listener to close action, edit, and help lists when clicking outside
 document.addEventListener("click", (e) => {
@@ -253,10 +274,10 @@ document.addEventListener("click", (e) => {
             helpList.classList.add("up");
         }, 100);
 
-        if(searchBg.className == "srch-bg hide"){
+        if (searchBg.className == "srch-bg hide") {
             textInput.focus();
         }
-        else{
+        else {
             return;
         }
     }
@@ -264,50 +285,67 @@ document.addEventListener("click", (e) => {
 
 // Event listener for openBtn click
 openBtn.addEventListener("click", async (e) => {
-// Event listener for openBtn click
-openBtn.addEventListener("click", async (e) => {
-    try {
-        await fileInput.click();
-    } catch (error) {
-        console.error(`Error while handling file input click:`, error);
-        alert(`An error occurred while opening file.`);
-    }
-})
+    // Event listener for openBtn click
+    openBtn.addEventListener("click", async (e) => {
+        try {
+            await fileInput.click();
+        } catch (error) {
+            console.error(`Error while handling file input click:`, error);
+            alert(`An error occurred while opening file.`);
+        }
+    })
 });
 
-// Function to read file content
+// Function to read file content with chunking
 const readFile = (file) => {
-    try {
-        const fileReader = new FileReader();
-        fileReader.readAsText(file);
-        
-        fileReader.addEventListener("load", async (e) => {
-            let result = await fileReader.result;
-            if(!result){
-                throw new Error(`Oops! It seems like the ${file.name} doesn't contain any data!`);
-            }
-            hasUnsavedChanges = true;
-            console.log(`File reading has been successfully completed!`);
-            console.warn(`If any issues occur try to refresh this page.`);
-            textInput.innerText = result;
-            wordsCount.innerText = `Total Words: ${textInput.innerText.length}`;
-            return textInput.focus();
-        });
-    
-        fileReader.addEventListener("error", (e) => {
-            console.error(e.target.error);
-            return alert(`Oops! There was an error reading the file. Please check Browser Console for more information.`);
-        });
-    
-        fileReader.addEventListener("abort", (e) => {
-            console.error(`File reading was aborted!`);
-            console.warn(`If you believe this is a bug, please file an issue at https://github.com/blazeinferno64/NotePlus`);
-            return alert(`The file reading was aborted!`);
-        });
-    } catch (error) {
-        console.error(`Error while reading file: ${error.message}`);
-        return alert(error.message);
-    }
+    const CHUNK_SIZE = 1024 * 1024; // 1MB chunk size, adjust as needed
+    let offset = 0;
+    let fileContent = '';
+
+    const fileReader = new FileReader();
+
+    fileReader.addEventListener("error", (e) => {
+        console.error(`Error reading file '${file.name}':`, e.target.error);
+        alert(`Error: Failed to read file '${file.name}'. Please check the console for more information!`);
+    });
+
+    fileReader.addEventListener("abort", (e) => {
+        console.warn(`File reading aborted for '${file.name}'.`);
+        alert(`File reading aborted for '${file.name}'!`);
+    });
+
+    fileReader.addEventListener("load", (e) => {
+        const chunk = fileReader.result;
+        fileContent += chunk;
+
+        // Continue reading next chunk if file is not fully read
+        if (offset < file.size) {
+            readNextChunk();
+        } else {
+            // File reading completed
+            handleFileContent(fileContent);
+        }
+    });
+
+    // Function to read next chunk
+    const readNextChunk = () => {
+        const slice = file.slice(offset, offset + CHUNK_SIZE);
+        fileReader.readAsText(slice);
+        offset += CHUNK_SIZE;
+    };
+
+    // Start reading the first chunk
+    readNextChunk();
+};
+
+// Function to handle file content after reading is completed
+const handleFileContent = (content) => {
+    hasUnsavedChanges = true;
+    console.log(`File reading completed successfully!`);
+    console.warn(`If any issues occur then please refresh this page and try to open the file again!`);
+    textInput.innerText = content;
+    wordsCount.innerText = `Total Words: ${textInput.innerText.length}`;
+    textInput.focus();
 };
 
 // Event listener for fileInput change
@@ -319,6 +357,8 @@ fileInput.onchange = (e) => {
     readFile(file);
     activeFileName.innerText = file.name ? `${file.name} - NotePlus` : `Untitled - NotePlus`;
 };
+
+
 
 // Event listener for saveAsBtn click
 saveAsBtn.addEventListener("click", async (e) => {
@@ -356,7 +396,7 @@ saveAsBtn.addEventListener("click", async (e) => {
         // Handle specific errors
         if (err.name === 'NotAllowedError') {
             alert(`Saving failed: File system access not allowed. Please check your browser settings.`);
-        } else if(err.name = "AbortError"){
+        } else if (err.name = "AbortError") {
             alert(`Saving failed: You aborted the request.`);
         } else {
             alert(`Saving failed: ${err.message}`);
@@ -366,15 +406,7 @@ saveAsBtn.addEventListener("click", async (e) => {
 
 // Event listener for saveBtn click
 saveBtn.addEventListener("click", (e) => {
-    const text = textInput.innerText;
-    const blob = new Blob([text], { type: "text/plain" });
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = `${activeFileName.innerText}.txt`;
-    link.click();
-    URL.revokeObjectURL(link.href);
-    link.remove();
-    alert(`File has been saved to the device. Please check your downloads folder.`);
+    saveFile();
 });
 
 // Event listener for exitBtn click
@@ -397,7 +429,7 @@ reportIssuesBtn.addEventListener("click", async (e) => {
 // Any further changes to NotePlus in future will be updated here
 const about = {
     Name: "NotePlus",
-    Version: '3.7',
+    Version: '3.8',
     Developer: "BlazeInferno64",
     Platform: detectBrowser()
 }
@@ -456,7 +488,7 @@ pasteAllBtn.addEventListener("click", async () => {
 });
 
 // Event listener for aboutBtn click
-aboutBtn.addEventListener("click", async(e) => {
+aboutBtn.addEventListener("click", async (e) => {
     alert(`Please wait while your request is being processed...`);
     setTimeout(() => {
         window.location.href = `https://github.com/blazeinferno64/NotePlus`
@@ -471,6 +503,8 @@ images.forEach((image) => {
 });
 
 // Drag and drop listeners
+let folderDropErrorShown = false; // Flag to track if folder drop error has been shown
+
 const handleDrop = (event) => {
     event.preventDefault();
     const droppedFile = event.dataTransfer.files[0];
@@ -479,6 +513,7 @@ const handleDrop = (event) => {
         activeFileName.innerText = droppedFile.name ? `${droppedFile.name} - NotePlus` : `Untitled - NotePlus`;
     }
 };
+
 
 Body.addEventListener("dragover", (event) => {
     textInput.focus();
@@ -523,10 +558,10 @@ let isCtrlPressed = false;
 
 // Check if the key pressed is Ctrl key or not
 document.addEventListener("keydown", (e) => {
-    if (e.ctrlKey){
+    if (e.ctrlKey) {
         isCtrlPressed = true;
     }
-    else{
+    else {
         isCtrlPressed = false;
     }
 });
@@ -536,10 +571,10 @@ document.addEventListener("keyup", (e) => {
         saveBtn.click();
         isCtrlPressed = false
     }
-    if(e.key === "b" && isCtrlPressed){
+    if (e.key === "b" && isCtrlPressed) {
         openBtn.click();
     }
-    if(e.key === "x" && isCtrlPressed){
+    if (e.key === "x" && isCtrlPressed) {
         saveAsBtn.click();
     }
 })

@@ -168,6 +168,9 @@ body{
 .text::-webkit-scrollbar-corner{
     background: transparent;
 }
+.text::-webkit-scrollbar,.text::-webkit-scrollbar-thumb,.text::-webkit-scrollbar-corner{
+    cursor: default;
+}
 .main {
     flex: 1; /* Allow it to grow */
     width: 100%;
