@@ -3,9 +3,6 @@ Free and open source browser based text editor
 |-----|
 
 # Test
-
-View it live here at -
-
 Test the web app using vercel 
 
 <a href="https://note-plus-mu.vercel.app/">
