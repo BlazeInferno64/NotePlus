@@ -38,7 +38,7 @@ NotePlus Version 3.9 is here!!!
       2. `save`:NotePlus can also directly save the text to your device as an .txt  file, but you need to have `text` and `save` search params for it to work. The `save` param takes 
                 two input `true` and `false`. Your URL will look something like this https://note-plus-mu.vercel.app/?text=ok&save=true , here NotePlus will automatically extract 
                 the text present inside the `text` param ('ok' in this case), and save it your device as an .txt file.
-5. Bug & Issue Fixes: Fixed some minor ui bugs and feature issues.
+5. Bugs & Issues Fixes: Fixed some minor ui bugs and feature related issues.
 
 # Info
 Please read the following point carefully -
