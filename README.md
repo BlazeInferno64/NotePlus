@@ -27,7 +27,7 @@ NotePlus Version 4.0 is under development, and would be released soon! Meanwhile
 # Patch Notes
 NotePlus Version 3.9 is here!!!
 
-1. New Option is here: Now you can directly create a new blank document by clicking on the `New` option present in the file tab, or by pressing `Ctrl` + `Alt` + `J` on your keyboard!
+1. `New` Option is here: Now you can directly create a new blank document by clicking on the `New` option present in the file tab, or by pressing `Ctrl` + `Alt` + `J` on your keyboard!
 2. Improved Features & Optimization: NotePlus has been more optimized for various platforms.
 3. Optimized file reading: NotePlus can now read files more memory efficiently, which will help a lot in low-end devices.
 4. Added search query params: Now you can directly interact with NotePlus by providing search query params in the url, you have two search query params for this,i.e, `text` & `save`.
