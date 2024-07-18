@@ -5,6 +5,8 @@ const footer = document.querySelector(".footer");
 const mainBg = document.querySelector(".main");
 
 const themeBtn = document.querySelector("#theme");
+const themeBtnText = document.querySelector(".t");
+const themeIcon = document.querySelector("#ico");
 const prefersDarkMode = window.matchMedia('(prefers-color-scheme: dark)');
 
 const switchThemes = () => {
@@ -27,10 +29,14 @@ const switchThemes = () => {
 };
 
 const updateThemeButtonText = () => {
-    if (themeBtn.innerText === "Light Mode") {
-        return themeBtn.innerText = "Dark Mode";
+    if (themeBtnText.innerText === "Light Mode") {
+        themeIcon.classList.remove("fa-circle-half-stroke");
+        themeIcon.classList.add("fa-moon");
+        return themeBtnText.innerText = "Dark Mode";
     } else {
-        return themeBtn.innerText = "Light Mode";
+        themeIcon.classList.add("fa-circle-half-stroke");
+        themeIcon.classList.remove("fa-moon");
+        return themeBtnText.innerText = "Light Mode";
     }
 };
 
@@ -44,10 +50,14 @@ const applyDarkMode = (e) => {
         switchThemes();
         updateThemeButtonText();
         console.log("Your system uses Dark Mode");
-        themeBtn.innerText = `Light Mode`
+        themeIcon.classList.add("fa-circle-half-stroke");
+        themeIcon.classList.remove("fa-moon");
+        themeBtnText.innerText = `Light Mode`
     } else {
         console.log("Your system uses Light Mode");
-        themeBtn.innerText = `Dark Mode`;
+        themeIcon.classList.remove("fa-circle-half-stroke");
+        themeIcon.classList.add("fa-moon");
+        themeBtnText.innerText = `Dark Mode`;
     }
 };
 

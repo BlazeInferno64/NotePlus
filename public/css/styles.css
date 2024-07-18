@@ -73,9 +73,14 @@ body{
 #file,#help,#edit,.set{
     background: transparent;
     border-radius: .2rem;
-    padding: .5rem;
     position: relative;
     z-index: 2;
+}
+.set{
+    padding: .5rem;
+}
+#file .fl, #edit .ed, #help .he{
+    padding: .5rem;
 }
 #file:hover,#help:hover,#edit:hover,.set:hover{
     background: #dedede;
@@ -106,7 +111,7 @@ body{
     padding: .5rem .4rem;
     border-radius: .3rem;
     box-shadow: 0 10px 20px 0 rgba(0,0,0,.6);
-    margin-top: 1rem;
+    margin-top: .5rem;
     transition: all .5s ease-in-out;
 }
 .action-list ul,.edit-list ul,.help-list ul{
@@ -120,7 +125,6 @@ body{
 .action-list ul li,.edit-list ul li,.help-list ul li{
     background: transparent;
     width: 100%;
-    padding: .5rem .5rem;
     border-radius: .3rem;
     display: flex;
     align-items: center;
@@ -130,7 +134,15 @@ body{
 .action-list ul li:hover,.edit-list ul li:hover,.help-list ul li:hover{
     background: #a5a5a5;
 }
-.action-list ul li p,.help-list ul li p,.edit-list ul li p{
+.action-list ul li span,.help-list ul li span,.edit-list ul li span{
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+    gap: 5px;
+    padding: .5rem ;
+}
+.action-list ul li span p,.help-list ul li span p,.edit-list ul li p{
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -202,6 +214,13 @@ body{
 }
 .info p{
     padding: .2rem .5rem;
+}
+.brow,.enc{
+    display: flex;
+    align-items: center;
+}
+.enc {
+    margin-left: .5rem;
 }
 .srch-bg{
     position: fixed;

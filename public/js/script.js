@@ -1,6 +1,7 @@
 const textInput = document.querySelector(".text");
 
 const browserName = document.querySelector("#browser");
+const browserIcon = document.querySelector("#browser-icon");
 const encoding = document.querySelector("#encoding");
 
 const mainElement = document.querySelector(".main");
@@ -24,6 +25,7 @@ const openBtn = document.querySelector("#open-file");
 const saveAsBtn = document.querySelector("#sv-as");
 const saveBtn = document.querySelector("#sv");
 const exitBtn = document.querySelector("#ex");
+const newDocumentBtn = document.querySelector("#new-doc");
 
 const selectAllBtn = document.querySelector("#sel-all");
 const copyAllBtn = document.querySelector("#copy-all");
@@ -54,6 +56,7 @@ noScriptTag.classList.add("none");
 appBody.classList.remove("none");
 
 let hasUnsavedChanges = false;
+let fileType = "";
 
 // Function to detect the current browser
 const detectBrowser = () => {
@@ -106,10 +109,66 @@ const detectBrowser = () => {
     }
     if (userAgent.includes("Insomnia")) {
         return "Insomnia";
+    } 
+    if (userAgent.indexOf("Code") !== -1 && userAgent.indexOf("VS") !== -1) {
+        return "VSCode";
     }
 
+    // Set browser icons
+    setBrowserIcon(browserName);
     // Fallback for unknown browsers
     return "Unknown";
+};
+
+// Function to set browser icon based on browser name
+const setBrowserIcon = (name) => {
+    const browserIcon = elements.browserIcon;
+    const classes = ["fa-edge", "fa-opera", "fa-brave", "fa-safari", "fa-firefox-browser", "fa-chrome", "fa-triangle-exclamation", "fa-code", "fa-user-secret"];
+
+    // Remove all existing icon classes
+    browserIcon.classList.remove(...classes);
+
+    switch (name) {
+        case "Chrome":
+            browserIcon.classList.add("fa-chrome");
+            break;
+        case "Edge":
+            browserIcon.classList.add("fa-edge");
+            break;
+        case "Brave":
+            browserIcon.classList.add("fa-brave");
+            break;
+        case "Safari":
+            browserIcon.classList.add("fa-safari");
+            break;
+        case "Opera":
+            browserIcon.classList.add("fa-opera");
+            break;
+        case "Unknown":
+            browserIcon.classList.add("fa-triangle-exclamation");
+            break;
+        case "Firefox":
+            browserIcon.classList.add("fa-firefox-browser");
+            break;
+        case "VSCode":
+            browserIcon.classList.add("fa-code");
+            break;
+        case "Insomnia":
+            browserIcon.classList.add("fa-code");
+            break;
+        case "Postman":
+            browserIcon.classList.add("fa-code");
+            break;
+        case "Tor Browser":
+            browserIcon.classList.add("fa-user-secret");
+            break;
+        case "Samsung Internet":
+            browserIcon.classList.add("fa-triangle-exclamation");
+            break;
+        default:
+            browserIcon.classList.add("fa-triangle-exclamation");
+            break;
+    }
 };
 
 // Function to save file
@@ -131,7 +190,7 @@ const detectSearchQuery = () => {
     const text = urlParams.get('text');
     const saveText = urlParams.get('save');
 
-    if (urlParams.has('text') === false && urlParams.toString() === "" && urlParams.has('save') === false) {
+    if (!urlParams.has('text') && urlParams.toString() === "" && !urlParams.has('save')) {
         return;
     } else {
         if (text === "") {
@@ -215,23 +274,25 @@ textInput.addEventListener("input", (e) => {
     hasUnsavedChanges = true;
 });
 
-// Function to toggle visibility of action, edit, and help lists
-const toggleListVisibility = (list) => {
-    actionList.classList.toggle("hide", list !== actionList);
-    editList.classList.toggle("hide", list !== editList);
-    helpList.classList.toggle("hide", list !== helpList);
-
-    setTimeout(() => {
-        list.classList.toggle("up");
-    }, 100);
-};
-
 // Event listener for fileBtn click
 fileBtn.addEventListener("click", (e) => {
     fileBtn.classList.toggle("active");
     helpBtn.classList.remove("active");
     editBtn.classList.remove("active");
-    toggleListVisibility(actionList);
+
+    actionList.classList.toggle("hide");
+    setTimeout(() => {
+        actionList.classList.toggle("up");
+    }, 100);
+    editList.classList.add("hide");
+    setTimeout(() => {
+        editList.classList.add("up");
+    }, 100);
+
+    helpList.classList.add("hide");
+    setTimeout(() => {
+        helpList.classList.add("up");
+    }, 100);
 });
 
 // Event listener for editBtn click
@@ -239,7 +300,21 @@ editBtn.addEventListener("click", (e) => {
     fileBtn.classList.remove("active");
     helpBtn.classList.remove("active");
     editBtn.classList.toggle("active");
-    toggleListVisibility(editList);
+
+    actionList.classList.add("hide");
+    setTimeout(() => {
+        actionList.classList.add("up");
+    }, 100);
+
+    editList.classList.toggle("hide");
+    setTimeout(() => {
+        editList.classList.toggle("up");
+    }, 100);
+
+    helpList.classList.add("hide");
+    setTimeout(() => {
+        helpList.classList.add("up");
+    }, 100);
 });
 
 // Event listener for helpBtn click
@@ -247,7 +322,21 @@ helpBtn.addEventListener("click", (e) => {
     fileBtn.classList.remove("active");
     helpBtn.classList.toggle("active");
     editBtn.classList.remove("active");
-    toggleListVisibility(helpList);
+
+    actionList.classList.add("hide");
+    setTimeout(() => {
+        actionList.classList.add("up");
+    }, 100);
+
+    editList.classList.add("hide");
+    setTimeout(() => {
+        editList.classList.add("up");
+    }, 100);
+
+    helpList.classList.toggle("hide");
+    setTimeout(() => {
+        helpList.classList.toggle("up");
+    }, 100);
 })
 
 // Event listener to close action, edit, and help lists when clicking outside
@@ -283,24 +372,50 @@ document.addEventListener("click", (e) => {
     }
 });
 
+const createNewDocument = () => {
+    activeFileName.innerText = `Untitled - NotePlus`;
+    textInput.innerText = "";
+    textInput.focus();
+}
+
+// Event listener for newDocumentBtn click
+newDocumentBtn.addEventListener("click", (e) => {
+    if (hasUnsavedChanges) {
+        const userChoice = prompt(`You have unsaved changes, do you wish to continue?\nType in Y for yes and N for no`);
+        if (!userChoice) return;
+        if (userChoice.toLocaleLowerCase() == "y") {
+            alert(`Successfully created a new untitled document!`);
+            console.log(`New untitled document has been created!`);
+            return createNewDocument();
+        } else if (userChoice.toLocaleLowerCase() == "n") {
+            console.warn(`Abort Error: New untitled document creation was aborted!`);
+            return alert(`Abort Error: New untitled document creation was aborted`);
+        } else {
+            console.error(`Error: Unrecognized command provided: ${userChoice}`);
+            return alert(`Error: Unrecognized command provided: ${userChoice}`);
+        }
+    } else {
+        alert(`Successfully created a new untitled document!`);
+        console.log(`New untitled document has been created!`);
+        return createNewDocument();
+    }
+})
+
 // Event listener for openBtn click
 openBtn.addEventListener("click", async (e) => {
-    // Event listener for openBtn click
-    openBtn.addEventListener("click", async (e) => {
-        try {
-            await fileInput.click();
-        } catch (error) {
-            console.error(`Error while handling file input click:`, error);
-            alert(`An error occurred while opening file.`);
-        }
-    })
+    try {
+        await fileInput.click();
+    } catch (error) {
+        console.error(`Error while handling file input click:`, error);
+        alert(`An error occurred while opening file : ${error}`);
+    }
 });
 
-// Function to read file content with chunking
 const readFile = (file) => {
     const CHUNK_SIZE = 1024 * 1024; // 1MB chunk size, adjust as needed
     let offset = 0;
-    let fileContent = '';
+
+    textInput.innerText = "";
 
     const fileReader = new FileReader();
 
@@ -316,14 +431,14 @@ const readFile = (file) => {
 
     fileReader.addEventListener("load", (e) => {
         const chunk = fileReader.result;
-        fileContent += chunk;
+        processChunk(chunk); // Process the chunk here
 
         // Continue reading next chunk if file is not fully read
         if (offset < file.size) {
             readNextChunk();
         } else {
             // File reading completed
-            handleFileContent(fileContent);
+            handleFileComplete();
         }
     });
 
@@ -338,13 +453,23 @@ const readFile = (file) => {
     readNextChunk();
 };
 
-// Function to handle file content after reading is completed
-const handleFileContent = (content) => {
+// Function to process a chunk of file content
+const processChunk = (chunk) => {
+    // Perform some operation on the chunk, e.g.:
+    // - Wait for the chunk to get processed
+    // - Write the chunk to a file
+    // - Perform some computation on the chunk
+    console.log(`Processing chunks...`);
+    // Update the text input with the chunk
+    textInput.innerText += chunk;
+    wordsCount.innerText = `Total Words: ${textInput.innerText.length}`;
+};
+
+// Function to handle file completion
+const handleFileComplete = () => {
     hasUnsavedChanges = true;
     console.log(`File reading completed successfully!`);
     console.warn(`If any issues occur then please refresh this page and try to open the file again!`);
-    textInput.innerText = content;
-    wordsCount.innerText = `Total Words: ${textInput.innerText.length}`;
     textInput.focus();
 };
 
@@ -356,6 +481,7 @@ fileInput.onchange = (e) => {
     }
     readFile(file);
     activeFileName.innerText = file.name ? `${file.name} - NotePlus` : `Untitled - NotePlus`;
+    return fileType = file.type;
 };
 
 
@@ -373,7 +499,33 @@ saveAsBtn.addEventListener("click", async (e) => {
             throw new Error(`Your browser doesn't support the Web File System API.`);
         }
 
+        let options = [
+            { description: `HTML File`, accept: { "text/html": [".html"] } },
+            { description: `Text File`, accept: { "text/plain": [".txt"] } },
+            { description: `JavaScript File`, accept: { "text/javascript": [".js"] } },
+            { description: `CSS File`, accept: { "text/css": [".css"] } },
+            { description: `JSON File`, accept: { "application/json": [".json"] } },
+            { description: `Python File`, accept: { "text/x-python": [".py"] } },
+            { description: `Php File`, accept: { "application/x-httpd-php": [".php"] } }
+        ];
 
+
+        for (let option of options) {
+            if (fileType === option.accept) {
+                const handle = await window.showSaveFilePicker({
+                    suggestedName: filename,
+                    types: option.accept,
+                });
+                const writable = await handle.createWritable();
+                await writable.write(blob);
+                await writable.close();
+                console.log(`File has been successfully saved!`);
+                alert(`Successfully saved file to the device!`);
+                return;
+            }
+        }
+
+        // Handle default case here if no specific fileType matches
         const handle = await window.showSaveFilePicker({
             suggestedName: filename,
             types: [
@@ -382,27 +534,29 @@ saveAsBtn.addEventListener("click", async (e) => {
                 { description: `JavaScript File`, accept: { "text/javascript": [".js"] } },
                 { description: `CSS File`, accept: { "text/css": [".css"] } },
                 { description: `JSON File`, accept: { "application/json": [".json"] } },
-                { description: `Python File`, accept: { "text/x-python": [".py"] } }
+                { description: `Python File`, accept: { "text/x-python": [".py"] } },
+                { description: `Php File`, accept: { "application/x-httpd-php": [".php"] } }
             ]
         });
-
         const writable = await handle.createWritable();
         await writable.write(blob);
         await writable.close();
         console.log(`File has been successfully saved!`);
         alert(`Successfully saved file to the device!`);
+
     } catch (err) {
         console.error(`Saving Failed: ${err}`);
         // Handle specific errors
         if (err.name === 'NotAllowedError') {
             alert(`Saving failed: File system access not allowed. Please check your browser settings.`);
-        } else if (err.name = "AbortError") {
+        } else if (err.name === 'AbortError') {
             alert(`Saving failed: You aborted the request.`);
         } else {
             alert(`Saving failed: ${err.message}`);
         }
     }
 });
+
 
 // Event listener for saveBtn click
 saveBtn.addEventListener("click", (e) => {
@@ -429,7 +583,7 @@ reportIssuesBtn.addEventListener("click", async (e) => {
 // Any further changes to NotePlus in future will be updated here
 const about = {
     Name: "NotePlus",
-    Version: '3.8',
+    Version: '3.9',
     Developer: "BlazeInferno64",
     Platform: detectBrowser()
 }
@@ -456,6 +610,7 @@ copyAllBtn.addEventListener("click", async () => {
         alert(`Text has been successfully copied to clipboard!`);
     } catch (error) {
         console.error(error);
+        alert(error);
     }
 });
 
@@ -480,10 +635,19 @@ pasteAllBtn.addEventListener("click", async () => {
     }
     try {
         const text = await navigator.clipboard.readText();
+        if (!text) {
+            console.warn(`Seems like your clipboard is empty!`);
+            return alert(`Error: NotePlus wasn't able to find any text present on your clipboard as it was empty!`);
+        }
         textInput.innerText = text;
     } catch (error) {
-        alert(`An error occurred: ${error}!`);
-        console.error(error);
+        if (error.name = "NotAllowedError") {
+            console.error(`Permission Error: You didn't allowed NotePlus to read and write text from your clipboard!`);
+            return alert(`Permission Error: You didn't allowed NotePlus to read and write text from your clipboard!`)
+        } else {
+            console.error(error);
+            return alert(`An error occured: ${error}`);
+        }
     }
 });
 
@@ -503,14 +667,29 @@ images.forEach((image) => {
 });
 
 // Drag and drop listeners
-let folderDropErrorShown = false; // Flag to track if folder drop error has been shown
+let folderDrop = false; // Flag to track if folder drop error has been shown
 
 const handleDrop = (event) => {
-    event.preventDefault();
-    const droppedFile = event.dataTransfer.files[0];
-    if (droppedFile) {
-        readFile(droppedFile);
-        activeFileName.innerText = droppedFile.name ? `${droppedFile.name} - NotePlus` : `Untitled - NotePlus`;
+    try {
+        event.preventDefault();
+        const droppedFile = event.dataTransfer.files[0];
+        if (droppedFile) {
+            const reader = new FileReader();
+            reader.onload = () => {
+                fileType = droppedFile.type;
+                readFile(droppedFile);
+                activeFileName.innerText = droppedFile.name ? `${droppedFile.name} - NotePlus` : `Untitled - NotePlus`;
+            };
+            reader.onerror = () => {
+                if (folderDrop) return folderDrop = false;
+                folderDrop = true;
+                return alert(`Folder dropping isn't yet supported by NotePlus`)
+            };
+            reader.readAsArrayBuffer(droppedFile);
+        }
+    } catch (error) {
+        console.error(error);
+        return alert(`${error}`);
     }
 };
 
@@ -555,27 +734,43 @@ textInput.addEventListener("drop", handleDrop);
 
 // Ctrl Key value
 let isCtrlPressed = false;
+// Alt Key value
+let isAltKeyPressed = false;
 
 // Check if the key pressed is Ctrl key or not
 document.addEventListener("keydown", (e) => {
+    isAltKeyPressed = false;
+    isCtrlPressed = false;
     if (e.ctrlKey) {
+        if (e.altKey) {
+            isAltKeyPressed = true;
+        }
         isCtrlPressed = true;
     }
     else {
         isCtrlPressed = false;
+        isAltKeyPressed = false;
     }
 });
 // Check what other key is pressed with Ctrl key
 document.addEventListener("keyup", (e) => {
-    if (e.key === "m" && isCtrlPressed) {
+    if (e.key === "m" && isCtrlPressed && !isAltKeyPressed) {
         saveBtn.click();
-        isCtrlPressed = false
+        return isCtrlPressed = false;
     }
-    if (e.key === "b" && isCtrlPressed) {
-        openBtn.click();
+    if (e.key === "o" && isCtrlPressed && isAltKeyPressed) {
+        fileInput.click();
+        isCtrlPressed = false;
+        return isAltKeyPressed = false;
     }
-    if (e.key === "x" && isCtrlPressed) {
+    if (e.key === "x" && isCtrlPressed && !isAltKeyPressed) {
         saveAsBtn.click();
+        return isCtrlPressed = false;
+    }
+    if (e.key === "j" && isCtrlPressed && isAltKeyPressed) {
+        newDocumentBtn.click();
+        isCtrlPressed = false;
+        return isAltKeyPressed = false;
     }
 })
 
