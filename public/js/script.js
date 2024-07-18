@@ -113,16 +113,12 @@ const detectBrowser = () => {
     if (userAgent.indexOf("Code") !== -1 && userAgent.indexOf("VS") !== -1) {
         return "VSCode";
     }
-
-    // Set browser icons
-    setBrowserIcon(browserName);
     // Fallback for unknown browsers
     return "Unknown";
 };
 
 // Function to set browser icon based on browser name
 const setBrowserIcon = (name) => {
-    const browserIcon = elements.browserIcon;
     const classes = ["fa-edge", "fa-opera", "fa-brave", "fa-safari", "fa-firefox-browser", "fa-chrome", "fa-triangle-exclamation", "fa-code", "fa-user-secret"];
 
     // Remove all existing icon classes
@@ -244,6 +240,8 @@ const detectSearchQuery = () => {
 document.addEventListener("DOMContentLoaded", (e) => {
     const name = detectBrowser();
     browserName.innerText = name;
+    // Set browser icons
+    setBrowserIcon(name);
     wordsCount.innerText = `Total Words: ${textInput.innerText.length}`;
     textInput.focus();
 
