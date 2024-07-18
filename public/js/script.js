@@ -119,7 +119,7 @@ const detectBrowser = () => {
 
 // Function to set browser icon based on browser name
 const setBrowserIcon = (name) => {
-    const classes = ["fa-edge", "fa-opera", "fa-brave", "fa-safari", "fa-firefox-browser", "fa-chrome", "fa-triangle-exclamation", "fa-code", "fa-user-secret"];
+    const classes = ["fa-edge", "fa-opera", "fa-brave", "fa-safari", "fa-firefox", "fa-chrome", "fa-triangle-exclamation", "fa-code", "fa-user-secret"];
 
     // Remove all existing icon classes
     browserIcon.classList.remove(...classes);
@@ -144,7 +144,7 @@ const setBrowserIcon = (name) => {
             browserIcon.classList.add("fa-triangle-exclamation");
             break;
         case "Firefox":
-            browserIcon.classList.add("fa-firefox-browser");
+            browserIcon.classList.add("fa-firefox");
             break;
         case "VSCode":
             browserIcon.classList.add("fa-code");
