@@ -1,3 +1,6 @@
+/**
+ * Copyright (c) 2024 BlazeInferno64 --> https://github.com/blazeinferno64
+ */
 const textInput = document.querySelector(".text");
 
 const browserName = document.querySelector("#browser");
@@ -26,6 +29,8 @@ const saveAsBtn = document.querySelector("#sv-as");
 const saveBtn = document.querySelector("#sv");
 const exitBtn = document.querySelector("#ex");
 const newDocumentBtn = document.querySelector("#new-doc");
+const newTabBtn = document.querySelector("#new-win");
+const closeTabBtn = document.querySelector("#cl-tab");
 
 const selectAllBtn = document.querySelector("#sel-all");
 const copyAllBtn = document.querySelector("#copy-all");
@@ -109,13 +114,40 @@ const detectBrowser = () => {
     }
     if (userAgent.includes("Insomnia")) {
         return "Insomnia";
-    } 
+    }
     if (userAgent.indexOf("Code") !== -1 && userAgent.indexOf("VS") !== -1) {
         return "VSCode";
     }
     // Fallback for unknown browsers
     return "Unknown";
 };
+
+const detectOS = () => {
+    const userAgent = navigator.userAgent;
+
+    //Check for windows
+    if (userAgent.indexOf("Windows NT") !== -1) {
+        return "Windows";
+    }
+    //Check for macOS
+    if (userAgent.indexOf("Mac OS X") !== -1) {
+        return "MacOS";
+    }
+    //Check for linux
+    if (userAgent.indexOf("Linux") !== -1) {
+        return "Linux";
+    }
+    //Check for android
+    if (userAgent.indexOf("Android") !== -1) {
+        return "Android";
+    }
+    //Check for iOS
+    if (userAgent.indexOf("iPhone") !== -1) {
+        return "iOS";
+    }
+    // If none of the above match then return 'Unknown'
+    return "Unknown";
+}
 
 // Function to set browser icon based on browser name
 const setBrowserIcon = (name) => {
@@ -335,6 +367,14 @@ helpBtn.addEventListener("click", (e) => {
     setTimeout(() => {
         helpList.classList.toggle("up");
     }, 100);
+})
+
+// Event listener for close tab btn
+closeTabBtn.addEventListener("click", async(e) => {
+    alert(`Current active tab of NotePlus has been successfully closed!`);
+    setTimeout(() => {
+        return window.close();
+    }, 300);
 })
 
 // Event listener to close action, edit, and help lists when clicking outside
@@ -581,17 +621,29 @@ reportIssuesBtn.addEventListener("click", async (e) => {
 // Any further changes to NotePlus in future will be updated here
 const about = {
     Name: "NotePlus",
-    Version: '3.9',
+    Version: '4.0',
     Developer: "BlazeInferno64",
-    Platform: detectBrowser()
+    Platform: detectBrowser(),
+    OS: detectOS()
 }
 
 // Event listener for versionInfoBtn click
 versionInfoBtn.addEventListener("click", (e) => {
-    alert(`Name: ${about.Name}\nVersion: ${about.Version}\nDeveloper: ${about.Developer}\nPlatform: ${about.Platform}`);
+    alert(`Name: ${about.Name}\nVersion: ${about.Version}\nDeveloper: ${about.Developer}\nPlatform: ${about.Platform}\nOS: ${about.OS}`);
 })
 
 versionP.innerText = about.Version;
+
+// Event listener for newTabBtn click
+newTabBtn.addEventListener("click", (e) => {
+    const aTag = document.createElement("a");
+    aTag.href = "";
+    aTag.target = "_blank";
+    aTag.click();
+    aTag.remove();
+    console.log(`Successfully created a new `)
+    return alert(`New Untitled NotePlus window has been created!`);
+})
 
 // Event listener for copyAllBtn click
 copyAllBtn.addEventListener("click", async () => {
@@ -767,6 +819,16 @@ document.addEventListener("keyup", (e) => {
     }
     if (e.key === "j" && isCtrlPressed && isAltKeyPressed) {
         newDocumentBtn.click();
+        isCtrlPressed = false;
+        return isAltKeyPressed = false;
+    }
+    if (e.key === "p" && isCtrlPressed && isAltKeyPressed) {
+        newTabBtn.click();
+        isCtrlPressed = false;
+        return isAltKeyPressed = false;
+    }
+    if (e.key === "f" && isCtrlPressed && isAltKeyPressed) {
+        closeTabBtn.click();
         isCtrlPressed = false;
         return isAltKeyPressed = false;
     }

@@ -1,3 +1,6 @@
+/**
+ * Copyright (c) 2024 BlazeInferno64 --> https://github.com/blazeinferno64
+ */
 const app = document.querySelector(".app");
 const appHead = document.querySelector(".app-head");
 const appOptions = document.querySelector(".app-options");
