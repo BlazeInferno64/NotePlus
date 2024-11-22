@@ -22,12 +22,12 @@ https://blazeinferno64.github.io/NotePlus
 </a>
 
 # Status
-NotePlus Version 4.1 is under development, and would be released soon! 
+NotePlus Version 4.2 is under development, and would be released soon! 
 
 Meanwhile if you have feature requests suggestion please open up an issue [NotePlus issue tracker](https://github.com/blazeinferno64/NotePlus/issues)!
 
 # Patch Notes
-NotePlus Version 4.0 is here!!!
+NotePlus Version 4.1 is here!!!
 
 1. `New` Option is here: Now you can directly create a new blank document by clicking on the `New` option present in the file tab, or by pressing `Ctrl` + `Alt` + `J` on your keyboard!
 2. Improved Features & Optimization: NotePlus has been more optimized for various platforms.
@@ -43,6 +43,7 @@ NotePlus Version 4.0 is here!!!
 5. Bugs & Issues Fixes: Fixed some minor ui bugs and feature related issues.
 6. `Close Tab` Option is here: Now you can directly close current active NotePlus tab by clicking on the `Close Tab` button present in the file tab, or by pressing `Ctrl` + `Alt` + `F` on your keyboard!
 7. `New Tab` Option is here: Now you can directly create a new Untitled NotePlus document in another tab by clicking on the `New Tab` button present in the file tab, or by pressing `Ctrl` + `Alt` + `P` on your keyboard!
+8. `File Info Viewer`: First open any local file by pressing `Ctrl` + `Alt` + `O` or clicking `Open` option present in the `File` tab. After that press `Ctrl` + `Alt` + `K` on your keyboard or select the `File Info` option present in the `File` tab to open up the `File Info Viewer` which will display some basic file details about the selected file!
 
 # Info
 Please read the following point carefully -
