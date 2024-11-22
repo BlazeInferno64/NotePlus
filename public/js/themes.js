@@ -6,6 +6,7 @@ const appHead = document.querySelector(".app-head");
 const appOptions = document.querySelector(".app-options");
 const footer = document.querySelector(".footer");
 const mainBg = document.querySelector(".main");
+const file_Card = document.querySelector(".f-card");
 
 const themeBtn = document.querySelector("#theme");
 const themeBtnText = document.querySelector(".t");
@@ -29,6 +30,7 @@ const switchThemes = () => {
     editList.classList.toggle("dark");
     helpList.classList.toggle("dark");
     searchCard.classList.toggle("dark");
+    file_Card.classList.toggle("dark")
 };
 
 const updateThemeButtonText = () => {

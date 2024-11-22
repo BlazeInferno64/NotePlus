@@ -51,8 +51,11 @@ const versionP = document.querySelector("#ver");
 const searchBtn = document.querySelector("#srch");
 const searchCard = document.querySelector(".srch-card");
 const searchBg = document.querySelector(".srch-bg");
+const fileBg = document.querySelector(".f-bg");
+const fileCard = document.querySelector(".f-card");
 const replaceBtn = document.querySelector(".replace");
-const closeSearchCardBtn = document.querySelector("#close-srch")
+const openFileInfoBtn = document.querySelector("#f-open");
+const closeSearchCardBtn = document.querySelector("#close-srch");
 
 const resultMatch = document.querySelector(".res");
 
@@ -68,23 +71,23 @@ const detectBrowser = () => {
     const userAgent = navigator.userAgent;
 
     // Check if the environment provides VSCode API
-    if (typeof acquireVsCodeApi !== 'undefined') {
+    if (typeof acquireVsCodeApi !== 'undefined' || typeof acquireVsCodeApi !== 'function') {
         return "VSCode";
     }
 
     // Tor Browser detection
-    if (userAgent.includes("TorBrowser")) {
-        return "Tor Browser";
+    if (userAgent.includes("TorBrowser") || userAgent.includes("Tor Browser")) {
+        return "Tor";
     }
 
     // Check for .onion address and Tor-like properties
     if (window.history.length === 1 && window.location.hostname.includes(".onion")) {
-        return "Tor Browser";
+        return "Tor";
     }
 
     // Check for undetermined language (common in Tor Browser)
     if (navigator.languages && navigator.languages.includes("und")) {
-        return "Tor Browser";
+        return "Tor";
     }
 
     // Standard browser detection based on user agent string
@@ -129,21 +132,21 @@ const detectOS = () => {
     if (userAgent.indexOf("Windows NT") !== -1) {
         return "Windows";
     }
+    //Check for iOS
+    if (userAgent.indexOf("iPhone") !== -1) {
+        return "iOS";
+    }
     //Check for macOS
     if (userAgent.indexOf("Mac OS X") !== -1) {
         return "MacOS";
-    }
-    //Check for linux
-    if (userAgent.indexOf("Linux") !== -1) {
-        return "Linux";
     }
     //Check for android
     if (userAgent.indexOf("Android") !== -1) {
         return "Android";
     }
-    //Check for iOS
-    if (userAgent.indexOf("iPhone") !== -1) {
-        return "iOS";
+    //Check for linux
+    if (userAgent.indexOf("Linux") !== -1) {
+        return "Linux";
     }
     // If none of the above match then return 'Unknown'
     return "Unknown";
@@ -275,14 +278,18 @@ document.addEventListener("DOMContentLoaded", (e) => {
     // Set browser icons
     setBrowserIcon(name);
     wordsCount.innerText = `Total Words: ${textInput.innerText.length}`;
-    textInput.focus();
+    //textInput.focus();
 
     // Check if browser supports Web File System API
     if (!window.showSaveFilePicker) {
-        console.warn(`Your browser doesn't currently support the Web File System API. Please check browser compatibility at https://developer.mozilla.org/en-US/docs/Web/API/Window/showSaveFilePicker#browser_compatibility.`);
-        alert(`Your browser currently doesn't support the Web File System API. Some features may not work as intended. Please check the browser console for more information.`);
+        console.warn(`Your version of ${detectBrowser()} doesn't currently supports the Web File System API. Please check browser compatibility at https://developer.mozilla.org/en-US/docs/Web/API/Window/showSaveFilePicker#browser_compatibility.`);
+        alert(`Your version of ${detectBrowser()} currently doesn't supports the Web File System API. Some features may not work as intended. Please check the browser console for more information regarding the Web File System API compatibility issue.`);
     }
 
+    fileInfoViewer.textContent = `
+    No metadata available!
+    Error: No file selected!
+    `
     console.log(`Welcome to NotePlus text editor :)`);
     console.log(`NotePlus is a free open-source text editor based on Notepad. Visit https://github.com/blazeinferno64/NotePlus for more information.`);
     return detectSearchQuery();
@@ -370,7 +377,7 @@ helpBtn.addEventListener("click", (e) => {
 })
 
 // Event listener for close tab btn
-closeTabBtn.addEventListener("click", async(e) => {
+closeTabBtn.addEventListener("click", async (e) => {
     alert(`Current active tab of NotePlus has been successfully closed!`);
     setTimeout(() => {
         return window.close();
@@ -401,7 +408,7 @@ document.addEventListener("click", (e) => {
             helpList.classList.add("up");
         }, 100);
 
-        if (searchBg.className == "srch-bg hide") {
+        if (searchBg.className == "srch-bg hide" && fileBg.className == "f-bg hide") {
             textInput.focus();
         }
         else {
@@ -512,11 +519,12 @@ const handleFileComplete = () => {
 };
 
 // Event listener for fileInput change
-fileInput.onchange = (e) => {
+fileInput.onchange = async (e) => {
     const file = e.target.files[0];
     if (!file) {
         return;
     }
+    await parseFile(file);
     readFile(file);
     activeFileName.innerText = file.name ? `${file.name} - NotePlus` : `Untitled - NotePlus`;
     return fileType = file.type;
@@ -621,7 +629,7 @@ reportIssuesBtn.addEventListener("click", async (e) => {
 // Any further changes to NotePlus in future will be updated here
 const about = {
     Name: "NotePlus",
-    Version: '4.0',
+    Version: '4.1',
     Developer: "BlazeInferno64",
     Platform: detectBrowser(),
     OS: detectOS()
@@ -725,9 +733,10 @@ const handleDrop = (event) => {
         const droppedFile = event.dataTransfer.files[0];
         if (droppedFile) {
             const reader = new FileReader();
-            reader.onload = () => {
+            reader.onload = async () => {
                 fileType = droppedFile.type;
                 readFile(droppedFile);
+                await parseFile(droppedFile);
                 activeFileName.innerText = droppedFile.name ? `${droppedFile.name} - NotePlus` : `Untitled - NotePlus`;
             };
             reader.onerror = () => {
@@ -829,6 +838,11 @@ document.addEventListener("keyup", (e) => {
     }
     if (e.key === "f" && isCtrlPressed && isAltKeyPressed) {
         closeTabBtn.click();
+        isCtrlPressed = false;
+        return isAltKeyPressed = false;
+    }
+    if (e.key === "k" && isCtrlPressed && isAltKeyPressed) {
+        openFileMenu();
         isCtrlPressed = false;
         return isAltKeyPressed = false;
     }
