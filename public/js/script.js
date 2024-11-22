@@ -71,7 +71,7 @@ const detectBrowser = () => {
     const userAgent = navigator.userAgent;
 
     // Check if the environment provides VSCode API
-    if (typeof acquireVsCodeApi !== 'undefined' || typeof acquireVsCodeApi !== 'function') {
+    if (typeof acquireVsCodeApi !== 'undefined' || typeof acquireVsCodeApi === 'function') {
         return "VSCode";
     }
 
