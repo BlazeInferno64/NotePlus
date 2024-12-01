@@ -59,6 +59,8 @@ const closeSearchCardBtn = document.querySelector("#close-srch");
 
 const resultMatch = document.querySelector(".res");
 
+const imageIcon = document.querySelector("#im");
+
 // Hide noscript message and show app body
 noScriptTag.classList.add("none");
 appBody.classList.remove("none");
@@ -71,7 +73,7 @@ const detectBrowser = () => {
     const userAgent = navigator.userAgent;
 
     // Check if the environment provides VSCode API
-    if (typeof acquireVsCodeApi !== 'undefined' || typeof acquireVsCodeApi === 'function') {
+    if (typeof acquireVsCodeApi !== 'undefined' || typeof acquireVsCodeApi === 'function' || userAgent.indexOf("VS") !== -1 || userAgent.indexOf("Code") !== -1) {
         return "VSCode";
     }
 
@@ -117,9 +119,6 @@ const detectBrowser = () => {
     }
     if (userAgent.includes("Insomnia")) {
         return "Insomnia";
-    }
-    if (userAgent.indexOf("Code") !== -1 && userAgent.indexOf("VS") !== -1) {
-        return "VSCode";
     }
     // Fallback for unknown browsers
     return "Unknown";
@@ -278,7 +277,7 @@ document.addEventListener("DOMContentLoaded", (e) => {
     // Set browser icons
     setBrowserIcon(name);
     wordsCount.innerText = `Total Words: ${textInput.innerText.length}`;
-    textInput.focus();
+    //textInput.focus();
 
     // Check if browser supports Web File System API
     if (!window.showSaveFilePicker) {
@@ -306,7 +305,7 @@ mainElement.addEventListener("click", (e) => {
 
 // Event listener for textInput changes
 textInput.addEventListener("input", (e) => {
-    const count = e.target.innerText.length;
+    const count = e.target.textContent.length;
     wordsCount.innerText = `Total Words: ${count}`;
     hasUnsavedChanges = true;
 });
@@ -530,6 +529,11 @@ fileInput.onchange = async (e) => {
     return fileType = file.type;
 };
 
+// Event listener for imageIcon contextmenu
+imageIcon.addEventListener("contextmenu", (e) => {
+    return e.preventDefault();
+})
+
 
 
 // Event listener for saveAsBtn click
@@ -537,12 +541,13 @@ saveAsBtn.addEventListener("click", async (e) => {
     const text = textInput.innerText;
     const blob = new Blob([text], { type: "text/plain" });
 
-    let filename = activeFileName.innerText !== "Untitled - NotePlus" ? activeFileName.innerText : "NotePlus File";
+    let filename = activeFileName.innerText !== "Untitled - NotePlus" ? activeFileName.innerText : "Untitled - NotePlus File";
 
     try {
-        // Check if browser supports showSaveFilePicker
+        // Check if browser supports Web File System API
         if (!window.showSaveFilePicker) {
-            throw new Error(`Your browser doesn't support the Web File System API.`);
+            console.warn(`Your version of ${detectBrowser()} doesn't currently supports the Web File System API. Please check browser compatibility at https://developer.mozilla.org/en-US/docs/Web/API/Window/showSaveFilePicker#browser_compatibility.`);
+            alert(`Your version of ${detectBrowser()} currently doesn't supports the Web File System API. Some features may not work as intended. Please check the browser console for more information regarding the Web File System API compatibility issue.`);
         }
 
         let options = [
@@ -567,7 +572,7 @@ saveAsBtn.addEventListener("click", async (e) => {
                 await writable.close();
                 console.log(`File has been successfully saved!`);
                 alert(`Successfully saved file to the device!`);
-                return;
+                
             }
         }
 
@@ -598,7 +603,7 @@ saveAsBtn.addEventListener("click", async (e) => {
         } else if (err.name === 'AbortError') {
             alert(`Saving failed: You aborted the request.`);
         } else {
-            alert(`Saving failed: ${err.message}`);
+            alert(`Saving failed: ${err}`);
         }
     }
 });
@@ -629,7 +634,7 @@ reportIssuesBtn.addEventListener("click", async (e) => {
 // Any further changes to NotePlus in future will be updated here
 const about = {
     Name: "NotePlus",
-    Version: '4.1',
+    Version: '4.2',
     Developer: "BlazeInferno64",
     Platform: detectBrowser(),
     OS: detectOS()

@@ -56,7 +56,7 @@ searchBtn.addEventListener("click", (e) => {
 });
 
 closeSearchCardBtn.addEventListener("click", (e) => {
-    closeSearchMenu();
+    return closeSearchMenu();
 });
 
 const replaceWord = (string, oldWord, newWord) => {
@@ -70,7 +70,7 @@ const replaceWord = (string, oldWord, newWord) => {
         throw new Error("No word supplied for replacing!");
     }
 
-    const regex = new RegExp(`\\b${oldWord}\\b`, `g`);
+    const regex = new RegExp(`\\b${oldWord.replace(/\//g, "\\/")}\\b`, `g`);
     const matches = string.match(regex);
     if (!matches) {
         throw new Error(`No matches found for the word '${oldWord}' in the text!`);
@@ -89,7 +89,7 @@ const searchString = (string, word) => {
         throw new Error("No word supplied for checking!");
     }
 
-    const regex = new RegExp(`\\b${word}\\b`, `g`);
+    const regex = new RegExp(`\\b${word.replace(/\//g, "\\/")}\\b`, `g`);
     const matches = string.match(regex);
     if (matches) {
         resultMatch.classList.add("ok");
@@ -105,7 +105,7 @@ const searchString = (string, word) => {
 replaceBtn.addEventListener("click", async (e) => {
     try {
         if (!textInput.innerText.includes(searchWordInput.value)) {
-            throw new Error(`No match found for the word '${searchWordInput.value}' in the active document!`);
+            throw new Error(`No match found for the word '${searchWordInput.value.trim()}' in the active document!`);
         }
 
         const output = replaceWord(textInput.innerText, searchWordInput.value, replaceWordInput.value);
@@ -129,16 +129,28 @@ searchWordInput.addEventListener("input", (e) => {
         }, 1000);
     } catch (error) {
         alert(error.message);
-        console.error(error);
+        return console.error(error);
     }
 });
+
+searchWordInput.addEventListener("keydown", (e) => {
+    try {
+        if (e.key === 'Backspace') {
+            console.log("Yes");
+        }
+    } catch (error) {
+        alert(error);
+        return console.error(error);
+    }
+})
 
 searchWordInput.addEventListener("keydown", (e) => {
     try {
         if(e.target.value.length <= 0) return;
         if(e.keyCode === 13) return replaceWordInput.focus();
     } catch (error) {
-        
+        alert(error);
+        return console.error(error);
     }
 })
 
@@ -148,3 +160,4 @@ replaceWordInput.addEventListener("keydown", (e) => {
         return replaceBtn.click();
     }
 })
+

@@ -23,7 +23,7 @@
     <input type="file" name="File" id="file-input" class="file" accept="*" hidden/>
     <div class="app none">
         <div class="app-head">
-            <img class="img" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAACXBIWXMAAAsTAAALEwEAmpwYAAABV0lEQVR4nO1ZwUrDQBDdn8ipntT6C/ZWdvRXmp/RT2ihaAYJpf/QW8WDPVaweu3FQCM72FtkKy1CWxR3mklkHsxpSGbezLzNsDFGoSgPk+nzw+N0di/lD8bkaVZ4k/L/Ge1bOrLoBusAgLTT+PxueInLJl/yCWWt7mIToNXLt4Jz+21CGfSpEUzAV94HOL6abwKcXM+3EjiIP3FpMAFAel8HSMcvRTp+3ZsAt98mtOAg8NXiXr4K4l9+3t0xAgfyGy4CUmaUAGoHCh2hEOyrXhSPiqjDZ1C2iGtPAPQYJdnvAOf4RLGEBupOAFQDVF0N1GKZi+pOAFQDpB3QEYISdGAkTqHQDRSUwDfoMYr/QAPw0zNxxdfpShIAXSVIV4lfwSLlUuNjea7X3VCMALpBMIGLu+WZRXoTqH7Wvvk4DSaw6kKfGv53TxnjZJFyX3m25BUKhak0PgFPsVTws4faFAAAAABJRU5ErkJggg==">
+            <img id="im" class="img" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAACXBIWXMAAAsTAAALEwEAmpwYAAABV0lEQVR4nO1ZwUrDQBDdn8ipntT6C/ZWdvRXmp/RT2ihaAYJpf/QW8WDPVaweu3FQCM72FtkKy1CWxR3mklkHsxpSGbezLzNsDFGoSgPk+nzw+N0di/lD8bkaVZ4k/L/Ge1bOrLoBusAgLTT+PxueInLJl/yCWWt7mIToNXLt4Jz+21CGfSpEUzAV94HOL6abwKcXM+3EjiIP3FpMAFAel8HSMcvRTp+3ZsAt98mtOAg8NXiXr4K4l9+3t0xAgfyGy4CUmaUAGoHCh2hEOyrXhSPiqjDZ1C2iGtPAPQYJdnvAOf4RLGEBupOAFQDVF0N1GKZi+pOAFQDpB3QEYISdGAkTqHQDRSUwDfoMYr/QAPw0zNxxdfpShIAXSVIV4lfwSLlUuNjea7X3VCMALpBMIGLu+WZRXoTqH7Wvvk4DSaw6kKfGv53TxnjZJFyX3m25BUKhak0PgFPsVTws4faFAAAAABJRU5ErkJggg==" alt="NotePLus_logo" />
             <p class="file-av" title="The current document opened in NotePlus">
                 Untitled - NotePlus
             </p>
@@ -165,7 +165,7 @@
                             <li id="ab" title="Know more about NotePlus">
                                 <span>
                                     <p>
-                                        <img class="img" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAACXBIWXMAAAsTAAALEwEAmpwYAAABV0lEQVR4nO1ZwUrDQBDdn8ipntT6C/ZWdvRXmp/RT2ihaAYJpf/QW8WDPVaweu3FQCM72FtkKy1CWxR3mklkHsxpSGbezLzNsDFGoSgPk+nzw+N0di/lD8bkaVZ4k/L/Ge1bOrLoBusAgLTT+PxueInLJl/yCWWt7mIToNXLt4Jz+21CGfSpEUzAV94HOL6abwKcXM+3EjiIP3FpMAFAel8HSMcvRTp+3ZsAt98mtOAg8NXiXr4K4l9+3t0xAgfyGy4CUmaUAGoHCh2hEOyrXhSPiqjDZ1C2iGtPAPQYJdnvAOf4RLGEBupOAFQDVF0N1GKZi+pOAFQDpB3QEYISdGAkTqHQDRSUwDfoMYr/QAPw0zNxxdfpShIAXSVIV4lfwSLlUuNjea7X3VCMALpBMIGLu+WZRXoTqH7Wvvk4DSaw6kKfGv53TxnjZJFyX3m25BUKhak0PgFPsVTws4faFAAAAABJRU5ErkJggg==">
+                                        <img class="img" alt="NotePLus_logo" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAACXBIWXMAAAsTAAALEwEAmpwYAAABV0lEQVR4nO1ZwUrDQBDdn8ipntT6C/ZWdvRXmp/RT2ihaAYJpf/QW8WDPVaweu3FQCM72FtkKy1CWxR3mklkHsxpSGbezLzNsDFGoSgPk+nzw+N0di/lD8bkaVZ4k/L/Ge1bOrLoBusAgLTT+PxueInLJl/yCWWt7mIToNXLt4Jz+21CGfSpEUzAV94HOL6abwKcXM+3EjiIP3FpMAFAel8HSMcvRTp+3ZsAt98mtOAg8NXiXr4K4l9+3t0xAgfyGy4CUmaUAGoHCh2hEOyrXhSPiqjDZ1C2iGtPAPQYJdnvAOf4RLGEBupOAFQDVF0N1GKZi+pOAFQDpB3QEYISdGAkTqHQDRSUwDfoMYr/QAPw0zNxxdfpShIAXSVIV4lfwSLlUuNjea7X3VCMALpBMIGLu+WZRXoTqH7Wvvk4DSaw6kKfGv53TxnjZJFyX3m25BUKhak0PgFPsVTws4faFAAAAABJRU5ErkJggg==">
                                         About
                                     </p>
                                 </span>
