@@ -49,7 +49,7 @@ NotePlus Version 4.2 is here!!!
 Please read the following point carefully -
 
 Since it is in the early stages of development so some features might not work as intended in mobile devices, but it would be improved upon future updates! 
-So if you spot any such issues then feel free to open up an issue here [NotePlus issue tracker](https://github.com/blazeinferno64/NotePlus/issues)
+So if you spot any such issues then feel free to open up an issue at [NotePlus issue tracker](https://github.com/blazeinferno64/NotePlus/issues)
 |-----|
 
 # Fun fact
