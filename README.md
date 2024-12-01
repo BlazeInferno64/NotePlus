@@ -22,12 +22,12 @@ https://blazeinferno64.github.io/NotePlus
 </a>
 
 # Status
-NotePlus Version 4.2 is under development, and would be released soon! 
+NotePlus Version 4.3 is under development, and would be released soon! 
 
 Meanwhile if you have feature requests suggestion please open up an issue [NotePlus issue tracker](https://github.com/blazeinferno64/NotePlus/issues)!
 
 # Patch Notes
-NotePlus Version 4.1 is here!!!
+NotePlus Version 4.2 is here!!!
 
 1. `New` Option is here: Now you can directly create a new blank document by clicking on the `New` option present in the file tab, or by pressing `Ctrl` + `Alt` + `J` on your keyboard!
 2. Improved Features & Optimization: NotePlus has been more optimized for various platforms.
