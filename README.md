@@ -27,7 +27,7 @@ https://blazeinferno64.github.io/NotePlus
 # Status
 NotePlus Version 4.3 is under development, and would be released soon! 
 
-Meanwhile if you have feature requests suggestion please open up an issue [NotePlus issue tracker](https://github.com/blazeinferno64/NotePlus/issues)!
+Meanwhile if you have feature requests suggestion please open up an issue at the [NotePlus issue tracker](https://github.com/blazeinferno64/NotePlus/issues)!
 
 # Patch Notes
 NotePlus Version 4.2 is here!!!
