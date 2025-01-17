@@ -3,7 +3,7 @@
 ## Supported Versions
 
 
-The latest version of the web app would get updated in future which in turn might change the whole working functionality of the web app. To help decide this I would make a community post in the discussions tab so make sure to keep an eye on it.
+The latest version of the web project would get updated in future which in turn might change the whole working functionality of the web app. To help decide this I would make a community post in the discussions tab so make sure to keep an eye on it.
 
 
 | Version | Supported          |
@@ -21,7 +21,7 @@ If any vulnerabilities/issues/bugs are found please open up an issue in this rep
 
 # Update deployment
 
-Expect to get an update of blaze audio player within 3-4 days of vulnerabilities/issues/bugs being reported. I would definitely try my best to patch it and deploy it as soon as possible meanwhile feel free to look around the source code which powers the web app :)
+Expect to get an update within 3-4 days of vulnerabilities/issues/bugs being reported. I would definitely try my best to patch it and deploy it as soon as possible meanwhile feel free to look around the source code which powers the web app :)
 
 
 `
