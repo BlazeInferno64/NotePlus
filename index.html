@@ -243,6 +243,17 @@
                     </label>
                     <input id="word-rep" autocomplete="name" title="The word you want to replace with" type="text" class="rep" placeholder="Enter word to replace..." />
                 </div>
+                <div class="checkbox-container">
+                <label>
+                    <input type="checkbox" id="whole-word" /> Whole Word Only
+                </label>
+                <label>
+                    <input type="checkbox" id="case-sensitive" /> Case Insensitive
+                </label>
+                <label>
+                    <input type="checkbox" id="replace-notation" /> Use Escape Sequences
+                </label>
+                </div>
                 <p class="res" title="The matches of the word across the document">
                     No results found!
                 </p>
@@ -252,7 +263,6 @@
             </div>
         </div>
     </div>
-    <!--File Info Overlay-->
     <div class="f-bg hide">
         <div class="f-card up hide">
             <div class="f-head">
