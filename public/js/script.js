@@ -277,7 +277,7 @@ document.addEventListener("DOMContentLoaded", (e) => {
     // Set browser icons
     setBrowserIcon(name);
     wordsCount.innerText = `Total Words: ${textInput.innerText.length}`;
-    //textInput.focus();
+    textInput.focus();
 
     // Check if browser supports Web File System API
     if (!window.showSaveFilePicker) {
@@ -869,4 +869,5 @@ window.addEventListener("beforeunload", (e) => {
 window.addEventListener("beforeinstallprompt", (e) => {
     console.log("App is ready for the installation process!");
     console.warn(`If changes aren't available the please try to clear this site's data and reload the page again!`);
+
 })
