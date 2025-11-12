@@ -132,10 +132,13 @@ body{
     display: flex;
     align-items: center;
     justify-content: space-between;
-    transition: all .1s ease-in-out;
+    transition: background .1s ease-in-out;
 }
 .action-list ul li:hover,.edit-list ul li:hover,.help-list ul li:hover{
     background: #a5a5a5;
+}
+.action-list ul li:active,.edit-list ul li:active,.help-list ul li:active{
+    scale: .99;
 }
 .action-list ul li span,.help-list ul li span,.edit-list ul li span{
     display: flex;
@@ -152,7 +155,7 @@ body{
     gap: 5px;
 }
 .text {
-    background: #dedede;
+    background: #eaeaea;
     width: calc(100% - 2rem); /* Adjusted width */
     min-height: 0; /* Ensure minimum height */
     outline: none;
@@ -192,7 +195,7 @@ body{
     max-height: calc(100% - 2.3rem); /* Adjusted max height */
     display: flex;
     cursor: text;
-    background: #dedede;
+    background: #eaeaea;
     align-items: center;
     flex-direction: column;
     justify-content: space-between;
@@ -203,6 +206,7 @@ body{
     cursor: default;
     width: 100%;
     padding: .3rem .5rem;
+    background: #fff;
     user-select: none;
     display: flex;
     align-items: center;
@@ -594,6 +598,9 @@ body{
 @media (max-width: 350px) {
     .srch-card{
         width: 93%;
+    }
+    .footer,.action-list ul,.help-list ul,.edit-list ul{
+        font-size: .95rem;
     }   
 }
 @media (max-height: 700px) {

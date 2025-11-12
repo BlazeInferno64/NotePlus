@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024 BlazeInferno64 --> https://github.com/blazeinferno64
+ * Copyright (c) 2025 BlazeInferno64 --> https://github.com/blazeinferno64
  */
 const textInput = document.querySelector(".text");
 
@@ -277,13 +277,14 @@ document.addEventListener("DOMContentLoaded", (e) => {
     // Set browser icons
     setBrowserIcon(name);
     wordsCount.innerText = `Total Words: ${textInput.innerText.length}`;
-    textInput.focus();
+    //textInput.focus();
 
     // Check if browser supports Web File System API
     if (!window.showSaveFilePicker) {
         console.warn(`Your version of ${detectBrowser()} doesn't currently supports the Web File System API. Please check browser compatibility at https://developer.mozilla.org/en-US/docs/Web/API/Window/showSaveFilePicker#browser_compatibility.`);
         alert(`Your version of ${detectBrowser()} currently doesn't supports the Web File System API. Some features may not work as intended. Please check the browser console for more information regarding the Web File System API compatibility issue.`);
     }
+
 
     fileInfoViewer.textContent = `
     No metadata available!
@@ -596,13 +597,16 @@ saveAsBtn.addEventListener("click", async (e) => {
         alert(`Successfully saved file to the device!`);
 
     } catch (err) {
-        console.error(`Saving Failed: ${err}`);
+        //console.error(`Saving Failed: ${err}`);
         // Handle specific errors
         if (err.name === 'NotAllowedError') {
             alert(`Saving failed: File system access not allowed. Please check your browser settings.`);
         } else if (err.name === 'AbortError') {
             alert(`Saving failed: You aborted the request.`);
-        } else {
+        } else if (err.name === 'TypeError') {
+            alert(`Please use a supported browser!`);
+        }
+         else {
             alert(`Saving failed: ${err}`);
         }
     }
@@ -861,3 +865,8 @@ window.addEventListener("beforeunload", (e) => {
         return confirmationMessage;
     }
 });
+
+window.addEventListener("beforeinstallprompt", (e) => {
+    console.log("App is ready for the installation process!");
+    console.warn(`If changes aren't available the please try to clear this site's data and reload the page again!`);
+})

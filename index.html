@@ -1,29 +1,39 @@
-<!-- Copyright (c) 2024 BlazeInferno64 -> https://github.com/blazeinferno64 -->
-
+<!-- Copyright (c) 2025 BlazeInferno64 -> https://github.com/blazeinferno64 -->
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="black">
     <meta name="author" content="BlazeInferno64">
-    <meta name="description" content="NotePlus is a free, online, browser-based text editor that provides an experience similar to Windows Notepad">
-    <meta name="keywords" content="NotePlus, Notepad++, Notepad, Online notepad, Free text editor, Text editing, Cloud editor, Code editor, Collaborative editing, Markdown support, Plain text editor, Syntax highlighting, Cross-platform, User-friendly, Document sharing, Code snippets, Text formatting, Lightweight editor, Web-based notepad, Productivity tools, Simple tools">
+    <meta name="description"
+        content="NotePlus is a free, online, browser-based text editor that provides an experience similar to Windows Notepad">
+    <meta name="keywords"
+        content="NotePlus, Notepad++, Notepad, Online notepad, Free text editor, Text editing, Cloud editor, Code editor, Collaborative editing, Markdown support, Plain text editor, Syntax highlighting, Cross-platform, User-friendly, Document sharing, Code snippets, Text formatting, Lightweight editor, Web-based notepad, Productivity tools, Simple tools">
     <title>NotePlus | Free Text Editor Online</title>
     <link rel="stylesheet" href="./public/css/styles.css" />
-    <link rel="shortcut icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGAAAABgCAYAAADimHc4AAAACXBIWXMAAAsTAAALEwEAmpwYAAADKUlEQVR4nO2dwW7TQBCG9wJvYI40PcYcuVIkj3gEQPAA8CwQBDThxA3aXZB4A4pE4QUwqCAiApdKCVJ7IlmfimS0iQIRKdSurPxr7/9J/yXSqJ5/dma3qdVVihBCCCGEVEjaH1xP+4OR07vPX66GFg8n7Q++p/2v+UyDUWjxcP48/EyhxcNBG5CGWoDk2eSCGPvg7wTEZKWUehafaHtftsex8pWLj/Mzom0v0fanjwZKBfEut0TbTZer8olrL/Kzic525g+/8XSylMClJ+PCyW/4H//SqyIk2j5afPj1zmgpAffZ5a1JoeTXaxDvOkH5MvPnY8ep3TvIz98ZLiXgPot7hyca0K5LvLZHV56P2z6s/s3FBNbuDv+ZQKszPNGAtRrFu40Z7b9KTPbpuAR2P3z7/fCv35c3YLce8Xto/5VoO1l8qLg7a+Gb2/vTJJxubO0XHgFxveLHaP/VcZtYqzOaPvCiymyCrRrFe1eAeRJx93Dazk7t7kHpY2Bck3gvCxCSFBq0AcIC4E0QdgDeCAEJPYE4gtCgV6CwA/AmCEcQ3ggBCT2BOILQoFegsAPKmXDu9ts8uvXGW0nTRxALUDEsABgWAMypNkHtsUzD94CmSaFBGyAsAN4EYQcUNwF9zo/+I3dEbvwIQpscsQB4oyN2AN7sKNQR1KTfAaSWBWiYFBq0AcIC4E0QdkBxE067QYoHZjdiBLEAFcMCgGEBwJSemys8owv3ALxBwk0Yb5LwFNRcKTRoA4QFwJsg7AC8EQISegJxBKFBr0BhB+BNEI6g4iag/+wYVfztKnoC1fatCGEBWAB2gAlwBMHffNDVfruK9p/HUDToY6DwGIo3QYBCN4A3x1Cp4OcE8WoiC1AxLAAYFgBM6Y1rVed6zbej4ScU4Smo+VJo0AYIC4A3QdgBeCMEJB9G0BhtgoCUmOyHd/++PjDtof1X7sYkD4zIQbrn3RUmwUh7coWJw11fBTfErFaJsQ+VL7grnRKTvQrGfJ3teHWN1fwuMTG22+hxpO2RW/nemb+Iu+5vujHr7GNirK39ajfTHPa8v8qQEEIIIYQQQghRdeAXSgE1XtbGmzEAAAAASUVORK5CYII=" type="image/x-icon">
+    <link rel="manifest" href="./manifest.json" />
+    <link rel="shortcut icon"
+        href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGAAAABgCAYAAADimHc4AAAACXBIWXMAAAsTAAALEwEAmpwYAAADKUlEQVR4nO2dwW7TQBCG9wJvYI40PcYcuVIkj3gEQPAA8CwQBDThxA3aXZB4A4pE4QUwqCAiApdKCVJ7IlmfimS0iQIRKdSurPxr7/9J/yXSqJ5/dma3qdVVihBCCCGEVEjaH1xP+4OR07vPX66GFg8n7Q++p/2v+UyDUWjxcP48/EyhxcNBG5CGWoDk2eSCGPvg7wTEZKWUehafaHtftsex8pWLj/Mzom0v0fanjwZKBfEut0TbTZer8olrL/Kzic525g+/8XSylMClJ+PCyW/4H//SqyIk2j5afPj1zmgpAffZ5a1JoeTXaxDvOkH5MvPnY8ep3TvIz98ZLiXgPot7hyca0K5LvLZHV56P2z6s/s3FBNbuDv+ZQKszPNGAtRrFu40Z7b9KTPbpuAR2P3z7/fCv35c3YLce8Xto/5VoO1l8qLg7a+Gb2/vTJJxubO0XHgFxveLHaP/VcZtYqzOaPvCiymyCrRrFe1eAeRJx93Dazk7t7kHpY2Bck3gvCxCSFBq0AcIC4E0QdgDeCAEJPYE4gtCgV6CwA/AmCEcQ3ggBCT2BOILQoFegsAPKmXDu9ts8uvXGW0nTRxALUDEsABgWAMypNkHtsUzD94CmSaFBGyAsAN4EYQcUNwF9zo/+I3dEbvwIQpscsQB4oyN2AN7sKNQR1KTfAaSWBWiYFBq0AcIC4E0QdkBxE067QYoHZjdiBLEAFcMCgGEBwJSemys8owv3ALxBwk0Yb5LwFNRcKTRoA4QFwJsg7AC8EQISegJxBKFBr0BhB+BNEI6g4iag/+wYVfztKnoC1fatCGEBWAB2gAlwBMHffNDVfruK9p/HUDToY6DwGIo3QYBCN4A3x1Cp4OcE8WoiC1AxLAAYFgBM6Y1rVed6zbej4ScU4Smo+VJo0AYIC4A3QdgBeCMEJB9G0BhtgoCUmOyHd/++PjDtof1X7sYkD4zIQbrn3RUmwUh7coWJw11fBTfErFaJsQ+VL7grnRKTvQrGfJ3teHWN1fwuMTG22+hxpO2RW/nemb+Iu+5vujHr7GNirK39ajfTHPa8v8qQEEIIIYQQQghRdeAXSgE1XtbGmzEAAAAASUVORK5CYII="
+        type="image/x-icon">
+    <link rel="apple-touch-icon" sizes="180x180" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGAAAABgCAYAAADimHc4AAAACXBIWXMAAAsTAAALEwEAmpwYAAADKUlEQVR4nO2dwW7TQBCG9wJvYI40PcYcuVIkj3gEQPAA8CwQBDThxA3aXZB4A4pE4QUwqCAiApdKCVJ7IlmfimS0iQIRKdSurPxr7/9J/yXSqJ5/dma3qdVVihBCCCGEVEjaH1xP+4OR07vPX66GFg8n7Q++p/2v+UyDUWjxcP48/EyhxcNBG5CGWoDk2eSCGPvg7wTEZKWUehafaHtftsex8pWLj/Mzom0v0fanjwZKBfEut0TbTZer8olrL/Kzic525g+/8XSylMClJ+PCyW/4H//SqyIk2j5afPj1zmgpAffZ5a1JoeTXaxDvOkH5MvPnY8ep3TvIz98ZLiXgPot7hyca0K5LvLZHV56P2z6s/s3FBNbuDv+ZQKszPNGAtRrFu40Z7b9KTPbpuAR2P3z7/fCv35c3YLce8Xto/5VoO1l8qLg7a+Gb2/vTJJxubO0XHgFxveLHaP/VcZtYqzOaPvCiymyCrRrFe1eAeRJx93Dazk7t7kHpY2Bck3gvCxCSFBq0AcIC4E0QdgDeCAEJPYE4gtCgV6CwA/AmCEcQ3ggBCT2BOILQoFegsAPKmXDu9ts8uvXGW0nTRxALUDEsABgWAMypNkHtsUzD94CmSaFBGyAsAN4EYQcUNwF9zo/+I3dEbvwIQpscsQB4oyN2AN7sKNQR1KTfAaSWBWiYFBq0AcIC4E0QdkBxE067QYoHZjdiBLEAFcMCgGEBwJSemys8owv3ALxBwk0Yb5LwFNRcKTRoA4QFwJsg7AC8EQISegJxBKFBr0BhB+BNEI6g4iag/+wYVfztKnoC1fatCGEBWAB2gAlwBMHffNDVfruK9p/HUDToY6DwGIo3QYBCN4A3x1Cp4OcE8WoiC1AxLAAYFgBM6Y1rVed6zbej4ScU4Smo+VJo0AYIC4A3QdgBeCMEJB9G0BhtgoCUmOyHd/++PjDtof1X7sYkD4zIQbrn3RUmwUh7coWJw11fBTfErFaJsQ+VL7grnRKTvQrGfJ3teHWN1fwuMTG22+hxpO2RW/nemb+Iu+5vujHr7GNirK39ajfTHPa8v8qQEEIIIYQQQghRdeAXSgE1XtbGmzEAAAAASUVORK5CYII=" />
     <script defer src="https://kit.fontawesome.com/f3220d5256.js" crossorigin="anonymous"></script>
+    <script defer src="./service-worker.js"></script>
 </head>
+
 <body>
     <p id="no-script">
         Seems like JavaScript isn't enabled in your browser!
         <br>
         It's required to run NotePlus!
     </p>
-    <input type="file" name="File" id="file-input" class="file" accept="*" hidden/>
+    <input type="file" name="File" id="file-input" class="file" accept="*" hidden />
     <div class="app none">
         <div class="app-head">
-            <img id="im" class="img" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAACXBIWXMAAAsTAAALEwEAmpwYAAABV0lEQVR4nO1ZwUrDQBDdn8ipntT6C/ZWdvRXmp/RT2ihaAYJpf/QW8WDPVaweu3FQCM72FtkKy1CWxR3mklkHsxpSGbezLzNsDFGoSgPk+nzw+N0di/lD8bkaVZ4k/L/Ge1bOrLoBusAgLTT+PxueInLJl/yCWWt7mIToNXLt4Jz+21CGfSpEUzAV94HOL6abwKcXM+3EjiIP3FpMAFAel8HSMcvRTp+3ZsAt98mtOAg8NXiXr4K4l9+3t0xAgfyGy4CUmaUAGoHCh2hEOyrXhSPiqjDZ1C2iGtPAPQYJdnvAOf4RLGEBupOAFQDVF0N1GKZi+pOAFQDpB3QEYISdGAkTqHQDRSUwDfoMYr/QAPw0zNxxdfpShIAXSVIV4lfwSLlUuNjea7X3VCMALpBMIGLu+WZRXoTqH7Wvvk4DSaw6kKfGv53TxnjZJFyX3m25BUKhak0PgFPsVTws4faFAAAAABJRU5ErkJggg==" alt="NotePLus_logo" />
+            <img id="im" class="img"
+                src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAACXBIWXMAAAsTAAALEwEAmpwYAAABV0lEQVR4nO1ZwUrDQBDdn8ipntT6C/ZWdvRXmp/RT2ihaAYJpf/QW8WDPVaweu3FQCM72FtkKy1CWxR3mklkHsxpSGbezLzNsDFGoSgPk+nzw+N0di/lD8bkaVZ4k/L/Ge1bOrLoBusAgLTT+PxueInLJl/yCWWt7mIToNXLt4Jz+21CGfSpEUzAV94HOL6abwKcXM+3EjiIP3FpMAFAel8HSMcvRTp+3ZsAt98mtOAg8NXiXr4K4l9+3t0xAgfyGy4CUmaUAGoHCh2hEOyrXhSPiqjDZ1C2iGtPAPQYJdnvAOf4RLGEBupOAFQDVF0N1GKZi+pOAFQDpB3QEYISdGAkTqHQDRSUwDfoMYr/QAPw0zNxxdfpShIAXSVIV4lfwSLlUuNjea7X3VCMALpBMIGLu+WZRXoTqH7Wvvk4DSaw6kKfGv53TxnjZJFyX3m25BUKhak0PgFPsVTws4faFAAAAABJRU5ErkJggg=="
+                alt="NotePLus_logo" />
             <p class="file-av" title="The current document opened in NotePlus">
                 Untitled - NotePlus
             </p>
@@ -76,10 +86,11 @@
                                     </p>
                                 </span>
                             </li>
-                            <li id="sv-as" title="Saves the document to the device using the Web File Sytem Api, Browser compatibility might be limited">
+                            <li id="sv-as"
+                                title="Saves the document to the device using the Web File Sytem Api, Browser compatibility might be limited">
                                 <span>
                                     <p>
-                                        <i class="fa-solid fa-floppy-disk"></i>  Save as
+                                        <i class="fa-solid fa-floppy-disk"></i> Save as
                                     </p>
                                     <p>
                                         Ctrl + X
@@ -117,19 +128,21 @@
                     </div>
                 </li>
                 <li id="edit" title="Edit options tab">
-                    <p  class="ed">
+                    <p class="ed">
                         Edit
                     </p>
                     <div class="edit-list up hide">
                         <ul>
-                            <li id="copy-all" title="Copies all the text present inside the active document to the clipboard">
+                            <li id="copy-all"
+                                title="Copies all the text present inside the active document to the clipboard">
                                 <span>
                                     <p>
-                                        <i class="fa-regular fa-copy"></i> Copy 
+                                        <i class="fa-regular fa-copy"></i> Copy
                                     </p>
                                 </span>
                             </li>
-                            <li id="pst-all" title="Pastes text from the clipboard, Requires Clipboard Access Permission">
+                            <li id="pst-all"
+                                title="Pastes text from the clipboard, Requires Clipboard Access Permission">
                                 <span>
                                     <p>
                                         <i class="fa-regular fa-clipboard"></i> Paste
@@ -139,7 +152,7 @@
                             <li id="srch" title="Search and Replace words across the document">
                                 <span>
                                     <p>
-                                        <i class="fa fa-search"></i>  Search
+                                        <i class="fa fa-search"></i> Search
                                     </p>
                                 </span>
                             </li>
@@ -165,7 +178,8 @@
                             <li id="ab" title="Know more about NotePlus">
                                 <span>
                                     <p>
-                                        <img class="img" alt="NotePLus_logo" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAACXBIWXMAAAsTAAALEwEAmpwYAAABV0lEQVR4nO1ZwUrDQBDdn8ipntT6C/ZWdvRXmp/RT2ihaAYJpf/QW8WDPVaweu3FQCM72FtkKy1CWxR3mklkHsxpSGbezLzNsDFGoSgPk+nzw+N0di/lD8bkaVZ4k/L/Ge1bOrLoBusAgLTT+PxueInLJl/yCWWt7mIToNXLt4Jz+21CGfSpEUzAV94HOL6abwKcXM+3EjiIP3FpMAFAel8HSMcvRTp+3ZsAt98mtOAg8NXiXr4K4l9+3t0xAgfyGy4CUmaUAGoHCh2hEOyrXhSPiqjDZ1C2iGtPAPQYJdnvAOf4RLGEBupOAFQDVF0N1GKZi+pOAFQDpB3QEYISdGAkTqHQDRSUwDfoMYr/QAPw0zNxxdfpShIAXSVIV4lfwSLlUuNjea7X3VCMALpBMIGLu+WZRXoTqH7Wvvk4DSaw6kKfGv53TxnjZJFyX3m25BUKhak0PgFPsVTws4faFAAAAABJRU5ErkJggg==">
+                                        <img class="img" alt="NotePLus_logo"
+                                            src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAACXBIWXMAAAsTAAALEwEAmpwYAAABV0lEQVR4nO1ZwUrDQBDdn8ipntT6C/ZWdvRXmp/RT2ihaAYJpf/QW8WDPVaweu3FQCM72FtkKy1CWxR3mklkHsxpSGbezLzNsDFGoSgPk+nzw+N0di/lD8bkaVZ4k/L/Ge1bOrLoBusAgLTT+PxueInLJl/yCWWt7mIToNXLt4Jz+21CGfSpEUzAV94HOL6abwKcXM+3EjiIP3FpMAFAel8HSMcvRTp+3ZsAt98mtOAg8NXiXr4K4l9+3t0xAgfyGy4CUmaUAGoHCh2hEOyrXhSPiqjDZ1C2iGtPAPQYJdnvAOf4RLGEBupOAFQDVF0N1GKZi+pOAFQDpB3QEYISdGAkTqHQDRSUwDfoMYr/QAPw0zNxxdfpShIAXSVIV4lfwSLlUuNjea7X3VCMALpBMIGLu+WZRXoTqH7Wvvk4DSaw6kKfGv53TxnjZJFyX3m25BUKhak0PgFPsVTws4faFAAAAABJRU5ErkJggg==">
                                         About
                                     </p>
                                 </span>
@@ -235,13 +249,16 @@
                     <label for="word-srch">
                         Word to search:
                     </label>
-                    <input type="text" autocomplete="name" id="word-srch" title="The word you want to search across the document" class="srch" placeholder="Enter word to search..." />
+                    <input type="text" autocomplete="name" id="word-srch"
+                        title="The word you want to search across the document" class="srch"
+                        placeholder="Enter word to search..." />
                 </div>
                 <div class="in">
                     <label for="word-rep">
                         Word to replace:
                     </label>
-                    <input id="word-rep" autocomplete="name" title="The word you want to replace with" type="text" class="rep" placeholder="Enter word to replace..." />
+                    <input id="word-rep" autocomplete="name" title="The word you want to replace with" type="text"
+                        class="rep" placeholder="Enter word to replace..." />
                 </div>
                 <p class="res" title="The matches of the word across the document">
                     No results found!
@@ -276,9 +293,24 @@
             </div>
         </div>
     </div>
+    <!--Register Service Worker-->
+    <script defer>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./service-worker.js')
+                    .then(registration => {
+                        console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                    })
+                    .catch(error => {
+                        console.log('ServiceWorker registration failed: ', error);
+                    });
+            });
+        }
+    </script>
     <script src="./public/js/script.js"></script>
     <script src="./public/js/themes.js"></script>
     <script src="./public/js/search.js"></script>
     <script src="./public/js/file-info.js"></script>
 </body>
+
 </html>

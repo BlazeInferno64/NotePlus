@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<!-- Created By BlazeInferno64 -->
+<html lang="en" dir="ltr">
+
+<head>
+  <meta charset="utf-8">
+  <title id="title">404 NOT FOUND </title>
+  <style>
+    @import url('https://fonts.googleapis.com/css?family=Poppins:400,500,600,700&display=swap');
+
+    /* Reset and base styles */
+    * {
+      margin: 0;
+      padding: 0;
+      outline: none;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    /* Body with animated gradient background */
+    body {
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      background: repeating-linear-gradient(-45deg, #71b7e6, #69a6ce, #b98acc, #ee8176, #b98acc, #69a6ce, #9b59b6);
+      background-size: 400%;
+      animation: animate 10s ease-in-out infinite;
+    }
+
+    /* Error page container */
+    #error-page {
+      position: absolute;
+      top: 10%;
+      left: 15%;
+      right: 15%;
+      bottom: 10%;
+      display: flex;
+      border-radius: .5rem;
+      align-items: center;
+      justify-content: center;
+      background: #2a2d2e;
+      color: #fff;
+      box-shadow: 0 5px 10px rgba(0, 0, 0, 0.95);
+    }
+
+    /* Content wrapper */
+    .content {
+      max-width: 600px;
+      text-align: center;
+      padding: 20px;
+    }
+
+    /* Large 404 header with gradient text effect */
+    .content h2.header {
+      font-size: 18vw;
+      line-height: 1em;
+      position: relative;
+    }
+
+    .content h2.header::after {
+      position: absolute;
+      content: attr(data-text);
+      top: 0;
+      left: 0;
+      right: 0;
+      background: repeating-linear-gradient(-45deg, #71b7e6, #69a6ce, #b98acc, #ee8176, #b98acc, #69a6ce, #9b59b6);
+      background-size: 400%;
+      background-clip: text;
+      -webkit-background-clip: text;
+      /* Fallback for older WebKit */
+      -webkit-text-fill-color: transparent;
+      text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.25);
+      animation: animate 10s ease-in-out infinite;
+    }
+
+    /* Subtitle */
+    .content h4 {
+      font-size: 2rem;
+      margin-bottom: 20px;
+      text-transform: uppercase;
+      position: relative;
+      background: repeating-linear-gradient(-45deg, #71b7e6, #69a6ce, #b98acc, #ee8176, #b98acc, #69a6ce, #9b59b6);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.15);
+      animation: animate 10s ease-in-out infinite;
+      z-index: 1;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    .content h4::after {
+      position: absolute;
+      content: attr(data-text);
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: -1;
+      background: repeating-linear-gradient(-45deg, #b98acc, #ee8176, #b98acc, #69a6ce, #9b59b6);
+      background-size: 400%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      opacity: 0.7;
+      filter: blur(1px);
+      animation: animate 10s ease-in-out infinite reverse;
+      transform: translateX(-2px) translateY(2px);
+    }
+
+    /* Paragraph text */
+    .content p {
+      font-size: 1.2em;
+      color: #fff;
+    }
+
+    /* Host display section */
+    .content .host-section {
+      margin: 15px 0;
+      font-size: 1em;
+      color: #ccc;
+    }
+
+    .content .host-section span {
+      font-weight: 600;
+      text-decoration: underline;
+      color: #69a6ce;
+    }
+
+    .content .host-section span:hover {
+      color: hsl(204, 51%, 51%);
+      cursor: pointer;
+    }
+
+    /* Button container */
+    .content .btns {
+      margin: 25px 0;
+      display: flex;
+      align-items: center;
+      width: 100%;
+      justify-content: center;
+      gap: 10px;
+      /* Modern gap for spacing */
+    }
+
+    .content .btns a {
+      display: inline-block;
+      text-decoration: none;
+      border: 2px solid #69a6ce;
+      color: #69a6ce;
+      font-weight: 500;
+      padding: 10px 25px;
+      border-radius: 25px;
+      text-transform: uppercase;
+      transition: all 0.3s ease;
+    }
+
+    .content .btns a:hover {
+      background: #69a6ce;
+      color: #111;
+    }
+
+    /* Animation keyframes */
+    @keyframes animate {
+      0% {
+        background-position: 0 0;
+      }
+
+      25% {
+        background-position: 100% 0;
+      }
+
+      50% {
+        background-position: 100% 100%;
+      }
+
+      75% {
+        background-position: 0 100%;
+      }
+
+      100% {
+        background-position: 0 0;
+      }
+    }
+
+    /* Mobile responsiveness */
+    @media (max-width: 768px) {
+      #error-page {
+        top: 5%;
+        left: 5%;
+        right: 5%;
+        bottom: 5%;
+      }
+
+      .content h2.header {
+        font-size: 20vw;
+        /* Slightly larger for visibility */
+      }
+
+      .content .btns {
+        flex-direction: column;
+        /* Stack buttons vertically */
+        align-items: stretch;
+        width: 100%;
+        gap: 15px;
+        margin-top: 3rem;
+      }
+
+      .content .btns a {
+        width: 100%;
+        margin: 0;
+        text-align: center;
+        padding: 12px 25px;
+        /* Slightly taller for better touch targets */
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="error-page">
+    <div class="content">
+      <h2 class="header" data-text="404">
+        404
+      </h2>
+      <h4 data-text="Oops! Page not found">
+        Oops! Page not found
+      </h4>
+      <p>
+        Sorry, the page you're looking for doesn't exist. If you think something is broken, report a problem.
+      </p>
+      <!-- Added target section to display the host variable -->
+      <div class="host-section">
+        Requested URL: <span id="host-display"></span>
+      </div>
+      <div class="btns">
+        <a id="main-site-link" href="#">return to main site</a>
+        <a id="repo-link" href="#">return back to repository</a>
+      </div>
+    </div>
+  </div>
+  <script>
+    const title = document.getElementById("title");
+    const hostDisplay = document.getElementById("host-display");
+    const mainSiteLink = document.getElementById("main-site-link");
+    const repoLink = document.getElementById("repo-link");
+
+    hostDisplay.addEventListener("click", async (e) => {
+      try {
+        await navigator.clipboard.writeText(hostDisplay.innerText);
+        alert("Copied to clipboard: " + hostDisplay.innerText);
+      } catch (error) {
+        alert(error);
+        console.error("Failed to copy to clipboard:", error);
+      }
+    })
+
+    window.addEventListener("load", () => {
+      if (!title) {
+        console.error("Title element not found.");
+        return;
+      }
+
+      // Get current URL info
+      const host = window.location.origin + window.location.pathname;
+
+      // Extract repository info from the current URL
+      let username = 'blazeinferno64'; // default fallback
+      let repo = 'NotePlus'; // default fallback
+
+      try {
+        // Try to extract from hostname for github.io
+        if (window.location.hostname.includes('github.io')) {
+          username = window.location.hostname.split('.')[0];
+          repo = window.location.pathname.split('/')[1];
+        } else {
+          // Try to extract from pathname for other cases
+          const pathParts = window.location.pathname.split('/').filter(Boolean);
+          if (pathParts.length >= 2) {
+            username = pathParts[0];
+            repo = pathParts[1];
+          }
+        }
+
+        // If username or repo is still undefined/empty, use defaults
+        if (!username || !repo) {
+          username = 'blazeinferno64';
+          repo = 'NotePlus';
+        }
+
+        // Build the URLs
+        const githubPagesURL = `https://${username}.github.io/${repo}/`;
+        const githubRepoURL = `https://github.com/${username}/${repo}/`;
+
+        // Update the links
+        mainSiteLink.href = githubPagesURL;
+        repoLink.href = githubRepoURL;
+
+      } catch (error) {
+        console.error('Error building URLs:', error);
+        // Keep the default URLs if there's an error
+        mainSiteLink.href = `https://note-plus-mu.vercel.app/`;
+        repoLink.href = `https://github.com/blazeinferno64/NotePlus/`;
+      }
+
+      // Update the title and host display
+      title.innerText = `${title.innerText} | ${host}`;
+      if (hostDisplay) {
+        hostDisplay.innerText = host;
+      }
+      console.log(`404 Not Found at ${host}`);
+    });
+  </script>
+</body>
+
+</html>
