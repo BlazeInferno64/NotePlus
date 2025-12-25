@@ -1,11 +1,13 @@
 /**
- * Copyright (c) 2024 BlazeInferno64 --> https://github.com/blazeinferno64
+ * Copyright (c) 2025 BlazeInferno64 --> https://github.com/blazeinferno64
  */
 const closeFileMenuBtn = document.querySelector(".f-close");
 const fileInfoViewer = document.querySelector(".f-info");
 
 const fileCopyBtn = document.querySelector(".f-copy");
 const fileMetaDataDownloadBtn = document.querySelector(".f-down");
+
+const ENCODING = document.querySelector(".enc");
 
 let prevURL = null;
 
@@ -41,21 +43,21 @@ const closeFileMenu = () => {
     }, 1200);
 };
 
-const parseFile = async(file) => {
-    if (file){
+const parseFile = async (file) => {
+    if (file) {
         const fileURL = URL.createObjectURL(file);
         const response = await fetch(fileURL);
         const blobbedResponse = await response.blob();
-    
+
         const formattedSize = formatBytes(blobbedResponse.size);
         const fileName = file.name;
-    
+
         const lastModifiedDate = new Date(file.lastModified);
         const now = new Date();
         const timeDiff = Math.floor((now - lastModifiedDate) / 1000);
-        
+
         let timeAgo;
-        
+
         if (timeDiff < 60) {
             timeAgo = "just now";
         } else if (timeDiff < 3600) {
@@ -63,7 +65,7 @@ const parseFile = async(file) => {
             timeAgo = `${minutes} minute${minutes !== 1 ? 's' : ''} ago`;
         } else if (timeDiff < 86400) {
             const hours = Math.floor(timeDiff / 3600);
-            timeAgo = `${hours} hour${hours !== 1 ? 's' :  ''} ago`;
+            timeAgo = `${hours} hour${hours !== 1 ? 's' : ''} ago`;
         } else if (timeDiff < 604800) { // Less than 7 days
             const days = Math.floor(timeDiff / 86400);
             timeAgo = `${days} day${days !== 1 ? 's' : ''} ago`;
@@ -87,6 +89,7 @@ const parseFile = async(file) => {
             "File_Type": blobbedResponse.type,
             "Last-Modified-Date": lastModifiedDate
         }
+        encoding.innerText = blobbedResponse.type ? blobbedResponse.type : 'No type available';
         fileInfoViewer.textContent = `{
     "Name": ${fileMetaJSON.Name ? fileMetaJSON.Name : 'No name available'},
     "Size": ${formattedSize ? formattedSize : '0'},
@@ -100,7 +103,7 @@ const parseFile = async(file) => {
 }
 
 const downloadData = (JSONData, file) => {
-    const blob = new Blob([JSONData], { type: "application/json" } );
+    const blob = new Blob([JSONData], { type: "application/json" });
     const aTag = document.createElement("a");
     const blobURL = URL.createObjectURL(blob);
     aTag.href = blobURL;

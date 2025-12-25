@@ -270,7 +270,7 @@
       let username = 'blazeinferno64'; // default fallback
       let repo = 'NotePlus'; // default fallback
 
-      try {
+      /*try {
         // Try to extract from hostname for github.io
         if (window.location.hostname.includes('github.io')) {
           username = window.location.hostname.split('.')[0];
@@ -303,7 +303,10 @@
         // Keep the default URLs if there's an error
         mainSiteLink.href = `https://note-plus-mu.vercel.app/`;
         repoLink.href = `https://github.com/blazeinferno64/NotePlus/`;
-      }
+      }*/
+
+      mainSiteLink.href = `https://note-plus-mu.vercel.app/`;
+      repoLink.href = `https://github.com/blazeinferno64/NotePlus/`;
 
       // Update the title and host display
       title.innerText = `${title.innerText} | ${host}`;

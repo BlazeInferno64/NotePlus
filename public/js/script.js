@@ -57,6 +57,9 @@ const replaceBtn = document.querySelector(".replace");
 const openFileInfoBtn = document.querySelector("#f-open");
 const closeSearchCardBtn = document.querySelector("#close-srch");
 
+const fetchOpenBtn = document.querySelector("#fetch-open");
+
+
 const resultMatch = document.querySelector(".res");
 
 const imageIcon = document.querySelector("#im");
@@ -200,6 +203,34 @@ const setBrowserIcon = (name) => {
             break;
     }
 };
+
+// Detects env
+const detectEnvironment = () => {
+    const { hostname, port, protocol } = window.location;
+    const host = hostname.toLowerCase();
+
+    const resolvedPort =
+        port || (protocol === "https:" ? "443" : "80");
+
+    let platform = "Custom";
+
+    if (host === "localhost" || host === "127.0.0.1" || host === "::1") {
+        platform = "Localhost(127.0.0.1)";
+    } else if (host.endsWith(".github.io")) {
+        platform = "GitHub Pages";
+    } else if (host.endsWith(".vercel.app")) {
+        platform = "Vercel Serverless Platform";
+    }
+
+    return {
+        hostname: host,
+        port: resolvedPort,
+        protocol,
+        platform
+    };
+};
+
+
 
 // Function to save file
 const saveFile = () => {
@@ -408,7 +439,7 @@ document.addEventListener("click", (e) => {
             helpList.classList.add("up");
         }, 100);
 
-        if (searchBg.className == "srch-bg hide" && fileBg.className == "f-bg hide") {
+        if (searchBg.className == "srch-bg hide" && fileBg.className == "f-bg hide" && fetchBg.className == "fetch-bg hide") {
             textInput.focus();
         }
         else {
@@ -416,6 +447,10 @@ document.addEventListener("click", (e) => {
         }
     }
 });
+
+fetchOpenBtn.addEventListener("click", (e) => {
+    return openFetchMenu();
+})
 
 const createNewDocument = () => {
     activeFileName.innerText = `Untitled - NotePlus`;
@@ -456,55 +491,63 @@ openBtn.addEventListener("click", async (e) => {
     }
 });
 
-const readFile = (file) => {
-    const CHUNK_SIZE = 1024 * 1024; // 1MB chunk size, adjust as needed
-    let offset = 0;
+const readFile = async (file) => {
+    textInput.textContent = "";
+    let totalChars = 0;
 
-    textInput.innerText = "";
+    try {
+        const reader = file.stream().getReader();
+        const decoder = new TextDecoder();
 
-    const fileReader = new FileReader();
+        let buffer = "";
 
-    fileReader.addEventListener("error", (e) => {
-        console.error(`Error reading file '${file.name}':`, e.target.error);
-        alert(`Error: Failed to read file '${file.name}'. Please check the console for more information!`);
-    });
+        while (true) {
+            const { value, done } = await reader.read();
+            if (done) break;
 
-    fileReader.addEventListener("abort", (e) => {
-        console.warn(`File reading aborted for '${file.name}'.`);
-        alert(`File reading aborted for '${file.name}'!`);
-    });
+            const chunk = decoder.decode(value, { stream: true });
+            buffer += chunk;
+            totalChars += chunk.length;
 
-    fileReader.addEventListener("load", (e) => {
-        const chunk = fileReader.result;
-        processChunk(chunk); // Process the chunk here
+            // Flush in batches to avoid DOM thrashing
+            if (buffer.length > 500_000) { // ~500 KB
+                textInput.textContent += buffer;
+                buffer = "";
 
-        // Continue reading next chunk if file is not fully read
-        if (offset < file.size) {
-            readNextChunk();
-        } else {
-            // File reading completed
-            handleFileComplete();
+                wordsCount.textContent = `Total Characters: ${totalChars}`;
+                await new Promise(requestAnimationFrame);
+            }
         }
-    });
 
-    // Function to read next chunk
-    const readNextChunk = () => {
-        const slice = file.slice(offset, offset + CHUNK_SIZE);
-        fileReader.readAsText(slice);
-        offset += CHUNK_SIZE;
-    };
+        // Flush remaining data
+        buffer += decoder.decode();
+        if (buffer) {
+            textInput.textContent += buffer;
+        }
 
-    // Start reading the first chunk
-    readNextChunk();
+        wordsCount.textContent = `Total Words: ${totalChars}`;
+        handleFileComplete();
+
+    } catch (err) {
+        console.error(`Error reading file '${file.name}':`, err);
+        alert(`Failed to read file '${file.name}'`);
+    }
 };
 
+
+let buffer = "";
 // Function to process a chunk of file content
 const processChunk = (chunk) => {
+    buffer += chunk;
     // Perform some operation on the chunk, e.g.:
     // - Wait for the chunk to get processed
     // - Write the chunk to a file
     // - Perform some computation on the chunk
     console.log(`Processing chunks...`);
+    if (buffer.length > 5_000_000) { // 5MB
+        textInput.textContent += buffer;
+        buffer = "";
+    }
     // Update the text input with the chunk
     textInput.innerText += chunk;
     wordsCount.innerText = `Total Words: ${textInput.innerText.length}`;
@@ -573,7 +616,7 @@ saveAsBtn.addEventListener("click", async (e) => {
                 await writable.close();
                 console.log(`File has been successfully saved!`);
                 alert(`Successfully saved file to the device!`);
-                
+
             }
         }
 
@@ -606,7 +649,7 @@ saveAsBtn.addEventListener("click", async (e) => {
         } else if (err.name === 'TypeError') {
             alert(`Please use a supported browser!`);
         }
-         else {
+        else {
             alert(`Saving failed: ${err}`);
         }
     }
@@ -638,15 +681,17 @@ reportIssuesBtn.addEventListener("click", async (e) => {
 // Any further changes to NotePlus in future will be updated here
 const about = {
     Name: "NotePlus",
-    Version: '4.2',
+    Version: '4.5',
     Developer: "BlazeInferno64",
     Platform: detectBrowser(),
-    OS: detectOS()
+    OS: detectOS(),
+    Hostname: detectEnvironment().platform,
+    Port: detectEnvironment().port
 }
 
 // Event listener for versionInfoBtn click
 versionInfoBtn.addEventListener("click", (e) => {
-    alert(`Name: ${about.Name}\nVersion: ${about.Version}\nDeveloper: ${about.Developer}\nPlatform: ${about.Platform}\nOS: ${about.OS}`);
+    return alert(`Name: ${about.Name}\nVersion: ${about.Version}\nDeveloper: ${about.Developer}\nPlatform: ${about.Platform}\nOS: ${about.OS}\nHostname: ${about.Hostname}\nPort: ${about.Port}`);
 })
 
 versionP.innerText = about.Version;
@@ -855,6 +900,11 @@ document.addEventListener("keyup", (e) => {
         isCtrlPressed = false;
         return isAltKeyPressed = false;
     }
+    if (e.key === "l" && isCtrlPressed && isAltKeyPressed) {
+        fetchOpenBtn.click();
+        isCtrlPressed = false;
+        return isAltKeyPressed = false;
+    }
 })
 
 // Event listener for beforeunload to prompt user with unsaved changes
@@ -869,5 +919,4 @@ window.addEventListener("beforeunload", (e) => {
 window.addEventListener("beforeinstallprompt", (e) => {
     console.log("App is ready for the installation process!");
     console.warn(`If changes aren't available the please try to clear this site's data and reload the page again!`);
-
 })
