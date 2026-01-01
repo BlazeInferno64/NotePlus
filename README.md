@@ -25,29 +25,66 @@ https://blazeinferno64.github.io/NotePlus
 </a>
 
 # Status
-NotePlus Version 5.0 is under development, and would be released soon! 
+NotePlus Version 5.5 is under development, and would be released soon! 
 
-Meanwhile if you have feature requests suggestion please open up an issue at the [NotePlus issue tracker](https://github.com/blazeinferno64/NotePlus/issues)!
+Meanwhile, if you have feature requests suggestion please open up an issue at the [NotePlus issue tracker](https://github.com/blazeinferno64/NotePlus/issues)!
+
+# Note About Keyboard Shortcuts
+
+> At present, keyboard shortcuts are fully optimized and available for Windows OS (Though some may work on other OS!)  
+Support for Linux and macOS keyboard shortcuts will be added in future updates, so for that stay tuned!
 
 # Patch Notes
 NotePlus Version 5.0 is here!!!
 
-1. `New` Option is here: Now you can directly create a new blank document by clicking on the `New` option present in the file tab, or by pressing `Ctrl` + `Alt` + `J` on your keyboard!
-2. Improved Features & Optimization: NotePlus has been more optimized for various platforms.
-3. Optimized file reading: NotePlus can now read files more memory efficiently, which will help a lot in low-end devices.
-4. Added search query params: Now you can directly interact with NotePlus by providing search query params in the url, you have two search query params for this,i.e, `text` & `save`.
+1. **New Option Added**  
+   You can now instantly create a new blank document by clicking the **`New`** option in the **File** tab or by pressing **`Ctrl + Alt + J`**.
 
-   Let's see a brief example regarding this:-
-      1. `text`: Whenever you type: https://note-plus-mu.vercel.app/ and add a `text` param to the url, NotePlus will automatically extract the text present in the `text` param for 
-                 you. Your URL will look something like this https://note-plus-mu.vercel.app/?text=hello+world , here hello world will get extracted and filled in the text editor.
-      2. `save`:NotePlus can also directly save the text to your device as an .txt  file, but you need to have `text` and `save` search params for it to work. The `save` param takes 
-                two input `true` and `false`. Your URL will look something like this https://note-plus-mu.vercel.app/?text=ok&save=true , here NotePlus will automatically extract 
-                the text present inside the `text` param ('ok' in this case), and save it your device as an .txt file.
-5. Bugs & Issues Fixes: Fixed some minor ui bugs and feature related issues.
-6. `Close Tab` Option is here: Now you can directly close current active NotePlus tab by clicking on the `Close Tab` button present in the file tab, or by pressing `Ctrl` + `Alt` + `F` on your keyboard!
-7. `New Tab` Option is here: Now you can directly create a new Untitled NotePlus document in another tab by clicking on the `New Tab` button present in the file tab, or by pressing `Ctrl` + `Alt` + `P` on your keyboard!
-8. `File Info Viewer`: First open any local file by pressing `Ctrl` + `Alt` + `O` or clicking `Open` option present in the `File` tab. After that press `Ctrl` + `Alt` + `K` on your keyboard or select the `File Info` option present in the `File` tab to open up the `File Info Viewer` which will display some basic file details about the selected file!
-9.  `Fetch Text`: Fetches text based response from any url which has cors enabled.
+2. **Performance Improvements & Optimizations**  
+   NotePlus has been further optimized to deliver better performance across different platforms.
+
+3. **Optimized File Reading**  
+   File reading is now more memory-efficient, significantly improving performance on low-end devices.
+
+4. **Search Query Parameters Support**  
+   You can now interact with NotePlus directly using URL search query parameters. Two parameters are supported: **`text`** and **`save`**.
+
+   **Examples:**
+   - **`text`**  
+     When you visit:  
+     `https://note-plus-mu.vercel.app/?text=hello+world`  
+     NotePlus will automatically extract **“hello world”** and populate the editor with it.
+
+   - **`save`**  
+     NotePlus can also automatically save text as a `.txt` file. To enable this, both `text` and `save` parameters are required.  
+     The `save` parameter accepts `true` or `false`.
+
+     Example:  
+     `https://note-plus-mu.vercel.app/?text=ok&save=true`  
+     This will extract **“ok”** and save it to your device as a `.txt` file.
+
+5. **Bug Fixes & Stability Improvements**  
+   Fixed several minor UI issues and feature-related bugs.
+
+6. **Close Tab Option Added**  
+   You can now close the currently active NotePlus tab by selecting **`Close Tab`** from the **File** tab or by pressing **`Ctrl + Alt + F`**.
+
+7. **New Tab Option Added**  
+   Create a new untitled NotePlus document in a separate tab by clicking **`New Tab`** in the **File** tab or pressing **`Ctrl + Alt + P`**.
+
+8. **File Info Viewer**  
+   - Open any local file using **`Ctrl + Alt + O`** or the **Open** option in the **File** tab.  
+   - Then press **`Ctrl + Alt + K`** or select **`File Info`** from the **File** tab.  
+   - The **File Info Viewer** will display basic details about the selected file.
+
+9. **Fetch Text**  
+   Fetch text-based responses from any URL that has CORS enabled.
+
+10. **Create with AI**  
+    Introducing **Create with AI**, a seamless way to generate text content directly within NotePlus.
+
+11. **Read Aloud Feature**  
+    Added a **Read** option that allows text to be read aloud for improved accessibility and convenience.
 
 # Info
 Please read the following point carefully -
