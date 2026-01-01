@@ -10,6 +10,8 @@ const fetchInput = document.querySelector(".fetch-input input");
 
 const fetchInfo = document.querySelector(".fetch-info");
 
+const fetchOpenBtn = document.querySelector("#fetch-open");
+
 const openFetchMenu = () => {
     fetchBg.style.display = 'flex';
     fetchBg.classList.remove("hide");
@@ -69,12 +71,19 @@ const isValidURL = (url) => {
 }
 const fetchText = async (url) => {
     try {
+        setState("fetching", "Fetching...", false);
         const validUrl = isValidURL(url);
-        const response = await fetch(validUrl);
+        const response = await fetch(validUrl,{
+            mode: "cors"
+        });
 
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
+
+        /*if (response.status === 404) {
+            throw new Error(`404 not found!`);
+        }*/
 
         // Reset UI
         textInput.textContent = "";
@@ -91,6 +100,7 @@ const fetchText = async (url) => {
         let buffer = "";
 
         while (true) {
+            setState("ready", "Fetched successfully", false);
             const { value, done } = await reader.read();
             if (done) break;
 
@@ -114,30 +124,43 @@ const fetchText = async (url) => {
 
         fetchInfo.innerText = `Loaded text successfully from '${url}'!`;
         closeFetchMenu();
+        setState("ready", "Ready", false);
 
     } catch (error) {
+        setState("error", "There was an error", false);
         fetchInfo.classList.remove("ok");
         fetchInfo.classList.add("err");
 
-        if (error.name === "TypeError" && error.message.includes("Failed to fetch")) {
-            fetchInfo.innerText =
-                "Possible CORS error! Please check your browser console.";
-            console.error("CORS / Network error:", error);
-            return;
+        if (error instanceof TypeError) {
+            if (!navigator.onLine) {
+                fetchInfo.innerText = "You are currently offline. Please check your internet connection!";
+                return console.warn(`HTTP request to ${url} failed you're offline!`)
+            } else {
+                fetchInfo.innerText =
+                    "Network request failed (possible CORS, DNS, or server issue). Check console for more info!";
+                console.error(`Fetch failed due to a network-level error (CORS policy, DNS resolution, server unavailability, or connection interruption)!`);
+                console.error(error);
+                return;
+            }
         }
-
         fetchInfo.innerText = error.message || String(error);
         throw error;
     }
 };
 
+fetchOpenBtn.addEventListener("click", (e) => {
+    setState("fetching", "Fetching started...", false);
+    return openFetchMenu();
+})
 
 closeFetchCardBtn.addEventListener("click", (e) => {
+    setState("ready", "Ready", false);
     return closeFetchMenu();
 })
 
 fetchInput.addEventListener("keydown", (e) => {
     if (e.key === "Enter") {
+        setState("fetching", "Fetching...", false);
         return fetchBtn.click();
     }
 })
@@ -161,6 +184,7 @@ fetchBtn.addEventListener("click", async (e) => {
         /*if (error.message === "TypeError: Failed to construct 'URL': Invalid URL") {
             return alert(`${fetchInput.value.trim()} isn't a valid URL!\nPlease provide a valid URL!`);
         }*/
+        setState("error", "There was an error", false);
         console.error(error);
         alert(error.message);
     }

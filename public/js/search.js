@@ -50,6 +50,7 @@ searchBtn.addEventListener("click", (e) => {
             throw new Error("There isn't any text available to search!\nTry entering some text for this to work!");
         }
         openSearchMenu();
+        setState("searching", "Searching started...", false);
     } catch (error) {
         alert(error.message);
         console.error(error);
@@ -57,6 +58,7 @@ searchBtn.addEventListener("click", (e) => {
 });
 
 closeSearchCardBtn.addEventListener("click", (e) => {
+    setState("ready", "Ready", false);
     return closeSearchMenu();
 });
 
@@ -120,6 +122,7 @@ replaceBtn.addEventListener("click", async (e) => {
 searchWordInput.addEventListener("input", (e) => {
     try {
         if (e.target.value.length <= 0) return;
+        setState("searching", "Searching...", false);
 
         resultMatch.classList.remove("ok");
         resultMatch.classList.remove("err");
@@ -129,6 +132,7 @@ searchWordInput.addEventListener("input", (e) => {
             searchString(textInput.innerText, searchWordInput.value);
         }, 1000);
     } catch (error) {
+        setState("error", "There was an error", false);
         alert(error.message);
         return console.error(error);
     }
@@ -147,9 +151,13 @@ searchWordInput.addEventListener("keydown", (e) => {
 
 searchWordInput.addEventListener("keydown", (e) => {
     try {
-        if(e.target.value.length <= 0) return;
-        if(e.keyCode === 13) return replaceWordInput.focus();
+        if (e.target.value.length <= 0) return;
+        if (e.keyCode === 13) {
+            replaceWordInput.focus();
+            return setState("ready", "Ready", false);
+        };
     } catch (error) {
+        setState("error", "There was an error", false);
         alert(error);
         return console.error(error);
     }
@@ -157,8 +165,9 @@ searchWordInput.addEventListener("keydown", (e) => {
 
 
 replaceWordInput.addEventListener("keydown", (e) => {
-    if(e.keyCode === 13) {
-        return replaceBtn.click();
+    if (e.keyCode === 13) {
+        replaceBtn.click();
+        return setState("ready", "Ready", false);
     }
 })
 

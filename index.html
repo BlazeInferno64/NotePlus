@@ -80,7 +80,7 @@
                             <li id="sv" title="Directly saves a copy of the current active document to your device">
                                 <span>
                                     <p>
-                                        <i class="fa-solid fa-floppy-disk"></i> Save
+                                        <i class="fa-regular fa-floppy-disk"></i> Save
                                     </p>
                                     <p>
                                         Ctrl + M
@@ -91,7 +91,7 @@
                                 title="Saves the document to the device using the Web File Sytem Api, Browser compatibility might be limited">
                                 <span>
                                     <p>
-                                        <i class="fa-solid fa-floppy-disk"></i> Save as
+                                        <i class="fa-regular fa-floppy-disk"></i> Save as
                                     </p>
                                     <p>
                                         Ctrl + X
@@ -111,7 +111,7 @@
                             <li id="f-open" title="Gets the file info">
                                 <span>
                                     <p>
-                                        <i class="fa-solid fa-file-pen"></i> File Info
+                                        <i class="fa-regular fa-file-code"></i> File Info
                                     </p>
                                     <p>
                                         Ctrl + Alt + K
@@ -121,7 +121,7 @@
                             <li id="fetch-open" title="Fetches text from a give URL">
                                 <span>
                                     <p>
-                                        <i class="fa-solid fa-link"></i> Fetch text
+                                        <i class="fa-solid fa-link"></i> Fetch Text
                                     </p>
                                     <p>
                                         Ctrl + Alt + L
@@ -165,6 +165,13 @@
                                     <p>
                                         <i class="fa fa-search"></i> Search
                                     </p>
+                                </span>
+                            </li>
+                            <li id="read-txt" title="Reads the current text(if any)">
+                                <span>
+                                    <div class="rd">
+                                        <i class="fa-solid fa-headphones"></i> <p id="rd-txt">Read</p>
+                                    </div>
                                 </span>
                             </li>
                             <li id="sel-all" title="Selects all the text present inside the active document">
@@ -215,19 +222,33 @@
                     </div>
                 </li>
             </ul>
-            <p id="theme" class="set" title="Toggle between Light & Dark theme">
-                <i id="ico" class="fa-solid fa-circle-half-stroke"></i>
-                <span class="t">
-                    Light Mode
+            <div class="optional">
+                <span class="ai-btn" title="Click to interact with NotePlus AI Assistant">
+                    <i class="fa-solid fa-hexagon-nodes"></i>
+                    Write with ai
                 </span>
-            </p>
+                <p id="theme" class="set" title="Toggle between Light & Dark theme">
+                    <i id="ico" class="fa-solid fa-circle-half-stroke"></i>
+                    <span class="t">
+                        Light Mode
+                    </span>
+                </p>
+            </div>
         </div>
         <div class="main">
             <div class="text" id="text" contenteditable="true" title="Write some nice text here :)"></div>
             <div class="footer">
-                <p class="count" title="Shows how many words the current active document consists">
-                    Total Words: 0
-                </p>
+                <div class="footer-main">
+                    <p class="count" title="Shows how many words the current active document consists">
+                        Total Words: 0
+                    </p>
+                    <span class="action" title="Shows current app's action">
+                        <i id="state-icon" class="fa-solid fa-circle-info"></i>
+                        <p class="state" title="State of NotePlus">
+                            State: Ready
+                        </p>
+                    </span>
+                </div>
                 <div class="info" title="Displays your current browser">
                     <span class="brow">
                         <i id="browser-icon" class="fa fa-chrome"></i>
@@ -311,7 +332,7 @@
                 <p>
                     Fetch text
                 </p>
-                <span title="Close File Info" class="fetch-close">
+                <span title="Close Fetch" class="fetch-close">
                     &times;
                 </span>
             </div>
@@ -332,6 +353,39 @@
             </div>
         </div>
     </div>
+    <!--Ai bg-->
+    <div class="ai-bg hide">
+        <div class="ai-card up hide">
+            <div class="ai-head">
+                <p>
+                    <i class="fa-solid fa-hexagon-nodes"></i> NotePlus Assistant
+                </p>
+                <span title="Close Ai Info" class="ai-close">
+                    &times;
+                </span>
+            </div>
+            <div class="ai-main">
+                <div class="ai-input">
+                    <label for="prompt-ai">
+                        Your prompt:
+                    </label>
+                    <textarea name="Prompt" class="ai-prompt" id="prompt-ai"
+                        placeholder="Describe a nice prompt to get a proper output..."
+                        title="Make your prompt outstand others"></textarea>
+                </div>
+                <div class="opt"
+                    title="If text is present it will be sent to the Ai assistant for reference, which may provide a more accurate and relevant response" />
+                <input type="checkbox" name="Present data" id="data" /> Also include existing data (if any)
+            </div>
+            <div class="ai-info">Generation not started!</div>
+            <div class="ai-btns">
+                <button class="ai-ok">
+                    <i class="fa-solid fa-hexagon-nodes-bolt"></i> Start Generating
+                </button>
+            </div>
+        </div>
+    </div>
+    </div>
     <!--Register Service Worker-->
     <script defer>
         if ('serviceWorker' in navigator) {
@@ -346,11 +400,12 @@
             });
         }
     </script>
-    <script src="./public/js/script.js"></script>
-    <script src="./public/js/themes.js"></script>
-    <script src="./public/js/search.js"></script>
-    <script src="./public/js/file-info.js"></script>
-    <script src="./public/js/fetch.js"></script>
+    <script defer src="./public/js/script.js"></script>
+    <script defer src="./public/js/ai.js"></script>
+    <script defer src="./public/js/themes.js"></script>
+    <script defer src="./public/js/search.js"></script>
+    <script defer src="./public/js/file-info.js"></script>
+    <script defer src="./public/js/fetch.js"></script>
 </body>
 
 </html>

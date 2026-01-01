@@ -96,14 +96,16 @@ body {
 #file,
 #help,
 #edit,
-.set {
+.set,
+.ai-btn {
     background: transparent;
     border-radius: .2rem;
     position: relative;
     z-index: 2;
 }
 
-.set {
+.set,
+.ai-btn {
     padding: .5rem;
 }
 
@@ -116,7 +118,8 @@ body {
 #file:hover,
 #help:hover,
 #edit:hover,
-.set:hover {
+.set:hover,
+.ai-btn:hover {
     background: #dedede;
 }
 
@@ -126,12 +129,14 @@ body {
     background: #dedede;
 }
 
-.set {
+.set,
+.ai-btn {
     cursor: pointer;
     transition: background .1s ease-in-out;
 }
 
-.set:active {
+.set:active,
+.ai-btn:active {
     scale: .95;
 }
 
@@ -156,6 +161,24 @@ body {
     margin-top: .5rem;
     transition: all .5s ease-in-out;
 }
+
+.edit-list::after,
+.action-list::after,
+.help-list::after {
+    content: "";
+    position: absolute;
+
+    top: -10px;
+    left: 12px;
+    /* top-left placement */
+
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 10px solid #dedede;
+
+    transition: all .3s ease-in-out;
+}
+
 
 .action-list ul,
 .edit-list ul,
@@ -212,9 +235,23 @@ body {
     gap: 5px;
 }
 
+.edit-list ul li span div {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.app-options .optional {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.app-options .optional .ai-btn {}
+
 .text {
     background: #eaeaea;
-    width: calc(100% - 2rem);
+    width: calc(100% - 1rem);
     /* Adjusted width */
     min-height: 0;
     /* Ensure minimum height */
@@ -224,8 +261,10 @@ body {
     font-size: 1.2rem;
     overflow-y: auto;
     /* Vertical scrollbar if needed */
-    white-space: pre;
+    white-space: pre-wrap;
     border: none;
+    scroll-behavior: smooth;
+    font-family: Consolas, "Lucida Console", Menlo, Monaco, "Courier New", monospace;
 }
 
 .text::-webkit-scrollbar {
@@ -289,6 +328,20 @@ body {
     color: #111;
 }
 
+.footer-main {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    gap: 30px;
+}
+
+.footer-main .action {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    gap: 5px;
+}
+
 .footer .info {
     display: flex;
     align-items: center;
@@ -318,6 +371,19 @@ body {
     height: 100vh;
     width: 100%;
     z-index: 7;
+    user-select: none;
+    background: rgba(0, 0, 0, .6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.ai-bg {
+    position: fixed;
+    height: 100vh;
+    width: 100%;
+    z-index: 13;
     user-select: none;
     background: rgba(0, 0, 0, .6);
     display: flex;
@@ -357,7 +423,7 @@ body {
     align-items: center;
     flex-direction: column;
     justify-content: center;
-    border-radius: 50%;
+    border-radius: .5rem;
     cursor: pointer;
     transition: all .1s ease-in-out;
 }
@@ -378,7 +444,8 @@ body {
 }
 
 .srch-main .in,
-.fetch-main .fetch-input {
+.fetch-main .fetch-input,
+.ai-main .ai-input {
     width: 100%;
     display: flex;
     align-items: center;
@@ -386,7 +453,8 @@ body {
 }
 
 .in label,
-.fetch-main label {
+.fetch-main label,
+.ai-main label {
     font-size: 1.1rem;
     width: 100%;
     background: #ccc;
@@ -396,8 +464,11 @@ body {
 }
 
 .in input,
-.fetch-main input {
+.fetch-main input,
+.ai-main textarea {
+    outline: none;
     border: none;
+    font-family: monospace;
 }
 
 .in .srch,
@@ -411,6 +482,7 @@ body {
     background: #fff;
     color: #111;
 }
+
 
 .res {
     width: 100%;
@@ -455,7 +527,8 @@ body {
 }
 
 .f-bg .f-card,
-.fetch-card {
+.fetch-card,
+.ai-card {
     color: #111;
     display: flex;
     align-items: center;
@@ -469,7 +542,8 @@ body {
 }
 
 .f-card .f-head,
-.fetch-card .fetch-head {
+.fetch-card .fetch-head,
+.ai-card .ai-head {
     width: 100%;
     display: flex;
     align-items: center;
@@ -479,7 +553,8 @@ body {
 }
 
 .f-head .f-close,
-.fetch-head .fetch-close {
+.fetch-head .fetch-close,
+.ai-card .ai-close {
     font-size: 2rem;
     background: transparent;
     width: 40px;
@@ -494,12 +569,14 @@ body {
 }
 
 .f-head .f-close:hover,
-.fetch-head .fetch-close:hover {
+.fetch-head .fetch-close:hover,
+.ai-head .ai-close:hover {
     background: #908f8f;
 }
 
 .f-card .f-main,
-.fetch-card .fetch-main {
+.fetch-card .fetch-main,
+.ai-card .ai-main {
     width: 100%;
     height: 100%;
     display: flex;
@@ -508,7 +585,8 @@ body {
     flex-direction: column;
 }
 
-.fetch-main {
+.fetch-main,
+.ai-main {
     padding: .3rem .5rem;
 }
 
@@ -524,7 +602,8 @@ body {
     font-family: monospace;
 }
 
-.fetch-info {
+.fetch-info,
+.ai-info {
     background: #afadad;
     height: fit-content;
     width: 100%;
@@ -548,7 +627,8 @@ body {
     gap: 5px;
 }
 
-.fetch-main .fetch-btns {
+.fetch-main .fetch-btns,
+.ai-main .ai-btns {
     margin-bottom: .5rem;
     margin-top: .5rem;
     width: 100%;
@@ -560,13 +640,15 @@ body {
 }
 
 .f-info::-webkit-scrollbar,
-.fetch-info::-webkit-scrollbar {
+.fetch-info::-webkit-scrollbar,
+.ai-info::-webkit-scrollbar {
     background: transparent;
     width: 10px;
 }
 
 .f-info::-webkit-scrollbar-thumb,
-.fetch-info::-webkit-scrollbar-thumb {
+.fetch-info::-webkit-scrollbar-thumb,
+.ai-info::-webkit-scrollbar-thumb {
     background: #4b494d;
     border-radius: .5rem;
     cursor: auto;
@@ -574,26 +656,30 @@ body {
 }
 
 .f-info::-webkit-scrollbar-thumb:hover,
-.fetch-info::-webkit-scrollbar-thumb:hover {
+.fetch-info::-webkit-scrollbar-thumb:hover,
+.ai-info::-webkit-scrollbar-thumb:hover {
     background: hsl(270, 3%, 39%);
     border-radius: .5rem;
 }
 
 .f-info::-webkit-scrollbar-thumb:active,
-.fetch-info::-webkit-scrollbar-thumb:active {
+.fetch-info::-webkit-scrollbar-thumb:active,
+.ai-info::-webkit-scrollbar-thumb:active {
     background: hsl(270, 3%, 49%);
     border-radius: .5rem;
 }
 
 .f-info::-webkit-scrollbar-corner,
-.fetch-info::-webkit-scrollbar-corner {
+.fetch-info::-webkit-scrollbar-corner,
+.ai-info::-webkit-scrollbar-corner {
     background: transparent;
 }
 
 .f-info::-webkit-scrollbar,
 .f-info::-webkit-scrollbar-thumb,
 .f-info::-webkit-scrollbar-corner,
-.fetch-info::-webkit-scrollbar-corner {
+.fetch-info::-webkit-scrollbar-corner,
+.ai-info::-webkit-scrollbar-corner {
     cursor: default;
 }
 
@@ -607,7 +693,8 @@ body {
 
 .f-down,
 .f-copy,
-.fetch-ok {
+.fetch-ok,
+.ai-ok {
     outline: none;
     border: none;
     border-radius: .3rem;
@@ -620,19 +707,21 @@ body {
 }
 
 .f-copy,
-.fetch-ok {
+.fetch-ok,
+.ai-ok {
     background: transparent;
     border: 2px solid rgb(14, 126, 186);
     color: rgb(14, 126, 186);
 }
 
-.fetch-ok:hover {
+.fetch-ok:hover,
+.ai-ok:hover {
     background: rgb(14, 126, 186);
     color: #111;
 }
 
-
-.fetch-ok {
+.fetch-ok,
+.ai-ok {
     cursor: pointer;
     width: 100%;
     font-size: 1.3rem;
@@ -652,7 +741,8 @@ body {
 
 .f-down:active,
 .f-copy:active,
-.fetch-ok:active {
+.fetch-ok:active,
+.ai-ok:active {
     scale: .97;
 }
 
@@ -667,6 +757,37 @@ body {
     align-items: center;
     justify-content: center;
     flex-direction: column;
+}
+
+.ai-main textarea {
+    resize: none;
+    width: 100%;
+    height: 170px;
+    padding: .3rem .5rem;
+    font-size: 1.13rem;
+    border-bottom-left-radius: .3rem;
+    border-bottom-right-radius: .3rem;
+}
+
+.ai-main .opt {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    padding: .3rem .5rem;
+    gap: 10px;
+    margin-top: .5rem;
+    margin-bottom: .5rem;
+    border: 2px dashed #4b494d;
+    border-radius: .3rem;
+    font-size: 1rem;
+    cursor: pointer; /* Makes the whole box feel clickable */
+}
+
+.ai-main .opt input[type="checkbox"] {
+    cursor: pointer;
+    accent-color: #349057; /* Modern way to set green color */
+    width: 1.2rem;         /* Ensures checkbox matches text size */
+    height: 1.2rem;
 }
 
 .body.dark {
@@ -689,7 +810,8 @@ body {
 #file.dark:hover,
 #edit.dark:hover,
 #help.dark:hover,
-.set.dark:hover {
+.set.dark:hover,
+.ai-btn.dark:hover {
     background: #2a2d2e;
 }
 
@@ -713,6 +835,7 @@ body {
 #help.active.dark {
     background: #2a2d2e;
 }
+
 
 .action-list.dark {
     background: #1a1a1a;
@@ -741,38 +864,52 @@ body {
     background: #4b494d;
 }
 
+.edit-list.dark::after,
+.action-list.dark::after,
+.help-list.dark::after {
+    border-bottom-color: #1a1a1a;
+    transition: border-bottom-color .2s ease-in-out;
+}
+
 .srch-card.dark,
 .f-card.dark,
-.fetch-card.dark {
+.fetch-card.dark,
+.ai-card.dark {
     background: rgba(30, 30, 30);
     color: #fff;
 }
 
 .srch-card.dark .srch-head #close-srch:hover,
 .f-card.dark .f-head .f-close:hover,
-.fetch-card .fetch-head .fetch-close:hover {
+.fetch-card.dark .fetch-head .fetch-close:hover,
+.ai-card.dark .ai-head .ai-close:hover {
     background: #4b494d;
 }
 
 .srch-card.dark .srch-main,
 .f-card.dark .f-main .f-info,
-.fetch-card.dark .fetch-main {
+.fetch-card.dark .fetch-main,
+.ai-card.dark .ai-main {
     background: #2a2d2e;
 }
 
 .srch-card.dark .srch-main .in,
-.fetch-card.dark .fetch-main .fetch-input {
+.fetch-card.dark .fetch-main .fetch-input,
+.ai-card.dark .ai-main .ai-input {
     color: #fff;
 }
 
 .srch-card.dark .srch-main .in label,
 .fetch-card.dark .fetch-main .fetch-input label,
-.fetch-card.dark .fetch-info {
+.fetch-card.dark .fetch-info,
+.ai-card.dark .ai-main .ai-input label,
+.ai-card.dark .ai-info {
     background: rgba(30, 30, 30);
 }
 
 .srch-card.dark .srch-main .in input,
-.fetch-card.dark .fetch-main .fetch-input input {
+.fetch-card.dark .fetch-main .fetch-input input,
+.ai-card.dark .ai-main .ai-input textarea {
     background: #4b494d;
     color: #fff;
 }

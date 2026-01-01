@@ -45,6 +45,7 @@ const closeFileMenu = () => {
 
 const parseFile = async (file) => {
     if (file) {
+        setState("view", "Parsing file...", false);
         const fileURL = URL.createObjectURL(file);
         const response = await fetch(fileURL);
         const blobbedResponse = await response.blob();
@@ -97,6 +98,7 @@ const parseFile = async (file) => {
     "Last-Modified": ${timeAgo ? timeAgo : 'Undefined'},
     "Last-Modified-Date": ${fileMetaJSON["Last-Modified-Date"] ? fileMetaJSON["Last-Modified-Date"] : 'Undefined'}
 }`;
+        setState("ready", "Ready", false);
     } else {
         return;
     }
@@ -127,10 +129,12 @@ function formatBytes(bytes) {
 }
 
 closeFileMenuBtn.addEventListener("click", (e) => {
+    setState("ready", "Ready", false);
     return closeFileMenu();
 })
 
 openFileInfoBtn.addEventListener("click", (e) => {
+    setState("view", "Viewing file info...", false);
     return openFileMenu();
 })
 

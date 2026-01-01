@@ -9,6 +9,7 @@ const mainBg = document.querySelector(".main");
 const file_Card = document.querySelector(".f-card");
 const fetchCard = document.querySelector(".fetch-card");
 
+const aiThemeBtn = document.querySelector(".ai-btn");
 const themeBtn = document.querySelector("#theme");
 const themeBtnText = document.querySelector(".t");
 const themeIcon = document.querySelector("#ico");
@@ -22,6 +23,7 @@ const switchThemes = () => {
     mainBg.classList.toggle("dark");
     textInput.classList.toggle("dark");
     themeBtn.classList.toggle("dark");
+    aiThemeBtn.classList.toggle("dark");
 
     helpBtn.classList.toggle("dark");
     editBtn.classList.toggle("dark");
@@ -33,6 +35,7 @@ const switchThemes = () => {
     searchCard.classList.toggle("dark");
     file_Card.classList.toggle("dark")
     fetchCard.classList.toggle("dark");
+    aiCard.classList.toggle("dark");
 };
 
 const updateThemeButtonText = () => {
@@ -47,7 +50,8 @@ const updateThemeButtonText = () => {
     }
 };
 
-themeBtn.addEventListener("click", () => {
+themeBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
     switchThemes();
     updateThemeButtonText();
 });

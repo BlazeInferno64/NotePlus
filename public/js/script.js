@@ -35,6 +35,8 @@ const closeTabBtn = document.querySelector("#cl-tab");
 const selectAllBtn = document.querySelector("#sel-all");
 const copyAllBtn = document.querySelector("#copy-all");
 const pasteAllBtn = document.querySelector("#pst-all");
+const readTextBtn = document.querySelector("#read-txt")
+const readTextBtnPara = readTextBtn.querySelector("p");
 
 const aboutBtn = document.querySelector("#ab");
 const reportIssuesBtn = document.querySelector("#rp");
@@ -57,8 +59,8 @@ const replaceBtn = document.querySelector(".replace");
 const openFileInfoBtn = document.querySelector("#f-open");
 const closeSearchCardBtn = document.querySelector("#close-srch");
 
-const fetchOpenBtn = document.querySelector("#fetch-open");
 
+const stateText = document.querySelector(".state");
 
 const resultMatch = document.querySelector(".res");
 
@@ -70,6 +72,47 @@ appBody.classList.remove("none");
 
 let hasUnsavedChanges = false;
 let fileType = "";
+
+/**
+ * Ready
+    Typing…
+    Unsaved changes
+    Reading file…
+    Saving…
+    Saved
+    Error
+ */
+
+const appState = {
+    mode: "ready", // ready | typing | reading | saving | error
+    dirty: false,  // unsaved changes
+    message: "Ready"
+};
+
+
+function setState(mode, message, dirty = appState.dirty) {
+    appState.mode = mode;
+    appState.message = message;
+    appState.dirty = dirty;
+
+    const iconMap = {
+        ready: "fa-circle-check",
+        typing: "fa-pen",
+        reading: "fa-file-lines",
+        saving: "fa-floppy-disk",
+        error: "fa-triangle-exclamation",
+        fetching: "fa-paper-plane",
+        info: "fa-circle-info",
+        searching: "fa-magnifying-glass",
+        view: "fa-file-code",
+        closeTab: "fa-arrow-right-from-bracket",
+        ai: "fa-hexagon-nodes",
+    };
+    const icon = document.querySelector("#state-icon");
+    icon.className = `fa-solid ${iconMap[mode]}`;
+
+    stateText.textContent = ` State: ${message}`;
+}
 
 // Function to detect the current browser
 const detectBrowser = () => {
@@ -234,6 +277,7 @@ const detectEnvironment = () => {
 
 // Function to save file
 const saveFile = () => {
+    setState("ready", "Saving...", false);
     const text = textInput.innerText;
     const blob = new Blob([text], { type: "text/plain" });
     const link = document.createElement("a");
@@ -243,6 +287,7 @@ const saveFile = () => {
     URL.revokeObjectURL(link.href);
     link.remove();
     alert(`File has been saved to the device. Please check your downloads folder.`);
+    setState("ready", "Ready", false);
 }
 
 // Function to detect search query 
@@ -303,6 +348,7 @@ const detectSearchQuery = () => {
 
 // Event listener when DOM content is loaded
 document.addEventListener("DOMContentLoaded", (e) => {
+    setState("ready", "Ready");
     const name = detectBrowser();
     browserName.innerText = name;
     // Set browser icons
@@ -315,7 +361,6 @@ document.addEventListener("DOMContentLoaded", (e) => {
         console.warn(`Your version of ${detectBrowser()} doesn't currently supports the Web File System API. Please check browser compatibility at https://developer.mozilla.org/en-US/docs/Web/API/Window/showSaveFilePicker#browser_compatibility.`);
         alert(`Your version of ${detectBrowser()} currently doesn't supports the Web File System API. Some features may not work as intended. Please check the browser console for more information regarding the Web File System API compatibility issue.`);
     }
-
 
     fileInfoViewer.textContent = `
     No metadata available!
@@ -340,6 +385,7 @@ textInput.addEventListener("input", (e) => {
     const count = e.target.textContent.length;
     wordsCount.innerText = `Total Words: ${count}`;
     hasUnsavedChanges = true;
+    setState("typing", "Typing…", true);
 });
 
 // Event listener for fileBtn click
@@ -409,9 +455,11 @@ helpBtn.addEventListener("click", (e) => {
 
 // Event listener for close tab btn
 closeTabBtn.addEventListener("click", async (e) => {
+    setState("closeTab", "Closing the active tab...", false);
     alert(`Current active tab of NotePlus has been successfully closed!`);
     setTimeout(() => {
-        return window.close();
+        window.close();
+        setState("ready", "Ready", false);
     }, 300);
 })
 
@@ -439,7 +487,7 @@ document.addEventListener("click", (e) => {
             helpList.classList.add("up");
         }, 100);
 
-        if (searchBg.className == "srch-bg hide" && fileBg.className == "f-bg hide" && fetchBg.className == "fetch-bg hide") {
+        if (searchBg.className == "srch-bg hide" && fileBg.className == "f-bg hide" && fetchBg.className == "fetch-bg hide" && aiBg.className == 'ai-bg hide') {
             textInput.focus();
         }
         else {
@@ -447,10 +495,6 @@ document.addEventListener("click", (e) => {
         }
     }
 });
-
-fetchOpenBtn.addEventListener("click", (e) => {
-    return openFetchMenu();
-})
 
 const createNewDocument = () => {
     activeFileName.innerText = `Untitled - NotePlus`;
@@ -508,12 +552,14 @@ const readFile = async (file) => {
             const chunk = decoder.decode(value, { stream: true });
             buffer += chunk;
             totalChars += chunk.length;
+            setState("reading", `Reading… ${totalChars} chars`, false);
 
             // Flush in batches to avoid DOM thrashing
             if (buffer.length > 500_000) { // ~500 KB
                 textInput.textContent += buffer;
                 buffer = "";
 
+                setState("reading", `Reading… ${buffer.length} bytes`, false);
                 wordsCount.textContent = `Total Characters: ${totalChars}`;
                 await new Promise(requestAnimationFrame);
             }
@@ -528,7 +574,11 @@ const readFile = async (file) => {
         wordsCount.textContent = `Total Words: ${totalChars}`;
         handleFileComplete();
 
+        setState("reading", `File loaded`, false);
+
     } catch (err) {
+        setState("error", "There was an error", false);
+
         console.error(`Error reading file '${file.name}':`, err);
         alert(`Failed to read file '${file.name}'`);
     }
@@ -559,33 +609,16 @@ const handleFileComplete = () => {
     console.log(`File reading completed successfully!`);
     console.warn(`If any issues occur then please refresh this page and try to open the file again!`);
     textInput.focus();
+    setState("ready", "File loaded", false);
 };
 
-// Event listener for fileInput change
-fileInput.onchange = async (e) => {
-    const file = e.target.files[0];
-    if (!file) {
-        return;
-    }
-    await parseFile(file);
-    readFile(file);
-    activeFileName.innerText = file.name ? `${file.name} - NotePlus` : `Untitled - NotePlus`;
-    return fileType = file.type;
-};
-
-// Event listener for imageIcon contextmenu
-imageIcon.addEventListener("contextmenu", (e) => {
-    return e.preventDefault();
-})
-
-
-
-// Event listener for saveAsBtn click
-saveAsBtn.addEventListener("click", async (e) => {
+const saveAsFile = async () => {
     const text = textInput.innerText;
     const blob = new Blob([text], { type: "text/plain" });
 
-    let filename = activeFileName.innerText !== "Untitled - NotePlus" ? activeFileName.innerText : "Untitled - NotePlus File";
+    let filename = activeFileName.innerText !== "Untitled - NotePlus" ? activeFileName.innerText : appState.fileName;
+
+    setState("saving", "Saving…", false);
 
     try {
         // Check if browser supports Web File System API
@@ -616,6 +649,7 @@ saveAsBtn.addEventListener("click", async (e) => {
                 await writable.close();
                 console.log(`File has been successfully saved!`);
                 alert(`Successfully saved file to the device!`);
+                setState("ready", "Saved", false);
 
             }
         }
@@ -630,7 +664,21 @@ saveAsBtn.addEventListener("click", async (e) => {
                 { description: `CSS File`, accept: { "text/css": [".css"] } },
                 { description: `JSON File`, accept: { "application/json": [".json"] } },
                 { description: `Python File`, accept: { "text/x-python": [".py"] } },
-                { description: `Php File`, accept: { "application/x-httpd-php": [".php"] } }
+                { description: `Php File`, accept: { "application/x-httpd-php": [".php"] } },
+                { description: "TypeScript File", accept: { "text/typescript": [".ts"] } },
+                { description: "C/C++ File", accept: { "text/x-c": [".c", ".cpp", ".h"] } },
+                { description: "Java File", accept: { "text/x-java-source": [".java"] } },
+                { description: "Markdown File", accept: { "text/markdown": [".md"] } },
+                { description: "XML File", accept: { "application/xml": [".xml"] } },
+                { description: "YAML File", accept: { "application/x-yaml": [".yml", ".yaml"] } },
+                { description: "CSV File", accept: { "text/csv": [".csv"] } },
+                { description: "INI File", accept: { "text/plain": [".ini"] } },
+                { description: "ENV File", accept: { "text/plain": [".env"] } },
+                { description: "Shell Script", accept: { "application/x-sh": [".sh"] } },
+                { description: "Batch File", accept: { "application/x-bat": [".bat", ".cmd"] } },
+                { description: "PowerShell Script", accept: { "application/x-powershell": [".ps1"] } }
+
+
             ]
         });
         const writable = await handle.createWritable();
@@ -638,21 +686,110 @@ saveAsBtn.addEventListener("click", async (e) => {
         await writable.close();
         console.log(`File has been successfully saved!`);
         alert(`Successfully saved file to the device!`);
+        setState("ready", "Saved", false);
 
     } catch (err) {
+        //setState("error", "Saving failed", false);
         //console.error(`Saving Failed: ${err}`);
         // Handle specific errors
         if (err.name === 'NotAllowedError') {
+            setState("error", "Saving not allowed", false);
             alert(`Saving failed: File system access not allowed. Please check your browser settings.`);
         } else if (err.name === 'AbortError') {
+            setState("error", "Saving request aborted", false);
             alert(`Saving failed: You aborted the request.`);
         } else if (err.name === 'TypeError') {
+            setState("error", "Unsupported browser", false);
             alert(`Please use a supported browser!`);
         }
         else {
+            setState("error", "Saving failed", false);
             alert(`Saving failed: ${err}`);
         }
     }
+}
+
+// Event listener for fileInput change
+fileInput.onchange = async (e) => {
+    try {
+        setState("reading", "Reading file…", false);
+        const file = e.target.files[0];
+        if (!file) {
+            return;
+        }
+        await parseFile(file);
+        readFile(file);
+        activeFileName.innerText = file.name ? `${file.name} - NotePlus` : `Untitled - NotePlus`;
+        fileType = file.type;
+        setState("ready", "File loaded", false);
+    } catch (error) {
+        setState("error", "Failed to open file", true);
+        alert(`Failed to open file`);
+    }
+};
+
+// Event listener for imageIcon contextmenu
+imageIcon.addEventListener("contextmenu", (e) => {
+    return e.preventDefault();
+})
+
+let isSpeaking = false;
+let synthesis = null;
+let speechState = 'stopped'; // 'stopped', 'speaking', 'paused'
+
+readTextBtn.addEventListener("click", (e) => {
+    try {
+        e.stopPropagation();
+        const text = textInput.textContent.trim();
+        if (!text) return alert("Nothing to read!");
+
+        if (speechState === 'stopped') {
+            synthesis = new SpeechSynthesisUtterance(text);
+
+            synthesis.onend = () => {
+                speechState = 'stopped';
+                isSpeaking = false;
+                readTextBtnPara.innerText = "Read";
+            };
+
+            synthesis.onerror = () => {
+                speechState = 'stopped';
+                isSpeaking = false;
+                readTextBtnPara.innerText = "Read";
+                console.error("SpeechSynthesis error occurred");
+            };
+
+            speechSynthesis.speak(synthesis);
+            console.log(`Speaking...`);
+            speechState = 'speaking';
+            isSpeaking = true;
+            readTextBtnPara.innerText = "Pause";
+
+        } else if (speechState === 'paused') {
+            speechSynthesis.resume();
+            speechState = 'speaking';
+            readTextBtnPara.innerText = "Pause";
+            console.log(`Resumed!`);
+
+        } else if (speechState === 'speaking') {
+            speechSynthesis.pause();
+            speechState = 'paused';
+            readTextBtnPara.innerText = "Resume";
+            console.log(`Paused!`);
+        }
+
+    } catch (error) {
+        speechState = 'stopped';
+        isSpeaking = false;
+        readTextBtnPara.innerText = "Read";
+        console.error(error);
+    }
+});
+
+
+// Event listener for saveAsBtn click
+saveAsBtn.addEventListener("click", async (e) => {
+    return saveAsFile();
 });
 
 
@@ -681,7 +818,7 @@ reportIssuesBtn.addEventListener("click", async (e) => {
 // Any further changes to NotePlus in future will be updated here
 const about = {
     Name: "NotePlus",
-    Version: '4.5',
+    Version: '5.0',
     Developer: "BlazeInferno64",
     Platform: detectBrowser(),
     OS: detectOS(),
@@ -698,6 +835,7 @@ versionP.innerText = about.Version;
 
 // Event listener for newTabBtn click
 newTabBtn.addEventListener("click", (e) => {
+    setState("ready", "Ready", false);
     const aTag = document.createElement("a");
     aTag.href = "";
     aTag.target = "_blank";
@@ -746,17 +884,21 @@ pasteAllBtn.addEventListener("click", async () => {
         return;
     }
     try {
+        setState("ready", "Copying...", false);
         const text = await navigator.clipboard.readText();
         if (!text) {
+            setState("info", "Clipboard is empty", false);
             console.warn(`Seems like your clipboard is empty!`);
             return alert(`Error: NotePlus wasn't able to find any text present on your clipboard as it was empty!`);
         }
         textInput.innerText = text;
     } catch (error) {
         if (error.name = "NotAllowedError") {
+            setState("error", "Clipboard reading not allowed", false);
             console.error(`Permission Error: You didn't allowed NotePlus to read and write text from your clipboard!`);
             return alert(`Permission Error: You didn't allowed NotePlus to read and write text from your clipboard!`)
         } else {
+            setState("error", "There was an error", false);
             console.error(error);
             return alert(`An error occured: ${error}`);
         }
@@ -783,6 +925,7 @@ let folderDrop = false; // Flag to track if folder drop error has been shown
 
 const handleDrop = (event) => {
     try {
+        setState("ready", "Reading...", false);
         event.preventDefault();
         const droppedFile = event.dataTransfer.files[0];
         if (droppedFile) {
@@ -796,11 +939,14 @@ const handleDrop = (event) => {
             reader.onerror = () => {
                 if (folderDrop) return folderDrop = false;
                 folderDrop = true;
+                setState("error", "Folder detected", false);
                 return alert(`Folder dropping isn't yet supported by NotePlus`)
             };
             reader.readAsArrayBuffer(droppedFile);
+            setState("ready", "File loaded", false);
         }
     } catch (error) {
+        setState("error", "There was an error", false);
         console.error(error);
         return alert(`${error}`);
     }
@@ -808,11 +954,13 @@ const handleDrop = (event) => {
 
 
 Body.addEventListener("dragover", (event) => {
+    setState("info", "File detected", false);
     textInput.focus();
     event.preventDefault();
 });
 
 Body.addEventListener("dragleave", (event) => {
+    setState("ready", "Ready", false);
     event.preventDefault();
     textInput.blur();
 });
@@ -820,11 +968,13 @@ Body.addEventListener("dragleave", (event) => {
 Body.addEventListener("drop", handleDrop);
 
 mainElement.addEventListener("dragover", (event) => {
+    setState("info", "File detected", false);
     textInput.focus();
     event.preventDefault();
 });
 
 mainElement.addEventListener("dragleave", (event) => {
+    setState("ready", "Ready", false);
     event.preventDefault();
     textInput.blur();
 });
@@ -832,11 +982,13 @@ mainElement.addEventListener("dragleave", (event) => {
 mainElement.addEventListener("drop", handleDrop);
 
 textInput.addEventListener("dragover", (event) => {
+    setState("info", "File detected", false);
     textInput.focus();
     event.preventDefault();
 });
 
 textInput.addEventListener("dragleave", (event) => {
+    setState("info", "File detected", false);
     event.preventDefault();
     textInput.blur();
 });

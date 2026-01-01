@@ -11,6 +11,7 @@ const FILES_TO_CACHE = [
     '/public/js/search.js',
     '/public/js/themes.js',
     '/public/js/fetch.js',
+    '/public/js/ai.js',
     '/manifest.json',
     '/public/img/icon.png',
     'https://kit.fontawesome.com/f3220d5256.js' // Consider replacing this with a local copy
