@@ -9,7 +9,7 @@ const sendAiBtn = document.querySelector(".ai-ok");
 const aiInfo = document.querySelector(".ai-info");
 const aiReferenceData = document.querySelector("#data");
 
-const aiURL = `https://text.pollinations.ai/`;
+const aiURL = `https://gen.pollinations.ai/text`;
 
 const MIN_PROMPT_LENGTH = 3;
 const MAX_PROMPT_LENGTH = 2000;
@@ -364,3 +364,4 @@ aiInput.addEventListener("keydown", (e) => {
         sendAiBtn.click();
     }
 });
+
