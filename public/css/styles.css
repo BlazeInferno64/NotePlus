@@ -1,10 +1,21 @@
 /*
-    Copyright (c) 2025 BlazeInferno64 --> https://github.com/blazeInferno64
+    Copyright (c) BlazeInferno64 --> https://github.com/blazeInferno64
 */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+
+@font-face {
+    font-family: "CartographItalic";
+    /* any name you choose */
+    src: url("./cartograph-regular-italic.woff2") format("woff2");
+    font-weight: normal;
+    /* adjust if you have multiple weights */
+    font-style: italic;
+    /* this matches your font style */
+}
 
 :root {
-    --ff: "Poppins", sans-serif
+    --ff: "Montserrat", sans-serif;
+    --ff2: "CartographItalic", "Monsterrat", sans-serif;
 }
 
 ::selection {
@@ -102,6 +113,12 @@ body {
     border-radius: .2rem;
     position: relative;
     z-index: 2;
+}
+
+.ai-btn,.set {
+    display: flex;
+    align-items: center;
+    gap: 5px;
 }
 
 .set,
@@ -233,6 +250,7 @@ body {
     align-items: center;
     justify-content: space-between;
     gap: 5px;
+
 }
 
 .edit-list ul li span div {
@@ -247,7 +265,6 @@ body {
     gap: 10px;
 }
 
-.app-options .optional .ai-btn {}
 
 .text {
     background: #eaeaea;
@@ -503,6 +520,9 @@ body {
     background: rgb(13, 138, 75);
     color: #fff;
     transition: all .1s ease-in-out;
+    display: flex;
+    align-items: center;
+    gap: 5px;
 }
 
 .replace:hover {
@@ -566,6 +586,15 @@ body {
     border-radius: .5rem;
     cursor: pointer;
     transition: all .1s ease-in-out;
+}
+
+.ai-head p,
+.fetch-head p,
+.srch-head p,
+.f-head p {
+    display: flex;
+    align-items: center;
+    gap: 5px;
 }
 
 .f-head .f-close:hover,
@@ -698,6 +727,9 @@ body {
     outline: none;
     border: none;
     border-radius: .3rem;
+    display: flex;
+    align-items: center;
+    gap: 5px;
 }
 
 .f-down {
@@ -727,6 +759,10 @@ body {
     font-size: 1.3rem;
     padding: .5rem 1rem;
     transition: all .1s ease-in-out;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
 }
 
 .f-down:hover {
@@ -780,13 +816,16 @@ body {
     border: 2px dashed #4b494d;
     border-radius: .3rem;
     font-size: 1rem;
-    cursor: pointer; /* Makes the whole box feel clickable */
+    cursor: pointer;
+    /* Makes the whole box feel clickable */
 }
 
 .ai-main .opt input[type="checkbox"] {
     cursor: pointer;
-    accent-color: #349057; /* Modern way to set green color */
-    width: 1.2rem;         /* Ensures checkbox matches text size */
+    accent-color: #349057;
+    /* Modern way to set green color */
+    width: 1.2rem;
+    /* Ensures checkbox matches text size */
     height: 1.2rem;
 }
 

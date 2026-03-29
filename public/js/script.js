@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2025 BlazeInferno64 --> https://github.com/blazeinferno64
+ * Copyright (c) 2026 BlazeInferno64 --> https://github.com/blazeinferno64
  */
 const textInput = document.querySelector(".text");
 
@@ -59,6 +59,8 @@ const replaceBtn = document.querySelector(".replace");
 const openFileInfoBtn = document.querySelector("#f-open");
 const closeSearchCardBtn = document.querySelector("#close-srch");
 
+const installNotePlusBtn = document.querySelector("#download-noteplus");
+const downloadOpt = document.querySelector("#download-Opt");
 
 const stateText = document.querySelector(".state");
 
@@ -66,12 +68,15 @@ const resultMatch = document.querySelector(".res");
 
 const imageIcon = document.querySelector("#im");
 
+const isPWA = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone;
+
 // Hide noscript message and show app body
 noScriptTag.classList.add("none");
 appBody.classList.remove("none");
 
 let hasUnsavedChanges = false;
 let fileType = "";
+
 
 /**
  * Ready
@@ -536,55 +541,53 @@ openBtn.addEventListener("click", async (e) => {
 });
 
 const readFile = async (file) => {
-    textInput.textContent = "";
+    textInput.textContent = ""; // Clear editor
     let totalChars = 0;
 
     try {
         const reader = file.stream().getReader();
-        const decoder = new TextDecoder();
+        const decoder = new TextDecoder("utf-8", {
+            fatal: false
+        });
 
-        let buffer = "";
+        // Use an array to collect chunks - joining an array is 
+        // faster than repeated string concatenation in many JS engines.
+        let contentChunks = [];
 
         while (true) {
             const { value, done } = await reader.read();
             if (done) break;
 
             const chunk = decoder.decode(value, { stream: true });
-            buffer += chunk;
+            contentChunks.push(chunk);
             totalChars += chunk.length;
-            setState("reading", `Reading… ${totalChars} chars`, false);
 
-            // Flush in batches to avoid DOM thrashing
-            if (buffer.length > 500_000) { // ~500 KB
-                textInput.textContent += buffer;
-                buffer = "";
+            setState("reading", `Reading… ${(totalChars / 1024).toFixed(1)} KB`, false);
 
-                setState("reading", `Reading… ${buffer.length} bytes`, false);
+            // Batch update UI every ~1MB to keep the user informed 
+            // without killing performance
+            if (totalChars % 1048576 < value.length) {
                 wordsCount.textContent = `Total Characters: ${totalChars}`;
                 await new Promise(requestAnimationFrame);
             }
         }
 
-        // Flush remaining data
-        buffer += decoder.decode();
-        if (buffer) {
-            textInput.textContent += buffer;
-        }
+        // Final Render: Join everything once. 
+        // This is much faster than += inside the loop.
+        textInput.textContent = contentChunks.join("");
 
-        wordsCount.textContent = `Total Words: ${totalChars}`;
         handleFileComplete();
-
-        setState("reading", `File loaded`, false);
+        wordsCount.textContent = `Total Words: ${totalChars}`;
+        setState("ready", "File loaded", false);
 
     } catch (err) {
-        setState("error", "There was an error", false);
-
-        console.error(`Error reading file '${file.name}':`, err);
-        alert(`Failed to read file '${file.name}'`);
+        setState("error", "Error reading file", false);
+        console.error(err);
     }
 };
 
 
+/*
 let buffer = "";
 // Function to process a chunk of file content
 const processChunk = (chunk) => {
@@ -601,7 +604,7 @@ const processChunk = (chunk) => {
     // Update the text input with the chunk
     textInput.innerText += chunk;
     wordsCount.innerText = `Total Words: ${textInput.innerText.length}`;
-};
+};*/
 
 // Function to handle file completion
 const handleFileComplete = () => {
@@ -818,7 +821,7 @@ reportIssuesBtn.addEventListener("click", async (e) => {
 // Any further changes to NotePlus in future will be updated here
 const about = {
     Name: "NotePlus",
-    Version: '5.0',
+    Version: '5.5',
     Developer: "BlazeInferno64",
     Platform: detectBrowser(),
     OS: detectOS(),
@@ -1068,7 +1071,240 @@ window.addEventListener("beforeunload", (e) => {
     }
 });
 
+let deferredPrompt = null;
+let isAppInstalled = false;
+let beforeInstallPromptHandled = false;
+
+// Check if app was uninstalled
+function checkIfAppUninstalled() {
+    // If beforeinstallprompt fires and we think app is installed, it means it was uninstalled
+    if (isAppInstalled && beforeInstallPromptHandled) {
+        console.warn('✗ App appears to have been uninstalled!');
+        isAppInstalled = false;
+        beforeInstallPromptHandled = false;
+        localStorage.removeItem("isAppInstalled"); // Clear localStorage
+        installNotePlusBtn.style.display = 'block'; // Show download button again
+        console.log('[App] Cleared isAppInstalled from localStorage');
+    }
+}
+
 window.addEventListener("beforeinstallprompt", (e) => {
-    console.log("App is ready for the installation process!");
-    console.warn(`If changes aren't available the please try to clear this site's data and reload the page again!`);
+    e.preventDefault();
+
+    // Check for uninstall
+    checkIfAppUninstalled();
+
+    deferredPrompt = e;
+
+    if (!beforeInstallPromptHandled) {
+        beforeInstallPromptHandled = true;
+        installNotePlusBtn.style.display = 'block'; // Show download button
+        console.log("✓ App is ready for the installation process!");
+        console.warn(`If changes aren't available then please try to clear this site's data and reload the page again!`);
+    }
+});
+
+installNotePlusBtn.addEventListener("click", async (e) => {
+    if (isAppInstalled) {
+        console.log("App is already installed! Checking for updates...");
+
+        // Check for updates
+        if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+            navigator.serviceWorker.controller.postMessage({ type: 'CHECK_FOR_UPDATES' });
+
+            // Show a checking message
+            const originalText = installNotePlusBtn.innerHTML;
+            installNotePlusBtn.innerHTML = '<span><p><i class="fa-solid fa-spinner fa-spin"></i>  Checking for updates...</p></span>';
+
+            // Reset button text after 3 seconds
+            setTimeout(() => {
+                installNotePlusBtn.innerHTML = originalText;
+                return alert(`No updates found!\nYou're already on the latest version of Blaze Audio Player!`);
+            }, 3000);
+        } else {
+            console.warn("Service Worker not available for update check");
+            alert("Unable to check for updates. Please refresh the page!");
+        }
+        return;
+    }
+
+    if (deferredPrompt !== null) {
+        deferredPrompt.prompt();
+        const choiceResult = await deferredPrompt.userChoice;
+        if (choiceResult.outcome === 'accepted') {
+            console.log('User accepted the install prompt');
+            isAppInstalled = true;
+            //downloadAppBtn.style.display = 'none';
+            localStorage.setItem("isAppInstalled", "true");
+        } else {
+            console.log('User dismissed the install prompt');
+            isAppInstalled = false;
+            deferredPrompt = null;
+            localStorage.setItem("isAppInstalled", "false");
+        }
+    }
 })
+
+
+window.addEventListener("appinstalled", (e) => {
+    isAppInstalled = true;
+    //installNotePlusBtn.innerHTML = '<span><i class="fa-solid fa-spinner fa-spin"></i> <p> Check for updates</p></span>';
+    //downloadAppBtn.style.display = 'none'; // Hide download button after installation
+    localStorage.setItem("isAppInstalled", "true"); // Persist to localStorage
+    console.info("✓ NotePlus has been installed successfully on your device as a standalone app!\nLaunch it from your operating system's app menu!");
+    alert(`Thank you for installing NotePlus!\nYou can now launch it from your device's app menu.\nEnjoy your premium writing/editing experience for free!`);
+    deferredPrompt = null;
+    installNotePlusBtn.style.display = 'none'; // Hide install button if already in PWA mode
+
+})
+
+// Periodic check for uninstall (every 5 seconds when app reports as installed)
+setInterval(() => {
+    const storedInstallState = localStorage.getItem("isAppInstalled");
+
+    if (storedInstallState === "true") {
+        // App was installed according to localStorage
+        // Check if we're still in standalone mode
+        const isStandalone = window.navigator.standalone === true ||
+            window.matchMedia('(display-mode: standalone)').matches;
+
+        // If NOT in standalone mode and app is NOT running in PWA, check via beforeinstallprompt
+        // If beforeinstallprompt can fire, app must be uninstalled
+        if (!isStandalone && !beforeInstallPromptHandled) {
+            console.warn('✗ App may have been uninstalled - no longer in standalone mode');
+            isAppInstalled = false;
+            localStorage.removeItem("isAppInstalled");
+            //downloadAppBtn.style.display = 'block';
+        }
+    }
+}, 5000);
+
+// Service Worker Update Management
+let updateRefreshScheduled = false;
+
+// Check for updates when app loads
+window.addEventListener('load', () => {
+    if (isPWA) {
+        installNotePlusBtn.style.display = 'none'; // Hide install button if already in PWA mode
+    }
+    // Register service worker if not already registered
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('./service-worker.js')
+            .then(registration => {
+                console.log('[App] Service Worker registered successfully');
+
+                // Check for updates immediately when app loads
+                if (registration.controller) {
+                    registration.controller.postMessage({ type: 'CHECK_FOR_UPDATES' });
+                }
+
+                // Optional: Check for updates every 30 seconds
+                setInterval(() => {
+                    if (registration.controller) {
+                        registration.controller.postMessage({ type: 'CHECK_FOR_UPDATES' });
+                    }
+                }, 30000);
+            })
+            .catch(error => {
+                console.error('[App] Service Worker registration failed:', error);
+            });
+    }
+
+    // Listen for update notifications from the service worker
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.addEventListener('message', (event) => {
+            if (event.data && event.data.type === 'UPDATE_AVAILABLE') {
+                console.log('[App] Update available:', event.data.message);
+
+                // Show update notification to user
+                showUpdateNotification();
+            }
+
+            // Handle installation complete message
+            if (event.data && event.data.type === 'INSTALLATION_COMPLETE') {
+                console.log('[App] Installation complete:', event.data.message);
+
+                // Show installation complete alert to user
+                showInstallationCompleteAlert(event.data.version);
+            }
+        });
+    }
+});
+
+// Add this event listener to your script.js
+window.addEventListener('swUpdateAvailable', () => {
+    showUpdateNotification();
+});
+
+// Function to show update notification
+function showUpdateNotification() {
+    if (updateRefreshScheduled) return;
+    updateRefreshScheduled = true;
+
+    const userConfirmed = confirm(
+        'A new version of NotePlus is available!\n' +
+        'Click OK to update and apply the changes now!'
+    );
+
+    if (userConfirmed) {
+        // Find the waiting worker and tell it to take over
+        navigator.serviceWorker.getRegistration().then(reg => {
+            if (reg && reg.waiting) {
+                reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+            } else {
+                alert(`Applying update...`);
+                setTimeout(() => {
+                    return window.location.reload();
+                }, 2000);
+                //window.location.reload();
+            }
+        });
+    } else {
+        updateRefreshScheduled = false;
+    }
+}
+
+let shown = false;
+
+// Function to show installation complete notification
+function showInstallationCompleteAlert(version) {
+    // Show alert that installation is complete
+    if (!shown) {
+        alert(
+            `NotePlus ${version} is ready!\n` +
+            'The app has been updated successfully!\n' +
+            'Applying changes...'
+        );
+        shown = true;
+        // Reset flag after 2 seconds
+        setTimeout(() => {
+            shown = false;
+        }, 2000);
+    }
+}
+
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.addEventListener('message', (event) => {
+        if (event.data.type === 'UPDATE_AVAILABLE') {
+            showUpdateNotification();
+        }
+
+        if (event.data.type === 'NO_UPDATE_FOUND') {
+            // Reset button text
+            if (isPWA) {
+                alert(`No updates found!\nYou're already on the latest version of NotePlus!`);
+                console.log('[App] No update found - app is on the latest version');
+            }
+        }
+
+        if (event.data.type === 'INSTALLATION_COMPLETE') {
+            showInstallationCompleteAlert(event.data.version);
+        }
+    });
+
+    // Listen for controller change (when service worker updates)
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+        console.log('[App] Service worker controller changed - new version is now active');
+        window.location.reload();
+    });
+}

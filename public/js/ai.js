@@ -9,9 +9,9 @@ const sendAiBtn = document.querySelector(".ai-ok");
 const aiInfo = document.querySelector(".ai-info");
 const aiReferenceData = document.querySelector("#data");
 
-const aiURL = `https://gen.pollinations.ai/text/`;
+const aiURL = `https://blazed-ai.vercel.app/api/p?format=text`;
 
-const MIN_PROMPT_LENGTH = 3;
+const MIN_PROMPT_LENGTH = 5;
 const MAX_PROMPT_LENGTH = 2000;
 const MAX_TOTAL_PROMPT_LENGTH = 5000;
 
@@ -124,10 +124,6 @@ const validateAiInput = (value) => {
         return "Prompt is too short.";
     }
 
-    if (prompt.length > MAX_PROMPT_LENGTH) {
-        return "Prompt is too long.";
-    }
-
     return null; // valid
 };
 
@@ -151,29 +147,9 @@ ${editorContent}
 
     // First build (with reference if checked)
     let finalPrompt = `
-${basePrompt}
 ${referenceBlock}
 ${userBlock}
 `.trim();
-
-    // Enforce 5000 character limit
-    if (finalPrompt.length > MAX_TOTAL_PROMPT_LENGTH) {
-        // Auto-uncheck reference
-        if (aiReferenceData?.checked) {
-            aiReferenceData.checked = false;
-        }
-
-        // Rebuild WITHOUT reference
-        finalPrompt = `
-${basePrompt}
-${userBlock}
-`.trim();
-
-        aiInfo.classList.add("err");
-        aiInfo.classList.remove("ok");
-        aiInfo.innerText =
-            "Reference data were removed because the prompt exceeded 5000 characters.";
-    }
 
     return finalPrompt;
 };
@@ -203,54 +179,48 @@ aiReferenceData?.addEventListener("change", () => {
 
     const testPrompt = buildPrompt(aiInput.value || "");
 
-    if (testPrompt.length > MAX_TOTAL_PROMPT_LENGTH) {
-        aiReferenceData.checked = false;
 
-        aiInfo.classList.add("err");
-        aiInfo.classList.remove("ok");
-        aiInfo.innerText =
-            "Cannot include reference data — total prompt would exceed 5000 characters!";
-    }
 });
 
 aiInput.addEventListener("input", (e) => {
     const totalLength = getTotalPromptLength(aiInput.value || "");
 
-    if (totalLength > MAX_TOTAL_PROMPT_LENGTH) {
-        aiInfo.classList.add("err");
-        aiInfo.classList.remove("ok");
-        aiInfo.innerText =
-            `Total prompt length exceeded (${totalLength}/${MAX_TOTAL_PROMPT_LENGTH})!`;
-    } else {
-        aiInfo.innerText = "Generation not started!";
-        aiInfo.classList.remove("err");
-    }
+    aiInfo.innerText = "Generation not started!";
+    aiInfo.classList.remove("err");
+    aiInfo.classList.remove("ok");
 })
 
 
-const cleanThis = (text) => {
-    return text
-        // Remove Support Pollinations section (markdown)
-        .replace(/---\s*\n?\*\*Support Pollinations\.AI:\*\*\s*\n?\s*---/gi, "")
-
-        // Remove ad block with flower emoji
-        .replace(/🌸\s*\*\*Ad\*\*\s*🌸[\s\S]*?accessible for everyone\./gi, "")
-        .trim();
-};
-
-
 const getAiResponse = async (prompt) => {
+    const getAuth = () => {
+        const encoded = "oynmrq-pber-dhnaghz-frpher-npprff-i1-2026";
+
+        return encoded.replace(/[a-zA-Z]/g, (c) =>
+            String.fromCharCode((c <= "Z" ? 90 : 122) >= (c = c.charCodeAt(0) + 13) ? c : c - 26)
+        );
+    };
+
+    const AUTH_KEY = getAuth();
     try {
         setState("fetching", "Generating...", false);
 
         const finalPrompt = buildPrompt(prompt);
-        const response = await fetch(
-            `${aiURL}${encodeURIComponent(finalPrompt)}`,
-            { mode: "cors" }
-        );
+        const response = await fetch(aiURL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-Authortisation": AUTH_KEY
+            },
+            body: JSON.stringify({
+                prompt: finalPrompt,
+                role: myPrompt.trim(), // Send the base prompt as role for better context
+                temperature: 0.9,
+            })
+        })
 
         if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            const err = await response.json();
+            throw new Error(err.message || `HTTP error! status: ${response.status}`);
         }
 
         // Reset / prepare editor
@@ -262,43 +232,24 @@ const getAiResponse = async (prompt) => {
 
         const reader = response.body.getReader();
         const decoder = new TextDecoder();
-
-        let totalChars = 0;
-        let buffer = "";
+        let aiResponse = "";
 
         while (true) {
-            const { value, done } = await reader.read();
+            const { done, value } = await reader.read();
             if (done) break;
 
             const chunk = decoder.decode(value, { stream: true });
-            buffer += chunk;
-            totalChars += chunk.length;
 
-            // Flush occasionally to avoid DOM thrashing
-            if (buffer.length > 500_000) { // ~500 KB
-                textInput.textContent += buffer;
-                buffer = "";
-
-                scrollEditorToBottom();
-                // Yield to UI thread
-                await new Promise(requestAnimationFrame);
-            }
+            textInput.textContent += chunk;
+            aiResponse += chunk;
         }
-
-        // Flush remaining data
-        buffer += decoder.decode();
-        if (buffer) {
-            const clean = cleanThis(buffer)
-            textInput.textContent += clean;
-            scrollEditorToBottom();
-        };
-
-        textInput.textContent = cleanThis(textInput.textContent);
         scrollEditorToBottom();
-        
+
         aiInfo.innerText = "AI response completed!";
         setState("ready", "Ready", false);
         wordsCount.innerText = `Total Words: ${textInput.textContent.length}`;
+        return aiResponse.trim();
+
     } catch (error) {
         setState("error", "There was an error", false);
         aiInfo.classList.add("err");
@@ -364,5 +315,3 @@ aiInput.addEventListener("keydown", (e) => {
         sendAiBtn.click();
     }
 });
-
-

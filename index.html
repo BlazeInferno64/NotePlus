@@ -1,4 +1,4 @@
-<!-- Copyright (c) 2025 BlazeInferno64 -> https://github.com/blazeinferno64 -->
+<!-- Copyright (c) 2026 BlazeInferno64 -> https://github.com/blazeinferno64 -->
 <!DOCTYPE html>
 <html lang="en">
 
@@ -14,13 +14,14 @@
     <title>NotePlus | Free Browser Based Text Editor Online</title>
     <link rel="stylesheet" href="./public/css/styles.css" />
     <link rel="manifest" href="./manifest.json" />
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     <link rel="shortcut icon"
         href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGAAAABgCAYAAADimHc4AAAACXBIWXMAAAsTAAALEwEAmpwYAAADKUlEQVR4nO2dwW7TQBCG9wJvYI40PcYcuVIkj3gEQPAA8CwQBDThxA3aXZB4A4pE4QUwqCAiApdKCVJ7IlmfimS0iQIRKdSurPxr7/9J/yXSqJ5/dma3qdVVihBCCCGEVEjaH1xP+4OR07vPX66GFg8n7Q++p/2v+UyDUWjxcP48/EyhxcNBG5CGWoDk2eSCGPvg7wTEZKWUehafaHtftsex8pWLj/Mzom0v0fanjwZKBfEut0TbTZer8olrL/Kzic525g+/8XSylMClJ+PCyW/4H//SqyIk2j5afPj1zmgpAffZ5a1JoeTXaxDvOkH5MvPnY8ep3TvIz98ZLiXgPot7hyca0K5LvLZHV56P2z6s/s3FBNbuDv+ZQKszPNGAtRrFu40Z7b9KTPbpuAR2P3z7/fCv35c3YLce8Xto/5VoO1l8qLg7a+Gb2/vTJJxubO0XHgFxveLHaP/VcZtYqzOaPvCiymyCrRrFe1eAeRJx93Dazk7t7kHpY2Bck3gvCxCSFBq0AcIC4E0QdgDeCAEJPYE4gtCgV6CwA/AmCEcQ3ggBCT2BOILQoFegsAPKmXDu9ts8uvXGW0nTRxALUDEsABgWAMypNkHtsUzD94CmSaFBGyAsAN4EYQcUNwF9zo/+I3dEbvwIQpscsQB4oyN2AN7sKNQR1KTfAaSWBWiYFBq0AcIC4E0QdkBxE067QYoHZjdiBLEAFcMCgGEBwJSemys8owv3ALxBwk0Yb5LwFNRcKTRoA4QFwJsg7AC8EQISegJxBKFBr0BhB+BNEI6g4iag/+wYVfztKnoC1fatCGEBWAB2gAlwBMHffNDVfruK9p/HUDToY6DwGIo3QYBCN4A3x1Cp4OcE8WoiC1AxLAAYFgBM6Y1rVed6zbej4ScU4Smo+VJo0AYIC4A3QdgBeCMEJB9G0BhtgoCUmOyHd/++PjDtof1X7sYkD4zIQbrn3RUmwUh7coWJw11fBTfErFaJsQ+VL7grnRKTvQrGfJ3teHWN1fwuMTG22+hxpO2RW/nemb+Iu+5vujHr7GNirK39ajfTHPa8v8qQEEIIIYQQQghRdeAXSgE1XtbGmzEAAAAASUVORK5CYII="
         type="image/x-icon">
     <link rel="apple-touch-icon" sizes="180x180"
         href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGAAAABgCAYAAADimHc4AAAACXBIWXMAAAsTAAALEwEAmpwYAAADKUlEQVR4nO2dwW7TQBCG9wJvYI40PcYcuVIkj3gEQPAA8CwQBDThxA3aXZB4A4pE4QUwqCAiApdKCVJ7IlmfimS0iQIRKdSurPxr7/9J/yXSqJ5/dma3qdVVihBCCCGEVEjaH1xP+4OR07vPX66GFg8n7Q++p/2v+UyDUWjxcP48/EyhxcNBG5CGWoDk2eSCGPvg7wTEZKWUehafaHtftsex8pWLj/Mzom0v0fanjwZKBfEut0TbTZer8olrL/Kzic525g+/8XSylMClJ+PCyW/4H//SqyIk2j5afPj1zmgpAffZ5a1JoeTXaxDvOkH5MvPnY8ep3TvIz98ZLiXgPot7hyca0K5LvLZHV56P2z6s/s3FBNbuDv+ZQKszPNGAtRrFu40Z7b9KTPbpuAR2P3z7/fCv35c3YLce8Xto/5VoO1l8qLg7a+Gb2/vTJJxubO0XHgFxveLHaP/VcZtYqzOaPvCiymyCrRrFe1eAeRJx93Dazk7t7kHpY2Bck3gvCxCSFBq0AcIC4E0QdgDeCAEJPYE4gtCgV6CwA/AmCEcQ3ggBCT2BOILQoFegsAPKmXDu9ts8uvXGW0nTRxALUDEsABgWAMypNkHtsUzD94CmSaFBGyAsAN4EYQcUNwF9zo/+I3dEbvwIQpscsQB4oyN2AN7sKNQR1KTfAaSWBWiYFBq0AcIC4E0QdkBxE067QYoHZjdiBLEAFcMCgGEBwJSemys8owv3ALxBwk0Yb5LwFNRcKTRoA4QFwJsg7AC8EQISegJxBKFBr0BhB+BNEI6g4iag/+wYVfztKnoC1fatCGEBWAB2gAlwBMHffNDVfruK9p/HUDToY6DwGIo3QYBCN4A3x1Cp4OcE8WoiC1AxLAAYFgBM6Y1rVed6zbej4ScU4Smo+VJo0AYIC4A3QdgBeCMEJB9G0BhtgoCUmOyHd/++PjDtof1X7sYkD4zIQbrn3RUmwUh7coWJw11fBTfErFaJsQ+VL7grnRKTvQrGfJ3teHWN1fwuMTG22+hxpO2RW/nemb+Iu+5vujHr7GNirK39ajfTHPa8v8qQEEIIIYQQQghRdeAXSgE1XtbGmzEAAAAASUVORK5CYII=" />
     <script defer src="https://kit.fontawesome.com/f3220d5256.js" crossorigin="anonymous"></script>
-    <script defer src="./service-worker.js"></script>
 </head>
 
 <body>
@@ -50,7 +51,9 @@
                             <li id="new-win" title="Creates a new Untitled NotePlus window as a seperate tab">
                                 <span>
                                     <p>
-                                        <i class="fa-regular fa-pen-to-square"></i> New Tab
+                                        <i class="material-symbols-outlined">
+                                            new_window
+                                        </i> New Tab
                                     </p>
                                     <p>
                                         Ctrl + Alt + P
@@ -60,7 +63,9 @@
                             <li id="new-doc" title="Creates a new Untitled NotePlus Document">
                                 <span>
                                     <p>
-                                        <i class="fa-regular fa-pen-to-square"></i> New
+                                        <i class="material-symbols-outlined">
+                                            new_window
+                                        </i> New
                                     </p>
                                     <p>
                                         Ctrl + Alt + J
@@ -70,7 +75,9 @@
                             <li id="open-file" title="Opens a file from your system">
                                 <span>
                                     <p>
-                                        <i class="fa-regular fa-file-lines"></i> Open
+                                        <i class="material-symbols-outlined">
+                                            file_open
+                                        </i> Open
                                     </p>
                                     <p>
                                         Ctrl + Alt + O
@@ -80,7 +87,9 @@
                             <li id="sv" title="Directly saves a copy of the current active document to your device">
                                 <span>
                                     <p>
-                                        <i class="fa-regular fa-floppy-disk"></i> Save
+                                        <i class="material-symbols-outlined">
+                                            save
+                                        </i> Save
                                     </p>
                                     <p>
                                         Ctrl + M
@@ -91,7 +100,9 @@
                                 title="Saves the document to the device using the Web File Sytem Api, Browser compatibility might be limited">
                                 <span>
                                     <p>
-                                        <i class="fa-regular fa-floppy-disk"></i> Save as
+                                        <i class="material-symbols-outlined">
+                                            save_as
+                                        </i> Save as
                                     </p>
                                     <p>
                                         Ctrl + X
@@ -101,7 +112,9 @@
                             <li id="cl-tab" title="Closes the current active NotePlus Tab">
                                 <span>
                                     <p>
-                                        <i class="fa-solid fa-arrow-right-from-bracket"></i> Close Tab
+                                        <i class="material-symbols-outlined">
+                                            tab_close
+                                        </i> Close Tab
                                     </p>
                                     <p>
                                         Ctrl + Alt + F
@@ -111,7 +124,9 @@
                             <li id="f-open" title="Gets the file info">
                                 <span>
                                     <p>
-                                        <i class="fa-regular fa-file-code"></i> File Info
+                                        <i class="material-symbols-outlined">
+                                            file_json
+                                        </i> File Info
                                     </p>
                                     <p>
                                         Ctrl + Alt + K
@@ -121,7 +136,9 @@
                             <li id="fetch-open" title="Fetches text from a give URL">
                                 <span>
                                     <p>
-                                        <i class="fa-solid fa-link"></i> Fetch Text
+                                        <i class="material-symbols-outlined">
+                                            add_link
+                                        </i> Fetch
                                     </p>
                                     <p>
                                         Ctrl + Alt + L
@@ -131,7 +148,9 @@
                             <li id="ex" title="Exits the file tab">
                                 <span>
                                     <p>
-                                        <i class="fa-solid fa-arrow-right-from-bracket"></i> Exit
+                                        <i class="material-symbols-outlined">
+                                            exit_to_app
+                                        </i> Exit
                                     </p>
                                 </span>
                             </li>
@@ -148,7 +167,9 @@
                                 title="Copies all the text present inside the active document to the clipboard">
                                 <span>
                                     <p>
-                                        <i class="fa-regular fa-copy"></i> Copy
+                                        <i class="material-symbols-outlined">
+                                            file_copy
+                                        </i> Copy
                                     </p>
                                 </span>
                             </li>
@@ -156,28 +177,37 @@
                                 title="Pastes text from the clipboard, Requires Clipboard Access Permission">
                                 <span>
                                     <p>
-                                        <i class="fa-regular fa-clipboard"></i> Paste
+                                        <i class="material-symbols-outlined">
+                                            assignment
+                                        </i> Paste
                                     </p>
                                 </span>
                             </li>
                             <li id="srch" title="Search and Replace words across the document">
                                 <span>
                                     <p>
-                                        <i class="fa fa-search"></i> Search
+                                        <i class="material-symbols-outlined">
+                                            search
+                                        </i> Search
                                     </p>
                                 </span>
                             </li>
                             <li id="read-txt" title="Reads the current text(if any)">
                                 <span>
                                     <div class="rd">
-                                        <i class="fa-solid fa-headphones"></i> <p id="rd-txt">Read</p>
+                                        <i class="material-symbols-outlined">
+                                            headset_mic
+                                        </i>
+                                        <p id="rd-txt">Read</p>
                                     </div>
                                 </span>
                             </li>
                             <li id="sel-all" title="Selects all the text present inside the active document">
                                 <span>
                                     <p>
-                                        <i class="fa-solid fa-arrow-pointer"></i> Select All
+                                        <i class="material-symbols-outlined">
+                                            select_all
+                                        </i> Select All
                                     </p>
                                     <p>
                                         Ctrl + A
@@ -205,16 +235,29 @@
                             <li id="rp" title="Report Issues and Bugs related to NotePlus">
                                 <span>
                                     <p>
-                                        <i class="fa-solid fa-bug"></i> Report Issues/Bugs
+                                        <i class="material-symbols-outlined">
+                                            bug_report
+                                        </i> Report Issues/Bugs
                                     </p>
                                 </span>
                             </li>
                             <li id="vr" title="Get some info regarding the current version of NotePlus">
                                 <span>
                                     <p>
-                                        <i class="fa-solid fa-code-branch"></i> Version
+                                        <i class="material-symbols-outlined">
+                                            rebase
+                                        </i> Version
                                     </p>
                                     <p id="ver">
+                                    </p>
+                                </span>
+                            </li>
+                            <li id="download-noteplus" title="Download NotePlus">
+                                <span id="download-Opt">
+                                    <p>
+                                        <i class="material-symbols-outlined">
+                                            cloud_download
+                                        </i> Install NotePlus
                                     </p>
                                 </span>
                             </li>
@@ -224,11 +267,15 @@
             </ul>
             <div class="optional">
                 <span class="ai-btn" title="Click to interact with NotePlus AI Assistant">
-                    <i class="fa-solid fa-hexagon-nodes"></i>
+                    <i class="material-symbols-outlined">
+                        cognition_2
+                    </i>
                     Write with ai
                 </span>
                 <p id="theme" class="set" title="Toggle between Light & Dark theme">
-                    <i id="ico" class="fa-solid fa-circle-half-stroke"></i>
+                    <i id="ico" class="material-symbols-outlined">
+                        brightness_4
+                    </i>
                     <span class="t">
                         Light Mode
                     </span>
@@ -256,7 +303,9 @@
                         </p>
                     </span>
                     <span class="enc">
-                        <i class="fa-solid fa-code"></i>
+                        <span class="material-symbols-outlined">
+                            code_xml
+                        </span>
                         <p id="encoding" title="Encoding type">
                             text/plain
                         </p>
@@ -270,6 +319,9 @@
         <div class="srch-card up hide">
             <div class="srch-head">
                 <p>
+                    <i class="material-symbols-outlined">
+                        search
+                    </i>
                     Search Words
                 </p>
                 <span id="close-srch" title="Close Search Menu">
@@ -296,6 +348,9 @@
                     No results found!
                 </p>
                 <button class="replace no" title="Replace the word">
+                    <i class="material-symbols-outlined">
+                        find_replace
+                    </i>
                     Replace
                 </button>
             </div>
@@ -306,7 +361,10 @@
         <div class="f-card up hide">
             <div class="f-head">
                 <p>
-                    File Info Viewer
+                    <i class="material-symbols-outlined">
+                        file_json
+                    </i>
+                    File Info
                 </p>
                 <span title="Close File Info" class="f-close">
                     &times;
@@ -316,10 +374,15 @@
                 <div class="f-info"></div>
                 <div class="f-btns">
                     <button class="f-copy" title="Copy all the file JSON data to your clipboard">
-                        <i class="fa fa-clipboard"></i> Copy
+                        <i class="material-symbols-outlined">
+                            file_copy
+                        </i> Copy
                     </button>
                     <button class="f-down" title="Download all the file JSON data as .json file">
-                        <i class="fa fa-download"></i> Download
+                        <i class="material-symbols-outlined">
+                            cloud_download
+                        </i> Download
+
                     </button>
                 </div>
             </div>
@@ -330,6 +393,9 @@
         <div class="fetch-card up hide">
             <div class="fetch-head">
                 <p>
+                    <i class="material-symbols-outlined">
+                        send
+                    </i>
                     Fetch text
                 </p>
                 <span title="Close Fetch" class="fetch-close">
@@ -347,7 +413,9 @@
                 <div class="fetch-info">HTTP request not sent!</div>
                 <div class="fetch-btns">
                     <button class="fetch-ok">
-                        <i class="fa fa-paper-plane"></i> Fetch text
+                        <i class="material-symbols-outlined">
+                            send
+                        </i> Fetch text
                     </button>
                 </div>
             </div>
@@ -358,7 +426,9 @@
         <div class="ai-card up hide">
             <div class="ai-head">
                 <p>
-                    <i class="fa-solid fa-hexagon-nodes"></i> NotePlus Assistant
+                    <i class="material-symbols-outlined">
+                        cognition_2
+                    </i> NotePlus Assistant
                 </p>
                 <span title="Close Ai Info" class="ai-close">
                     &times;
@@ -375,12 +445,14 @@
                 </div>
                 <div class="opt"
                     title="If text is present it will be sent to the Ai assistant for reference, which may provide a more accurate and relevant response" />
-                <input type="checkbox" name="Present data" id="data" /> Also include existing data (if any)
+                <input type="checkbox" name="Present data" id="data" checked /> Also include existing data (if any)
             </div>
             <div class="ai-info">Generation not started!</div>
             <div class="ai-btns">
                 <button class="ai-ok">
-                    <i class="fa-solid fa-hexagon-nodes-bolt"></i> Start Generating
+                    <i class="material-symbols-outlined">
+                        network_intel_node
+                    </i> Start Generating
                 </button>
             </div>
         </div>
@@ -390,13 +462,39 @@
     <script defer>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./service-worker.js')
+                navigator.serviceWorker.register('/service-worker.js')
                     .then(registration => {
-                        console.log('ServiceWorker registration successful with scope: ', registration.scope);
-                    })
-                    .catch(error => {
-                        console.log('ServiceWorker registration failed: ', error);
+                        console.log('SW registered:', registration.scope);
+
+                        // Check for updates manually on load
+                        if (registration.active) {
+                            registration.active.postMessage({ type: 'CHECK_FOR_UPDATES' });
+                        }
+
+                        // Handle the case where an update is already waiting
+                        if (registration.waiting) {
+                            window.dispatchEvent(new CustomEvent('swUpdateAvailable'));
+                        }
+
+                        // Listen for new updates found while the app is open
+                        registration.onupdatefound = () => {
+                            const installingWorker = registration.installing;
+                            installingWorker.onstatechange = () => {
+                                if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                    // Fire a custom event that script.js can listen to
+                                    window.dispatchEvent(new CustomEvent('swUpdateAvailable'));
+                                }
+                            };
+                        };
                     });
+            });
+
+            // Ensure the page reloads only once when the new worker takes control
+            let refreshing = false;
+            navigator.serviceWorker.addEventListener('controllerchange', () => {
+                if (refreshing) return;
+                refreshing = true;
+                window.location.reload();
             });
         }
     </script>
