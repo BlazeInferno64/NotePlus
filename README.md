@@ -31,7 +31,7 @@ Meanwhile, if you have feature requests suggestion please open up an issue at th
 
 # Note About Keyboard Shortcuts
 
-> At present, keyboard shortcuts are fully optimized and available for Windows OS (Though some may work on other OS!)  
+> At present, keyboard shortcuts are fully optimized and available for Windows OS (Though some may not work as intended on other OS except Windows!)  
 Support for Linux and macOS keyboard shortcuts will be added in future updates, so for that stay tuned!
 
 # Patch Notes
