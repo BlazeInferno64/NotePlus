@@ -25,7 +25,7 @@ https://blazeinferno64.github.io/NotePlus
 </a>
 
 # Status
-NotePlus Version 5.5 is under development, and would be released soon! 
+NotePlus Version 6.0 is under development, and would be released soon! 
 
 Meanwhile, if you have feature requests suggestion please open up an issue at the [NotePlus issue tracker](https://github.com/blazeinferno64/NotePlus/issues)!
 
