@@ -1,4 +1,4 @@
-# NotePlus Text Editor
+# NotePlus Text Editor 📝 
 
 <img src="https://img.shields.io/badge/NotePlus%20Text%20Editor-grey?style=for-the-badge&logo=javascript" />
 
