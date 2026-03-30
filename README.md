@@ -25,7 +25,7 @@ https://blazeinferno64.github.io/NotePlus
 </a>
 
 # Status
-NotePlus Version 6.0 is under development, and would be released soon! 
+NotePlus Version 6.5 is under development, and would be released soon! 
 
 Meanwhile, if you have feature requests suggestion please open up an issue at the [NotePlus issue tracker](https://github.com/blazeinferno64/NotePlus/issues)!
 
@@ -35,7 +35,7 @@ Meanwhile, if you have feature requests suggestion please open up an issue at th
 Support for Linux and macOS keyboard shortcuts will be added in future updates, so for that stay tuned!
 
 # Patch Notes
-NotePlus Version 5.5 is here!!!
+NotePlus Version 6.0 is here!!!
 
 1. **New Option Added**  
    You can now instantly create a new blank document by clicking the **`New`** option in the **File** tab or by pressing **`Ctrl + Alt + J`**.
