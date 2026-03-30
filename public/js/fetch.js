@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2025 BlazeInferno64 --> https://github.com/blazeinferno64
+ * Copyright (c) 2026 BlazeInferno64 --> https://github.com/blazeinferno64
  */
 const fetchBg = document.querySelector(".fetch-bg");
 const closeFetchCardBtn = document.querySelector(".fetch-close");
@@ -73,12 +73,14 @@ const fetchText = async (url) => {
     try {
         setState("fetching", "Fetching...", false);
         const validUrl = isValidURL(url);
-        const response = await fetch(validUrl,{
+        const response = await fetch(validUrl, {
             mode: "cors"
         });
 
         if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            const errText = await response.text();
+            console.error(`Fetch failed with status ${response.status}: ${errText}(${response.statusText})`);
+            throw new Error(errText || `HTTP error! status: ${response.status}(${response.statusText})!`);
         }
 
         /*if (response.status === 404) {
@@ -97,17 +99,19 @@ const fetchText = async (url) => {
         const decoder = new TextDecoder();
 
         let totalChars = 0;
-        let buffer = "";
-
+        //let buffer = "";
+        const isAtBottom = textInput.scrollHeight - textInput.scrollTop <= textInput.clientHeight + 50;
         while (true) {
             setState("ready", "Fetched successfully", false);
-            const { value, done } = await reader.read();
+            const { done, value } = await reader.read();
             if (done) break;
 
             const chunk = decoder.decode(value, { stream: true });
-            buffer += chunk;
+            //buffer += chunk;
             totalChars += chunk.length;
-
+            textInput.textContent += chunk;
+            //buffer = "";
+            /*
             // Flush occasionally to avoid DOM thrashing
             if (buffer.length > 500_000) { // ~500 KB
                 textInput.textContent += buffer;
@@ -115,16 +119,37 @@ const fetchText = async (url) => {
 
                 // Yield to UI thread
                 await new Promise(requestAnimationFrame);
+            }*/
+            if (isAtBottom) {
+                scrollEditorToBottom();
             }
         }
+        //scrollEditorToBottom();
+        //textInput.focus();
 
         // Flush remaining data
-        buffer += decoder.decode();
-        if (buffer) textInput.textContent += buffer;
+        //buffer += decoder.decode();
+        //if (buffer) textInput.textContent += buffer;
 
         fetchInfo.innerText = `Loaded text successfully from '${url}'!`;
         closeFetchMenu();
+        setTimeout(() => {
+            const scrollX = window.scrollX;
+            const scrollY = window.scrollY;
+
+            textInput.focus({ preventScroll: true });
+
+            const range = document.createRange();
+            const sel = window.getSelection();
+            range.selectNodeContents(textInput);
+            range.collapse(false); // Move to end
+            sel.removeAllRanges();
+            sel.addRange(range);
+            window.scrollTo(scrollX, scrollY);
+        }, 300);
+
         setState("ready", "Ready", false);
+        wordsCount.innerText = `Total Chars: ${totalChars}`;
 
     } catch (error) {
         setState("error", "There was an error", false);

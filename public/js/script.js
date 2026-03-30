@@ -358,7 +358,7 @@ document.addEventListener("DOMContentLoaded", (e) => {
     browserName.innerText = name;
     // Set browser icons
     setBrowserIcon(name);
-    wordsCount.innerText = `Total Words: ${textInput.innerText.length}`;
+    wordsCount.innerText = `Total Chars: ${textInput.innerText.length}`;
     textInput.focus();
 
     // Check if browser supports Web File System API
@@ -388,7 +388,7 @@ mainElement.addEventListener("click", (e) => {
 // Event listener for textInput changes
 textInput.addEventListener("input", (e) => {
     const count = e.target.textContent.length;
-    wordsCount.innerText = `Total Words: ${count}`;
+    wordsCount.innerText = `Total Chars: ${count}`;
     hasUnsavedChanges = true;
     setState("typing", "Typing…", true);
 });
@@ -567,7 +567,7 @@ const readFile = async (file) => {
             // Batch update UI every ~1MB to keep the user informed 
             // without killing performance
             if (totalChars % 1048576 < value.length) {
-                wordsCount.textContent = `Total Characters: ${totalChars}`;
+                wordsCount.textContent = `Total Chars: ${totalChars}`;
                 await new Promise(requestAnimationFrame);
             }
         }
@@ -577,7 +577,7 @@ const readFile = async (file) => {
         textInput.textContent = contentChunks.join("");
 
         handleFileComplete();
-        wordsCount.textContent = `Total Words: ${totalChars}`;
+        wordsCount.textContent = `Total Chars: ${totalChars}`;
         setState("ready", "File loaded", false);
 
     } catch (err) {
@@ -821,7 +821,7 @@ reportIssuesBtn.addEventListener("click", async (e) => {
 // Any further changes to NotePlus in future will be updated here
 const about = {
     Name: "NotePlus",
-    Version: '5.5',
+    Version: '6.0',
     Developer: "BlazeInferno64",
     Platform: detectBrowser(),
     OS: detectOS(),

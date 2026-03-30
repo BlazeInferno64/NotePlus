@@ -79,7 +79,7 @@ const replaceWord = (string, oldWord, newWord) => {
         throw new Error(`No matches found for the word '${oldWord}' in the text!`);
     }
 
-    wordsCount.innerText = `Total Words: ${string.length}`;
+    wordsCount.innerText = `Total Chars: ${string.length}`;
     resultMatch.innerText = `Replaced ${matches.length} occurrences`;
     return string.replace(regex, newWord);
 };

@@ -218,6 +218,10 @@ const getAiResponse = async (prompt) => {
             })
         })
 
+        if (response.status === 429) {
+            throw new Error(`⚠️ Warning: Rate limit exceeded! You may make atmost 15 ai generation requests per minute! Please try again after sometime!`);
+        }
+
         if (!response.ok) {
             const err = await response.json();
             throw new Error(err.message || `HTTP error! status: ${response.status}`);
@@ -234,6 +238,8 @@ const getAiResponse = async (prompt) => {
         const decoder = new TextDecoder();
         let aiResponse = "";
 
+        const isAtBottom = textInput.scrollHeight - textInput.scrollTop <= textInput.clientHeight + 50;
+
         while (true) {
             const { done, value } = await reader.read();
             if (done) break;
@@ -242,12 +248,29 @@ const getAiResponse = async (prompt) => {
 
             textInput.textContent += chunk;
             aiResponse += chunk;
+            if (isAtBottom) {
+                scrollEditorToBottom();
+            }
         }
-        scrollEditorToBottom();
+
+        setTimeout(() => {
+            const scrollX = window.scrollX;
+            const scrollY = window.scrollY;
+
+            textInput.focus({ preventScroll: true });
+
+            const range = document.createRange();
+            const sel = window.getSelection();
+            range.selectNodeContents(textInput);
+            range.collapse(false); // Move to end
+            sel.removeAllRanges();
+            sel.addRange(range);
+            window.scrollTo(scrollX, scrollY);
+        }, 300);
 
         aiInfo.innerText = "AI response completed!";
         setState("ready", "Ready", false);
-        wordsCount.innerText = `Total Words: ${textInput.textContent.length}`;
+        wordsCount.innerText = `Total Chars: ${textInput.textContent.length}`;
         return aiResponse.trim();
 
     } catch (error) {

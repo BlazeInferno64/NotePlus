@@ -1,5 +1,5 @@
 // Define a cache name with version
-const VERSION = 'v5.5'; // Increment this to force cache update (v1, v2, v3, etc.)
+const VERSION = 'v6.0'; // Increment this to force cache update (v1, v2, v3, etc.)
 const CACHE_NAME = `NotePlus ${VERSION}`;
 
 // List of files to cache
