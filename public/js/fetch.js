@@ -71,9 +71,10 @@ const isValidURL = (url) => {
 }
 const fetchText = async (url) => {
     try {
-        setState("fetching", "Fetching...", false);
         const validUrl = isValidURL(url);
-        const response = await fetch(validUrl, {
+        const proxyUrl = `https://blaze-proxy-server.vercel.app/api/proxy?url=${encodeURIComponent(validUrl)}`;
+        setState("fetching", "Fetching...", false);
+        const response = await fetch(proxyUrl, {
             mode: "cors"
         });
 
