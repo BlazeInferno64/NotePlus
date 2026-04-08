@@ -1237,6 +1237,32 @@ window.addEventListener("beforeunload", (e) => {
     }
 });
 
+if ('launchQueue' in window) {
+    window.launchQueue.setConsumer(async (launchParams) => {
+        if (launchParams.files && launchParams.files.length > 0) {
+            const fileHandle = launchParams.files[0];
+            const file = await fileHandle.getFile();
+
+            resetPopupMsg();
+            changePopupMsg(`Opening file from operating system...`);
+            openPopup();
+            setState("reading", "Opening from OS...", false);
+
+            await parseFile(file);
+            await readFile(file);
+
+            activeFileName.innerText = file.name ? `${file.name} - NotePlus` : `Untitled - NotePlus`;
+            fileType = file.type;
+            resetPopupMsg();
+            changePopupMsg(`File opened successfully from operating system! If any issues occur then please refresh this page and try to open the file again!`);
+            openPopup();
+            setState("ready", "File loaded", false);
+            console.log(`[Launch] Opened file: ${file.name}`);
+        }
+    })
+
+}
+
 let deferredPrompt = null;
 let isAppInstalled = false;
 let beforeInstallPromptHandled = false;

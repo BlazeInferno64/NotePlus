@@ -7,16 +7,54 @@
   "display": "standalone",
   "background_color": "#000000",
   "theme_color": "#000000",
-    "icons": [
-      {
-        "src": "/public/img/icon512.png",
-        "sizes": "192x192",
-        "type": "image/png"
-      },
-      {
-        "src": "/public/img/icon512.png",
-        "sizes": "512x512",
-        "type": "image/png"
+  "icons": [
+    {
+      "src": "/public/img/icon512.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/public/img/icon512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "file_handlers": [
+    {
+      "action": "./index.html",
+      "name": "Text Files",
+      "accept": {
+        "text/plain": [
+          ".txt",
+          ".md",
+          ".log",
+          ".conf",
+          ".ini",
+          ".env"
+        ],
+        "text/javascript": [
+          ".js",
+          ".jsx",
+          ".ts",
+          ".tsx"
+        ],
+        "text/css": [
+          ".css",
+          ".scss",
+          ".sass",
+          ".less"
+        ],
+        "text/html": [
+          ".html",
+          ".htm",
+          ".vue",
+          ".svelte"
+        ],
+        "application/json": [
+          ".json",
+          ".prettierrc"
+        ]
       }
-    ]
+    }
+  ]
 }
