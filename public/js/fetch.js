@@ -71,6 +71,9 @@ const isValidURL = (url) => {
 }
 const fetchText = async (url) => {
     try {
+        resetPopupMsg();
+        changePopupMsg(`Fetching text from ${url}...`);
+        openPopup();
         const validUrl = isValidURL(url);
         const proxyUrl = `https://blaze-proxy-server.vercel.app/api/proxy?url=${encodeURIComponent(validUrl)}`;
         setState("fetching", "Fetching...", false);
@@ -132,7 +135,7 @@ const fetchText = async (url) => {
         //buffer += decoder.decode();
         //if (buffer) textInput.textContent += buffer;
 
-        fetchInfo.innerText = `Loaded text successfully from '${url}'!`;
+        fetchInfo.innerText = `Loaded text successfully from ${url}!`;
         closeFetchMenu();
         setTimeout(() => {
             const scrollX = window.scrollX;
@@ -149,6 +152,7 @@ const fetchText = async (url) => {
             window.scrollTo(scrollX, scrollY);
         }, 300);
 
+        changePopupMsg(`Loaded text successfully from ${url}!`);
         setState("ready", "Ready", false);
         wordsCount.innerText = `Total Chars: ${totalChars}`;
 
@@ -160,16 +164,25 @@ const fetchText = async (url) => {
         if (error instanceof TypeError) {
             if (!navigator.onLine) {
                 fetchInfo.innerText = "You are currently offline. Please check your internet connection!";
+                resetPopupMsg();
+                changePopupMsg(`You are currently offline. Please check your internet connection!`);
+                openPopup();
                 return console.warn(`HTTP request to ${url} failed you're offline!`)
             } else {
                 fetchInfo.innerText =
                     "Network request failed (possible CORS, DNS, or server issue). Check console for more info!";
                 console.error(`Fetch failed due to a network-level error (CORS policy, DNS resolution, server unavailability, or connection interruption)!`);
+                resetPopupMsg();
+                changePopupMsg(`Network request failed (possible CORS, DNS, or server issue). Please check the console for more information!`);
+                openPopup();
                 console.error(error);
                 return;
             }
         }
         fetchInfo.innerText = error.message || String(error);
+        resetPopupMsg();
+        changePopupMsg(`Error fetching from '${url}': \n\n${error.message || String(error)}. \n\nPlease check the console for more details!`, false);
+        openPopup();
         throw error;
     }
 };
@@ -212,7 +225,7 @@ fetchBtn.addEventListener("click", async (e) => {
         }*/
         setState("error", "There was an error", false);
         console.error(error);
-        alert(error.message);
+        //alert(error.message);
     }
 })
 

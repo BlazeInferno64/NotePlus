@@ -1,5 +1,5 @@
 // Define a cache name with version
-const VERSION = 'v6.0'; // Increment this to force cache update (v1, v2, v3, etc.)
+const VERSION = 'v7.0'; // Increment this to force cache update (v1, v2, v3, etc.)
 const CACHE_NAME = `NotePlus ${VERSION}`;
 
 // List of files to cache
@@ -12,6 +12,7 @@ const FILES_TO_CACHE = [
     '/public/js/search.js',
     '/public/js/themes.js',
     '/public/js/fetch.js',
+    '/public/js/popup.js',
     '/public/js/ai.js',
     '/manifest.json',
     '/public/img/icon.png',
@@ -163,6 +164,13 @@ self.addEventListener('message', (event) => {
     if (event.data && event.data.type === 'CHECK_FOR_UPDATES') {
         console.log('[Service Worker] Checking for updates...');
         checkForUpdates();
+    }
+});
+
+// To handle communication
+self.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'GET_VERSION') {
+        event.ports[0].postMessage({ version: VERSION });
     }
 });
 

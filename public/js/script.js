@@ -72,6 +72,7 @@ const isPWA = window.matchMedia('(display-mode: standalone)').matches || navigat
 
 // Hide noscript message and show app body
 noScriptTag.classList.add("none");
+noScriptTag.style.display = "none";
 appBody.classList.remove("none");
 
 let hasUnsavedChanges = false;
@@ -291,7 +292,10 @@ const saveFile = () => {
     link.click();
     URL.revokeObjectURL(link.href);
     link.remove();
-    alert(`File has been saved to the device. Please check your downloads folder.`);
+    //alert(`File has been saved to the device. Please check your downloads folder.`);
+    resetPopupMsg();
+    changePopupMsg(`File has been saved to the device. Please check your downloads folder.`);
+    openPopup();
     setState("ready", "Ready", false);
 }
 
@@ -300,6 +304,12 @@ const detectSearchQuery = () => {
     const urlParams = new URLSearchParams(window.location.search);
     const text = urlParams.get('text');
     const saveText = urlParams.get('save');
+
+    if (urlParams.has('newtab') && urlParams.get('newtab') === "true") {
+        resetPopupMsg();
+        changePopupMsg(`Successfully created a new tab with an untitled NotePlus window!`);
+        openPopup();
+    }
 
     if (!urlParams.has('text') && urlParams.toString() === "" && !urlParams.has('save')) {
         return;
@@ -353,6 +363,8 @@ const detectSearchQuery = () => {
 
 // Event listener when DOM content is loaded
 document.addEventListener("DOMContentLoaded", (e) => {
+    resetPopupMsg();
+    openPopup();
     setState("ready", "Ready");
     const name = detectBrowser();
     browserName.innerText = name;
@@ -363,8 +375,10 @@ document.addEventListener("DOMContentLoaded", (e) => {
 
     // Check if browser supports Web File System API
     if (!window.showSaveFilePicker) {
+        changePopupMsg(`Your version of ${detectBrowser()} doesn't currently supports the Web File System API. Some features may not work as intended. Please check browser compatibility at <a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/showSaveFilePicker#browser_compatibility" target="_blank">MDN Web Docs</a>.`, true);
+        openPopup();
         console.warn(`Your version of ${detectBrowser()} doesn't currently supports the Web File System API. Please check browser compatibility at https://developer.mozilla.org/en-US/docs/Web/API/Window/showSaveFilePicker#browser_compatibility.`);
-        alert(`Your version of ${detectBrowser()} currently doesn't supports the Web File System API. Some features may not work as intended. Please check the browser console for more information regarding the Web File System API compatibility issue.`);
+        //alert(`Your version of ${detectBrowser()} currently doesn't supports the Web File System API. Some features may not work as intended. Please check the browser console for more information regarding the Web File System API compatibility issue.`);
     }
 
     fileInfoViewer.textContent = `
@@ -461,12 +475,26 @@ helpBtn.addEventListener("click", (e) => {
 // Event listener for close tab btn
 closeTabBtn.addEventListener("click", async (e) => {
     setState("closeTab", "Closing the active tab...", false);
-    alert(`Current active tab of NotePlus has been successfully closed!`);
+
+    // Attempt to close the window
+    window.close();
+
+    // Check if the window is still open after a short delay
     setTimeout(() => {
-        window.close();
-        setState("ready", "Ready", false);
-    }, 300);
-})
+        if (!window.closed) {
+            // If it didn't close, it's likely a security restriction.
+            // Provide a fallback or instruction to the user.
+            resetPopupMsg();
+            changePopupMsg(
+                `Browser's security prevented NotePlus from closing this tab automatically. <br><br>` +
+                `Please close this tab manually or <a href="about:blank">click here to go to a blank page</a>.`,
+                true
+            );
+            openPopup();
+            setState("ready", "Ready", false);
+        }
+    }, 500);
+});
 
 // Event listener to close action, edit, and help lists when clicking outside
 document.addEventListener("click", (e) => {
@@ -513,18 +541,30 @@ newDocumentBtn.addEventListener("click", (e) => {
         const userChoice = prompt(`You have unsaved changes, do you wish to continue?\nType in Y for yes and N for no`);
         if (!userChoice) return;
         if (userChoice.toLocaleLowerCase() == "y") {
-            alert(`Successfully created a new untitled document!`);
+            //alert(`Successfully created a new untitled document!`);
+            resetPopupMsg();
+            changePopupMsg(`Successfully created a new untitled document!`);
+            openPopup();
             console.log(`New untitled document has been created!`);
             return createNewDocument();
         } else if (userChoice.toLocaleLowerCase() == "n") {
-            console.warn(`Abort Error: New untitled document creation was aborted!`);
-            return alert(`Abort Error: New untitled document creation was aborted`);
+            resetPopupMsg();
+            changePopupMsg(`Abort Error: New untitled document creation was aborted!`);
+            openPopup();
+            return console.warn(`Abort Error: New untitled document creation was aborted!`);
+            //return alert(`Abort Error: New untitled document creation was aborted`);
         } else {
             console.error(`Error: Unrecognized command provided: ${userChoice}`);
-            return alert(`Error: Unrecognized command provided: ${userChoice}`);
+            resetPopupMsg();
+            changePopupMsg(`Error: Unrecognized command provided: ${userChoice}`);
+            openPopup();
+            return;
         }
     } else {
-        alert(`Successfully created a new untitled document!`);
+        //alert(`Successfully created a new untitled document!`);
+        resetPopupMsg();
+        changePopupMsg(`Successfully created a new untitled document!`);
+        openPopup();
         console.log(`New untitled document has been created!`);
         return createNewDocument();
     }
@@ -534,27 +574,46 @@ newDocumentBtn.addEventListener("click", (e) => {
 openBtn.addEventListener("click", async (e) => {
     try {
         await fileInput.click();
+        resetPopupMsg();
+        changePopupMsg(`Trying to capture the file...`);
+        openPopup();
     } catch (error) {
         console.error(`Error while handling file input click:`, error);
-        alert(`An error occurred while opening file : ${error}`);
+        resetPopupMsg();
+        changePopupMsg(`Unexpected error occurred while opening file dialog!`);
+        openPopup();
+        //alert(`An error occurred while opening file : ${error}`);
     }
 });
 
 const readFile = async (file) => {
-    textInput.textContent = ""; // Clear editor
     let totalChars = 0;
+    let reader;
 
     try {
-        const reader = file.stream().getReader();
-        const decoder = new TextDecoder("utf-8", {
-            fatal: false
-        });
+        // 1. Attempt to get the reader FIRST.
+        // If 'file' is a directory, this often throws immediately or on the first read.
+        reader = file.stream().getReader();
 
-        // Use an array to collect chunks - joining an array is 
-        // faster than repeated string concatenation in many JS engines.
+        const decoder = new TextDecoder("utf-8", { fatal: false });
         let contentChunks = [];
 
-        while (true) {
+        // 2. Perform a "Probe" read to confirm it's not a folder.
+        // Folders will usually fail here.
+        const { value: firstValue, done: firstDone } = await reader.read();
+
+        // 3. ONLY CLEAR AFTER SUCCESSFUL PROBE
+        // If we reach this line, it's a valid file. Now we wipe the old text.
+        textInput.textContent = "";
+
+        if (!firstDone && firstValue) {
+            const chunk = decoder.decode(firstValue, { stream: true });
+            contentChunks.push(chunk);
+            totalChars += chunk.length;
+        }
+
+        // 4. Continue with the rest of the stream
+        while (!firstDone) {
             const { value, done } = await reader.read();
             if (done) break;
 
@@ -564,27 +623,29 @@ const readFile = async (file) => {
 
             setState("reading", `Reading… ${(totalChars / 1024).toFixed(1)} KB`, false);
 
-            // Batch update UI every ~1MB to keep the user informed 
-            // without killing performance
             if (totalChars % 1048576 < value.length) {
                 wordsCount.textContent = `Total Chars: ${totalChars}`;
                 await new Promise(requestAnimationFrame);
             }
         }
 
-        // Final Render: Join everything once. 
-        // This is much faster than += inside the loop.
         textInput.textContent = contentChunks.join("");
-
         handleFileComplete();
         wordsCount.textContent = `Total Chars: ${totalChars}`;
         setState("ready", "File loaded", false);
 
     } catch (err) {
+        // If a folder was dropped, the error happens above, and we jump here
+        // WITHOUT having cleared textInput.textContent.
         setState("error", "Error reading file", false);
         console.error(err);
+        throw err; // Pass error back to handleDrop for the alert
+    } finally {
+        if (reader) reader.releaseLock();
     }
 };
+
+
 
 
 /*
@@ -612,6 +673,9 @@ const handleFileComplete = () => {
     console.log(`File reading completed successfully!`);
     console.warn(`If any issues occur then please refresh this page and try to open the file again!`);
     textInput.focus();
+    resetPopupMsg();
+    changePopupMsg(`File reading completed successfully! If any issues occur then please refresh this page and try to open the file again!`);
+    openPopup();
     setState("ready", "File loaded", false);
 };
 
@@ -619,15 +683,24 @@ const saveAsFile = async () => {
     const text = textInput.innerText;
     const blob = new Blob([text], { type: "text/plain" });
 
-    let filename = activeFileName.innerText !== "Untitled - NotePlus" ? activeFileName.innerText : appState.fileName;
+    //let filename = activeFileName.innerText !== "Untitled - NotePlus" ? activeFileName.innerText : appState.fileName;
+    let filename = activeFileName.innerText.trim();
+
+    // Check if it's the default "Untitled" state
+    if (filename === "Untitled - NotePlus" || filename === "" || !filename) {
+        filename = "Untitled - NotePlus.txt"; // Provide a clean default filename with extension
+    }
 
     setState("saving", "Saving…", false);
 
     try {
         // Check if browser supports Web File System API
         if (!window.showSaveFilePicker) {
+            resetPopupMsg();
+            changePopupMsg(`Your version of ${detectBrowser()} doesn't currently supports the Web File System API. Some features may not work as intended. Please check browser compatibility at <a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/showSaveFilePicker#browser_compatibility" target="_blank">MDN Web Docs</a>.`, true);
+            openPopup();
             console.warn(`Your version of ${detectBrowser()} doesn't currently supports the Web File System API. Please check browser compatibility at https://developer.mozilla.org/en-US/docs/Web/API/Window/showSaveFilePicker#browser_compatibility.`);
-            alert(`Your version of ${detectBrowser()} currently doesn't supports the Web File System API. Some features may not work as intended. Please check the browser console for more information regarding the Web File System API compatibility issue.`);
+            //alert(`Your version of ${detectBrowser()} currently doesn't supports the Web File System API. Some features may not work as intended. Please check the browser console for more information regarding the Web File System API compatibility issue.`);
         }
 
         let options = [
@@ -651,7 +724,10 @@ const saveAsFile = async () => {
                 await writable.write(blob);
                 await writable.close();
                 console.log(`File has been successfully saved!`);
-                alert(`Successfully saved file to the device!`);
+                resetPopupMsg();
+                changePopupMsg(`Successfully saved file to the device!`);
+                openPopup();
+                //alert(`Successfully saved file to the device!`);
                 setState("ready", "Saved", false);
 
             }
@@ -688,7 +764,10 @@ const saveAsFile = async () => {
         await writable.write(blob);
         await writable.close();
         console.log(`File has been successfully saved!`);
-        alert(`Successfully saved file to the device!`);
+        resetPopupMsg();
+        changePopupMsg(`Successfully saved file to the device!`);
+        openPopup();
+        //alert(`Successfully saved file to the device!`);
         setState("ready", "Saved", false);
 
     } catch (err) {
@@ -696,18 +775,30 @@ const saveAsFile = async () => {
         //console.error(`Saving Failed: ${err}`);
         // Handle specific errors
         if (err.name === 'NotAllowedError') {
+            resetPopupMsg();
+            changePopupMsg(`File system access is not allowed. Please check your browser settings to enable file system access for NotePlus.`);
+            openPopup();
             setState("error", "Saving not allowed", false);
-            alert(`Saving failed: File system access not allowed. Please check your browser settings.`);
+            //alert(`Saving failed: File system access not allowed. Please check your browser settings.`);
         } else if (err.name === 'AbortError') {
+            resetPopupMsg();
+            changePopupMsg(`Saving request was aborted. If this wasn't intentional, please try saving the file again.`);
+            openPopup();
             setState("error", "Saving request aborted", false);
-            alert(`Saving failed: You aborted the request.`);
+            //alert(`Saving failed: You aborted the request.`);
         } else if (err.name === 'TypeError') {
+            resetPopupMsg();
+            changePopupMsg(`Please use a supported browser that implements the Web File System API to use the saving feature of NotePlus. Check browser compatibility at <a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/showSaveFilePicker#browser_compatibility" target="_blank">MDN Web Docs</a>.`);
+            openPopup();
             setState("error", "Unsupported browser", false);
-            alert(`Please use a supported browser!`);
+            //alert(`Please use a supported browser!`);
         }
         else {
+            resetPopupMsg();
+            changePopupMsg(`An unexpected error occurred while saving the file: ${err.message}. Please try again or check the browser console for more details.`);
+            openPopup();
             setState("error", "Saving failed", false);
-            alert(`Saving failed: ${err}`);
+            //alert(`Saving failed: ${err}`);
         }
     }
 }
@@ -743,25 +834,36 @@ let speechState = 'stopped'; // 'stopped', 'speaking', 'paused'
 readTextBtn.addEventListener("click", (e) => {
     try {
         e.stopPropagation();
+        resetPopupMsg();
+        changePopupMsg(`Processing text-to-speech request...`);
+        openPopup();
         const text = textInput.textContent.trim();
-        if (!text) return alert("Nothing to read!");
+        if (!text) {
+            resetPopupMsg();
+            changePopupMsg(`Nothing to read!`);
+            return openPopup();
+            //return alert("Nothing to read!")
+        };
 
         if (speechState === 'stopped') {
             synthesis = new SpeechSynthesisUtterance(text);
 
             synthesis.onend = () => {
+                changePopupMsg(`Finished reading the text!`);
                 speechState = 'stopped';
                 isSpeaking = false;
                 readTextBtnPara.innerText = "Read";
             };
 
             synthesis.onerror = () => {
+                changePopupMsg(`An error occurred during speech! Please try again.`);
                 speechState = 'stopped';
                 isSpeaking = false;
                 readTextBtnPara.innerText = "Read";
                 console.error("SpeechSynthesis error occurred");
             };
 
+            changePopupMsg(`Speaking the text...`);
             speechSynthesis.speak(synthesis);
             console.log(`Speaking...`);
             speechState = 'speaking';
@@ -769,12 +871,14 @@ readTextBtn.addEventListener("click", (e) => {
             readTextBtnPara.innerText = "Pause";
 
         } else if (speechState === 'paused') {
+            changePopupMsg(`Resuming speech...`);
             speechSynthesis.resume();
             speechState = 'speaking';
             readTextBtnPara.innerText = "Pause";
             console.log(`Resumed!`);
 
         } else if (speechState === 'speaking') {
+            changePopupMsg(`Pausing speech...`);
             speechSynthesis.pause();
             speechState = 'paused';
             readTextBtnPara.innerText = "Resume";
@@ -782,6 +886,7 @@ readTextBtn.addEventListener("click", (e) => {
         }
 
     } catch (error) {
+        changePopupMsg(`An unexpected error occurred while processing text-to-speech!\nError:${error.message}`);
         speechState = 'stopped';
         isSpeaking = false;
         readTextBtnPara.innerText = "Read";
@@ -812,7 +917,10 @@ exitBtn.addEventListener("click", (e) => {
 
 // Event listener for reportIssuesBtn click
 reportIssuesBtn.addEventListener("click", async (e) => {
-    alert(`Please wait while your request is being processed...`);
+    //alert(`Please wait while your request is being processed...`);
+    resetPopupMsg();
+    changePopupMsg(`Please wait while your request is being processed...`);
+    openPopup();
     setTimeout(() => {
         window.location.href = `https://github.com/blazeinferno64/NotePlus/issues/new/choose`;
     }, 2000);
@@ -821,7 +929,7 @@ reportIssuesBtn.addEventListener("click", async (e) => {
 // Any further changes to NotePlus in future will be updated here
 const about = {
     Name: "NotePlus",
-    Version: '6.0',
+    Version: 'Loading...',
     Developer: "BlazeInferno64",
     Platform: detectBrowser(),
     OS: detectOS(),
@@ -831,37 +939,64 @@ const about = {
 
 // Event listener for versionInfoBtn click
 versionInfoBtn.addEventListener("click", (e) => {
-    return alert(`Name: ${about.Name}\nVersion: ${about.Version}\nDeveloper: ${about.Developer}\nPlatform: ${about.Platform}\nOS: ${about.OS}\nHostname: ${about.Hostname}\nPort: ${about.Port}`);
+    resetPopupMsg();
+    changePopupMsg(`
+    <b>Name:</b> <a href="https://github.com/blazeinferno64/NotePlus" target="_blank">${about.Name}</a><br>
+    <b>Version:</b> <span style="color: #28a75f; font-weight: 600;">${about.Version}</span> (Stable)<br>
+    <b>Developer:</b> <a href="https://github.com/blazeinferno64/" target="_blank">${about.Developer}</a><br>
+    <hr style="border: 0; border-top: 4px solid #433e50; margin: 10px 0;">
+    <b>Platform:</b> <span title="Detected via UserAgent">${about.Platform}</span><br>
+    <b>OS:</b> <span>${about.OS}</span><br>
+    <b>Environment:</b> <code style="color: #f4f4f4; padding: 2px 4px;">${about.Hostname}:${about.Port}</code>
+    <br><br>
+    <a href="https://github.com/blazeinferno64/NotePlus/blob/main/LICENSE" target="_blank" style="font-size: 0.8em;">View License</a>
+    `, true);
+    openPopup();
+    //return alert(`Name: ${about.Name}\nVersion: ${about.Version}\nDeveloper: ${about.Developer}\nPlatform: ${about.Platform}\nOS: ${about.OS}\nHostname: ${about.Hostname}\nPort: ${about.Port}`);
 })
 
-versionP.innerText = about.Version;
 
 // Event listener for newTabBtn click
 newTabBtn.addEventListener("click", (e) => {
     setState("ready", "Ready", false);
     const aTag = document.createElement("a");
-    aTag.href = "";
+    aTag.href = "?newtab=true";
     aTag.target = "_blank";
     aTag.click();
     aTag.remove();
-    console.log(`Successfully created a new `)
-    return alert(`New Untitled NotePlus window has been created!`);
+    console.log(`Successfully created a new tab with an untitled NotePlus window!`);
+    resetPopupMsg();
+    changePopupMsg(`New Untitled NotePlus window has been created!`);
+    openPopup();
+    //return alert(`New Untitled NotePlus window has been created!`);
 })
 
 // Event listener for copyAllBtn click
 copyAllBtn.addEventListener("click", async () => {
     if (!navigator.clipboard) {
-        alert(`Sorry, but your browser doesn't support clipboard copying!`);
+        //alert(`Sorry, but your browser doesn't support clipboard copying!`);
+        resetPopupMsg();
+        changePopupMsg(`Sorry, but your browser doesn't support clipboard copying!`);
+        openPopup();
         return;
     }
     try {
-        if (textInput.innerText === "") {
-            return alert(`There's nothing to copy!\nTry entering some text for this to work!`);
+        if (textInput.innerText.length === 0) {
+            resetPopupMsg();
+            changePopupMsg(`There's nothing to copy!\nTry entering some text for this to work!`);
+            return openPopup();
+            //return alert(`There's nothing to copy!\nTry entering some text for this to work!`);
         }
         await navigator.clipboard.writeText(textInput.innerText);
         console.log(`${textInput.innerText} has been copied to clipboard successfully!`);
-        alert(`Text has been successfully copied to clipboard!`);
+        resetPopupMsg();
+        changePopupMsg(`Text has been successfully copied to clipboard!`);
+        openPopup();
+        //alert(`Text has been successfully copied to clipboard!`);
     } catch (error) {
+        resetPopupMsg();
+        changePopupMsg(`An error occurred while copying to clipboard: ${error.message}. Please try again or check the browser console for more details.`, true);
+        openPopup();
         console.error(error);
         alert(error);
     }
@@ -883,24 +1018,42 @@ selectAllBtn.addEventListener("click", () => {
 // Event listener for pasteAllBtn click to paste clipboard content to textInput
 pasteAllBtn.addEventListener("click", async () => {
     if (!navigator.clipboard) {
+        resetPopupMsg();
+        changePopupMsg(`Your browser doesn't support clipboard pasting! Please check browser compatibility at <a href="https://developer.mozilla.org/en-US/docs/Web/API/Clipboard#browser_compatibility" target="_blank">MDN Web Docs</a>.`, true);
+        openPopup();
         alert(`Sorry, but your browser doesn't support clipboard pasting!`);
         return;
     }
     try {
         setState("ready", "Copying...", false);
+        resetPopupMsg();
+        changePopupMsg(`Pasting from clipboard...`);
+        openPopup();
         const text = await navigator.clipboard.readText();
         if (!text) {
+            resetPopupMsg();
+            changePopupMsg(`NotePlus wasn't able to find any text present on your clipboard as it was empty! Please copy some text and try again!`, true);
+            openPopup();
             setState("info", "Clipboard is empty", false);
             console.warn(`Seems like your clipboard is empty!`);
-            return alert(`Error: NotePlus wasn't able to find any text present on your clipboard as it was empty!`);
+            //return alert(`Error: NotePlus wasn't able to find any text present on your clipboard as it was empty!`);
         }
+        resetPopupMsg();
+        changePopupMsg(`NotePlus successfully pasted text from clipboard!`);
+        openPopup();
         textInput.innerText = text;
     } catch (error) {
         if (error.name = "NotAllowedError") {
+            resetPopupMsg();
+            changePopupMsg(`Permission Error: You didn't allowed NotePlus to read and write text from your clipboard!`);
+            openPopup();
             setState("error", "Clipboard reading not allowed", false);
             console.error(`Permission Error: You didn't allowed NotePlus to read and write text from your clipboard!`);
-            return alert(`Permission Error: You didn't allowed NotePlus to read and write text from your clipboard!`)
+            //return alert(`Permission Error: You didn't allowed NotePlus to read and write text from your clipboard!`)
         } else {
+            resetPopupMsg();
+            changePopupMsg(`An unexpected error occurred while accessing the clipboard: ${error.message}. Please try again or check the browser console for more details.`);
+            openPopup();
             setState("error", "There was an error", false);
             console.error(error);
             return alert(`An error occured: ${error}`);
@@ -910,7 +1063,10 @@ pasteAllBtn.addEventListener("click", async () => {
 
 // Event listener for aboutBtn click
 aboutBtn.addEventListener("click", async (e) => {
-    alert(`Please wait while your request is being processed...`);
+    //alert(`Please wait while your request is being processed...`);
+    resetPopupMsg();
+    changePopupMsg(`Please wait while your request is being processed...`);
+    openPopup();
     setTimeout(() => {
         window.location.href = `https://github.com/blazeinferno64/NotePlus`
     }, 2000);
@@ -924,34 +1080,44 @@ images.forEach((image) => {
 });
 
 // Drag and drop listeners
-let folderDrop = false; // Flag to track if folder drop error has been shown
+let folderDrop = false;
 
-const handleDrop = (event) => {
+const handleDrop = async (event) => {
     try {
-        setState("ready", "Reading...", false);
         event.preventDefault();
         const droppedFile = event.dataTransfer.files[0];
-        if (droppedFile) {
-            const reader = new FileReader();
-            reader.onload = async () => {
-                fileType = droppedFile.type;
-                readFile(droppedFile);
-                await parseFile(droppedFile);
-                activeFileName.innerText = droppedFile.name ? `${droppedFile.name} - NotePlus` : `Untitled - NotePlus`;
-            };
-            reader.onerror = () => {
-                if (folderDrop) return folderDrop = false;
-                folderDrop = true;
-                setState("error", "Folder detected", false);
-                return alert(`Folder dropping isn't yet supported by NotePlus`)
-            };
-            reader.readAsArrayBuffer(droppedFile);
+        if (!droppedFile) return;
+
+        resetPopupMsg();
+        changePopupMsg(`Processing dropped file...`);
+        openPopup();
+        setState("ready", "Reading...", false);
+
+        try {
+            // 1. Attempt to read/stream the file first
+            // If this throws (e.g., it's a folder), the code jumps to 'catch' 
+            // BEFORE changing the filename or clearing the text.
+            await readFile(droppedFile);
+
+            // 2. Only if successful, update the file metadata and UI
+            fileType = droppedFile.type;
+            changePopupMsg(`File reading completed successfully! If any issues occur then please refresh this page and try to open the file again!`);
+            await parseFile(droppedFile);
+            activeFileName.innerText = droppedFile.name ? `${droppedFile.name} - NotePlus` : `Untitled - NotePlus`;
             setState("ready", "File loaded", false);
+
+        } catch (streamError) {
+            // If readFile fails (folders throw here), we reset state but DON'T clear text
+            if (folderDrop) return folderDrop = false;
+            folderDrop = true;
+
+            changePopupMsg(`Folder dropping isn't yet supported! Please drop a file instead.`, true);
+            setState("error", "Folder detected", false);
+            //alert(`Folder dropping isn't yet supported by NotePlus`);
         }
     } catch (error) {
         setState("error", "There was an error", false);
         console.error(error);
-        return alert(`${error}`);
     }
 };
 
@@ -1152,7 +1318,10 @@ window.addEventListener("appinstalled", (e) => {
     //downloadAppBtn.style.display = 'none'; // Hide download button after installation
     localStorage.setItem("isAppInstalled", "true"); // Persist to localStorage
     console.info("✓ NotePlus has been installed successfully on your device as a standalone app!\nLaunch it from your operating system's app menu!");
-    alert(`Thank you for installing NotePlus!\nYou can now launch it from your device's app menu.\nEnjoy your premium writing/editing experience for free!`);
+    //alert(`Thank you for installing NotePlus!\nYou can now launch it from your device's app menu.\nEnjoy your premium writing/editing experience for free!`);
+    resetPopupMsg();
+    changePopupMsg(`Thank you for installing NotePlus!<br>You can now launch it from your device's app menu.<br>Enjoy your premium writing/editing experience for free!<br>Please consider giving a ⭐ on <a target="_blank" href="https://github.com/blazeinferno64/NotePlus">Github</a> if you like the app experience :D`, true);
+    openPopup();
     deferredPrompt = null;
     installNotePlusBtn.style.display = 'none'; // Hide install button if already in PWA mode
 
@@ -1191,11 +1360,28 @@ window.addEventListener('load', () => {
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('./service-worker.js')
             .then(registration => {
+                const worker = registration.active || registration.installing || registration.waiting;
                 console.log('[App] Service Worker registered successfully');
 
                 // Check for updates immediately when app loads
                 if (registration.controller) {
                     registration.controller.postMessage({ type: 'CHECK_FOR_UPDATES' });
+                }
+
+                if (worker) {
+                    const messageChannel = new MessageChannel();
+
+                    // Listen for the reply from SW
+                    messageChannel.port1.onmessage = (event) => {
+                        if (event.data.version) {
+                            about.Version = event.data.version;
+                            versionP.innerText = about.Version;
+                            console.log(`Version synced from SW: ${about.Version}`);
+                        }
+                    };
+
+                    // Ask the SW for the version
+                    worker.postMessage({ type: 'GET_VERSION' }, [messageChannel.port2]);
                 }
 
                 // Optional: Check for updates every 30 seconds
@@ -1292,7 +1478,10 @@ if ('serviceWorker' in navigator) {
         if (event.data.type === 'NO_UPDATE_FOUND') {
             // Reset button text
             if (isPWA) {
-                alert(`No updates found!\nYou're already on the latest version of NotePlus!`);
+                //alert(`No updates found!\nYou're already on the latest version of NotePlus!`);
+                resetPopupMsg();
+                changePopupMsg(`No updates found!\nYou're already on the latest version of NotePlus!`);
+                openPopup();
                 console.log('[App] No update found - app is on the latest version');
             }
         }

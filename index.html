@@ -25,11 +25,19 @@
 </head>
 
 <body>
-    <p id="no-script">
-        Seems like JavaScript isn't enabled in your browser!
+    <div id="no-script">
+        <div class="err-js" >
+            <i class="material-symbols-outlined">
+                warning
+            </i>
+            <p>
+                Warning: JavaScript is disabled on your browser!
+            </p>
+        </div>
         <br>
-        It's required to run NotePlus!
-    </p>
+        <p class="info-js">NotePlus needs JavaScript to handle your files and editor logic!</p>
+        <p class="sol-js">Please enable it in your browser/platform settings to continue & refresh this page!</p>
+    </div>
     <input type="file" name="File" id="file-input" class="file" accept="*" hidden />
     <div class="app none">
         <div class="app-head">
@@ -458,6 +466,24 @@
         </div>
     </div>
     </div>
+    <!--Popup-->
+    <div class="popup-bg hide">
+        <div class="popup go-down hide">
+            <!--<p>
+                Listen to your <span style="color: #ff1b6b; font-weight: bold;">Local Files</span>
+                or stream the <span style="color: #45caff; font-weight: bold;">24/7 Radio</span>!
+            </p>-->
+            <p class="popup-msg">
+                Welcome to NotePlus! Your free, online, browser-based text editor that provides an experience similar to
+                Windows Notepad!
+            </p>
+            <span class="popup-close">
+                <i class="material-symbols-outlined">
+                    close
+                </i>
+            </span>
+        </div>
+    </div>
     <!--Register Service Worker-->
     <script defer>
         if ('serviceWorker' in navigator) {
@@ -499,6 +525,7 @@
         }
     </script>
     <script defer src="./public/js/script.js"></script>
+    <script defer src="./public/js/popup.js"></script>
     <script defer src="./public/js/ai.js"></script>
     <script defer src="./public/js/themes.js"></script>
     <script defer src="./public/js/search.js"></script>

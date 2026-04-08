@@ -202,9 +202,13 @@ const getAiResponse = async (prompt) => {
 
     const AUTH_KEY = getAuth();
     try {
+        resetPopupMsg();
+        changePopupMsg(`Validating prompt and generating AI response...`);
+        openPopup();
         setState("fetching", "Generating...", false);
 
         const finalPrompt = buildPrompt(prompt);
+        changePopupMsg(`Final prompt being sent to AI:\n\n${finalPrompt}`);
         const response = await fetch(aiURL, {
             method: "POST",
             headers: {
@@ -223,7 +227,7 @@ const getAiResponse = async (prompt) => {
         }
 
         if (!response.ok) {
-            const err = await response.json();
+            const err = await response.text();
             throw new Error(err.message || `HTTP error! status: ${response.status}`);
         }
 
@@ -233,6 +237,9 @@ const getAiResponse = async (prompt) => {
         aiInfo.classList.add("ok");
         aiInfo.classList.remove("err");
         aiInfo.innerText = "Generating AI response...";
+
+        //resetPopupMsg();
+        changePopupMsg(`Generating AI response for the prompt:\n"${prompt}"`);
 
         const reader = response.body.getReader();
         const decoder = new TextDecoder();
@@ -268,6 +275,8 @@ const getAiResponse = async (prompt) => {
             window.scrollTo(scrollX, scrollY);
         }, 300);
 
+        changePopupMsg("AI response generation completed!");
+
         aiInfo.innerText = "AI response completed!";
         setState("ready", "Ready", false);
         wordsCount.innerText = `Total Chars: ${textInput.textContent.length}`;
@@ -279,6 +288,9 @@ const getAiResponse = async (prompt) => {
         aiInfo.classList.remove("ok");
         aiInfo.innerText = "Failed to generate AI response!";
         console.error("[AI Error]", error);
+        resetPopupMsg();
+        changePopupMsg(`[AI Generation Error] ${error.message || "An unknown error occurred while generating the AI response. Please check the console for more details."}`);
+        openPopup();
         throw error;
     }
 };
@@ -319,6 +331,9 @@ sendAiBtn.addEventListener("click", async (e) => {
         aiInfo.classList.add("err");
         if (!navigator.onLine) {
             aiInfo.textContent = "You are currently offline. Please check your internet connection!";
+            resetPopupMsg();
+            changePopupMsg(`Unable to connect to the servers!\nPlease check your internet connection!`);
+            openPopup();
             return console.warn(`HTTP request to ${url} failed you're offline!`)
         }
         aiInfo.textContent = "Something went wrong! Check console for more info!";

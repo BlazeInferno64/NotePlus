@@ -1,8 +1,7 @@
 /*
     Copyright (c) BlazeInferno64 --> https://github.com/blazeInferno64
 */
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
-
+@import url('https://fonts.googleapis.com/css2?family=Geist+Mono:wght@100..900&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
 @font-face {
     font-family: "CartographItalic";
     /* any name you choose */
@@ -16,6 +15,7 @@
 :root {
     --ff: "Montserrat", sans-serif;
     --ff2: "CartographItalic", "Monsterrat", sans-serif;
+    --ff-mono: "Geist Mono", monospace;
 }
 
 ::selection {
@@ -37,6 +37,10 @@ input {
     outline: none;
 }
 
+button {
+    font-family: var(--ff-mono);
+}
+
 a {
     text-decoration: none;
     color: inherit;
@@ -47,7 +51,7 @@ li {
 }
 
 body {
-    font-family: var(--ff);
+    font-family: var(--ff-mono);
     display: flex;
     align-items: center;
     flex-direction: column;
@@ -115,7 +119,8 @@ body {
     z-index: 2;
 }
 
-.ai-btn,.set {
+.ai-btn,
+.set {
     display: flex;
     align-items: center;
     gap: 5px;
@@ -202,7 +207,7 @@ body {
 .help-list ul {
     display: flex;
     height: 100%;
-    width: 250px;
+    width: 300px;
     align-items: center;
     justify-content: center;
     flex-direction: column;
@@ -241,6 +246,7 @@ body {
     justify-content: space-between;
     gap: 5px;
     padding: .5rem;
+    font-size: .95rem;
 }
 
 .action-list ul li span p,
@@ -281,7 +287,7 @@ body {
     white-space: pre-wrap;
     border: none;
     scroll-behavior: smooth;
-    font-family: Consolas, "Lucida Console", Menlo, Monaco, "Courier New", monospace;
+    font-family: var(--ff-mono);
 }
 
 .text::-webkit-scrollbar {
@@ -380,7 +386,7 @@ body {
 .brow {
     margin-left: .5rem;
     font-size: 1.13rem;
-    font-family: monospace;
+    font-family: var(--ff-mono);
 }
 
 .srch-bg {
@@ -485,7 +491,7 @@ body {
 .ai-main textarea {
     outline: none;
     border: none;
-    font-family: monospace;
+    font-family: var(--ff-mono);
 }
 
 .in .srch,
@@ -628,7 +634,7 @@ body {
     overflow: auto;
     font-size: 1.13rem;
     user-select: auto;
-    font-family: monospace;
+    font-family: var(--ff-mono);
 }
 
 .fetch-info,
@@ -641,7 +647,7 @@ body {
     overflow: auto;
     font-size: 1.13rem;
     user-select: auto;
-    font-family: monospace;
+    font-family: var(--ff-mono);
     border-radius: .5rem;
 }
 
@@ -829,8 +835,181 @@ body {
     height: 1.2rem;
 }
 
+.popup-bg {
+    width: 100%;
+    position: fixed;
+    z-index: 100;
+    /* Increased to stay above visualizer */
+    bottom: 5%;
+    left: 0;
+    display: flex;
+    justify-content: center;
+    pointer-events: none;
+    /* Prevents blocking clicks behind the popup */
+}
+
+.popup-bg .popup {
+    width: 90%;
+    max-width: 500px;
+    min-height: 55px;
+    height: auto;
+    max-height: 300px;
+    overflow-y: auto;
+    background: rgba(20, 20, 20, 0.9);
+    backdrop-filter: blur(15px);
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: 1rem;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    pointer-events: auto;
+}
+
+.popup-msg {
+    color: #efefef;
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    padding-right: 10px;
+
+    overflow-wrap: anywhere; 
+    word-break: break-word;
+    white-space: normal;
+    font-family: var(--ff-mono);
+}
+
+.popup::-webkit-scrollbar {
+    width: 6px; /* Slimmer is more modern */
+}
+
+.popup::-webkit-scrollbar-track {
+    background: transparent; 
+    margin: 10px 0; 
+}
+
+.popup::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1); 
+    border-radius: 20px; 
+    border: 1px solid rgba(255, 255, 255, 0.05); 
+    transition: background 0.3s ease;
+}
+
+.popup::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.25); 
+}
+
+.popup {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+}
+
+.popup-msg a {
+    color: #45caff;
+    text-decoration: underline;
+    transition: color 0.2s ease-in-out;
+}
+
+.popup-msg a:hover {
+    color: #1e90ff;
+}
+
+.popup-bg .popup p i {
+    color: #45caff;
+    margin: 0 5px;
+}
+
+.popup-bg .popup .popup-close {
+    font-size: 1.5rem;
+    height: 40px;
+    width: 40px;
+    flex-shrink: 0;
+    display: flex;
+    position: sticky;
+    top: .3rem;
+    align-self: flex-start;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    /* Added a slightly faster cubic-bezier for a snappier feel */
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    color: #888;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid transparent; /* Prevents layout shift on hover */
+}
+
+.popup-bg .popup .popup-close:hover {
+    background: rgba(255, 69, 58, 0.15); /* Subtle red tint for "close" action */
+    color: #ff453a; /* iOS-style vivid red */
+    transform: scale(1.1); /* Modern rotation effect */
+    box-shadow: 0 0 15px rgba(255, 69, 58, 0.3); /* Soft glow */
+    border: 1px solid rgba(255, 69, 58, 0.2);
+}
+
+/* Optional: Add a "click" effect */
+.popup-bg .popup .popup-close:active {
+    transform: scale(1);
+    background: rgba(255, 69, 58, 0.3);
+}
+
+mark.match {
+    background-color: #ffd700; /* Classic highlight yellow */
+    color: #000;
+    border-radius: 2px;
+    padding: 0 1px;
+    box-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+}
+
+/* Optional: Active match (if you add next/prev later) */
+mark.match.current {
+    background-color: #ff8c00;
+    outline: 2px solid #fff;
+}
+
 .body.dark {
     background: rgba(30, 30, 30);
+}
+
+#no-script {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 2rem;
+}
+
+#no-script .err-js {
+    color: #ff4b4b;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-bottom: 1rem;
+    font-size: 2rem;
+    transition: all .1s ease-in-out;
+}
+
+#no-script .err-js:hover {
+    color: #ff1a1a;
+}
+
+#no-script .err-js i {
+    font-size: 2.5rem;
+}
+
+#no-script .info-js {
+    font-weight: 600;
+    font-size: 1.5rem;
+}
+
+#no-script .sol-js {
+    font-size: 1.1rem;
+    color: yellow;
+    margin-top: 1rem;
 }
 
 #no-script.dark {
@@ -961,6 +1140,19 @@ body {
     color: rgb(36, 161, 99);
 }
 
+
+.danger {
+    color: rgb(255, 43, 43);
+}
+
+.success {
+    color: rgb(10, 208, 109);
+}
+
+.warn {
+    color: yellow;
+}
+
 .none {
     display: none;
 }
@@ -1034,6 +1226,12 @@ body {
     .help-list ul,
     .edit-list ul {
         font-size: .95rem;
+    }
+}
+
+@media (max-width: 500px) {
+    .popup {
+        width: 90%;
     }
 }
 

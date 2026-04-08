@@ -40,10 +40,16 @@ const switchThemes = () => {
 
 const updateThemeButtonText = () => {
     if (themeBtnText.innerText === "Light Mode") {
+        resetPopupMsg();
+        changePopupMsg(`Switched to Light Mode!`);
+        openPopup();
         themeIcon.classList.remove("fa-circle-half-stroke");
         themeIcon.classList.add("fa-moon");
         return themeBtnText.innerText = "Dark Mode";
     } else {
+        resetPopupMsg();
+        changePopupMsg(`Switched to Dark Mode!`);
+        openPopup();
         themeIcon.classList.add("fa-circle-half-stroke");
         themeIcon.classList.remove("fa-moon");
         return themeBtnText.innerText = "Light Mode";
