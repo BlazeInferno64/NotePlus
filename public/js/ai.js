@@ -203,12 +203,12 @@ const getAiResponse = async (prompt) => {
     const AUTH_KEY = getAuth();
     try {
         resetPopupMsg();
-        changePopupMsg(`Validating prompt and generating AI response...`);
+        changePopupMsg(`Validating prompt and generating AI response! Please wait...`);
         openPopup();
         setState("fetching", "Generating...", false);
 
         const finalPrompt = buildPrompt(prompt);
-        changePopupMsg(`Final prompt being sent to AI:\n\n${finalPrompt}`);
+        //changePopupMsg(`Final prompt being sent to AI:\n\n${finalPrompt}`);
         const response = await fetch(aiURL, {
             method: "POST",
             headers: {
@@ -353,3 +353,10 @@ aiInput.addEventListener("keydown", (e) => {
         sendAiBtn.click();
     }
 });
+
+
+aiBg.addEventListener("click", (e) => {
+    if (e.target === aiBg) {
+        closeAiMenu();
+    }
+})

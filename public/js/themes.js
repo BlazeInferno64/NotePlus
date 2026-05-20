@@ -10,6 +10,7 @@ const file_Card = document.querySelector(".f-card");
 const fetchCard = document.querySelector(".fetch-card");
 
 const aiThemeBtn = document.querySelector(".ai-btn");
+const renderCrd = document.querySelector(".render-card");
 const themeBtn = document.querySelector("#theme");
 const themeBtnText = document.querySelector(".t");
 const themeIcon = document.querySelector("#ico");
@@ -36,7 +37,13 @@ const switchThemes = () => {
     file_Card.classList.toggle("dark")
     fetchCard.classList.toggle("dark");
     aiCard.classList.toggle("dark");
+    renderCrd.classList.toggle("dark");
 };
+
+renderCrd.addEventListener("click", (e) => {
+    e.stopPropagation();
+    //renderCrd.classList.add("hovered");
+});
 
 const updateThemeButtonText = () => {
     if (themeBtnText.innerText === "Light Mode") {
@@ -64,17 +71,21 @@ themeBtn.addEventListener("click", (e) => {
 
 const applyDarkMode = (e) => {
     if (e.matches) {
-        switchThemes();
-        updateThemeButtonText();
-        console.log("Your system uses Dark Mode");
+        if (!app.classList.contains("dark")) {
+            switchThemes();
+        }
         themeIcon.classList.add("fa-circle-half-stroke");
         themeIcon.classList.remove("fa-moon");
-        themeBtnText.innerText = `Light Mode`
+        themeBtnText.innerText = `Light Mode`;
+        console.log("Your system uses Dark Mode");
     } else {
-        console.log("Your system uses Light Mode");
+        if (app.classList.contains("dark")) {
+            switchThemes();
+        }
         themeIcon.classList.remove("fa-circle-half-stroke");
         themeIcon.classList.add("fa-moon");
         themeBtnText.innerText = `Dark Mode`;
+        console.log("Your system uses Light Mode");
     }
 };
 

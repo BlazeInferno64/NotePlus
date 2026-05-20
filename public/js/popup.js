@@ -19,6 +19,7 @@ if (popup) {
 }
 
 const openPopup = () => {
+    popupBg.style.display = "flex";
     popupBg.classList.remove("hide");
     setTimeout(() => {
         popup.classList.remove("go-down");
@@ -35,6 +36,7 @@ const closePopup = () => {
     }, 100);
     setTimeout(() => {
         popupBg.classList.add("hide");
+        popupBg.style.display = "none";
     }, 500);
 }
 

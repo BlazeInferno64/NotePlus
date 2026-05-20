@@ -50,7 +50,7 @@ const parseFile = async (file) => {
         const response = await fetch(fileURL);
         const blobbedResponse = await response.blob();
 
-        const formattedSize = formatBytes(blobbedResponse.size);
+        const formattedSize = formatBytesForFileInfo(blobbedResponse.size);
         const fileName = file.name;
 
         const lastModifiedDate = new Date(file.lastModified);
@@ -116,7 +116,7 @@ const downloadData = (JSONData, file) => {
     alert(`${file.name}-Metadata.json file has been succesfully saved to the device!`);
 }
 
-function formatBytes(bytes) {
+function formatBytesForFileInfo(bytes) {
     if (bytes < 0) {
         return "Invalid byte size"; // Handle negative values
     }
@@ -148,5 +148,6 @@ fileCopyBtn.addEventListener("click", async (e) => {
 })
 
 fileMetaDataDownloadBtn.addEventListener("click", (e) => {
-    return downloadData(fileInfoViewer.textContent, fileInput.files[0]);
+    const metadataFile = fileInput.files[0] || { name: 'shared-document' };
+    return downloadData(fileInfoViewer.textContent, metadataFile);
 })

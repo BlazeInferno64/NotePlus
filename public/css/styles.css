@@ -2,6 +2,7 @@
     Copyright (c) BlazeInferno64 --> https://github.com/blazeInferno64
 */
 @import url('https://fonts.googleapis.com/css2?family=Geist+Mono:wght@100..900&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+
 @font-face {
     font-family: "CartographItalic";
     /* any name you choose */
@@ -322,12 +323,30 @@ body {
     cursor: default;
 }
 
+.text {
+    scrollbar-width:auto;
+    scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+    position: relative;
+}
+
+.text:empty::before {
+    /* content: "Write something amazing here, something fascinating..."; */
+    content: var(--placeholder, "Unleash your creativity here...");
+    position: absolute;
+    top: 8px;
+    left: 20px;
+    color: #888888;
+    font-family: var(--ff-mono);
+    font-style: italic;
+    pointer-events: none;
+    display: block;
+    opacity: 0.6;
+}
+
 .main {
     flex: 1;
-    /* Allow it to grow */
     width: 100%;
     max-height: calc(100% - 2.3rem);
-    /* Adjusted max height */
     display: flex;
     cursor: text;
     background: #eaeaea;
@@ -335,7 +354,6 @@ body {
     flex-direction: column;
     justify-content: space-between;
     overflow: hidden;
-    /* Hide overflow if any */
 }
 
 .footer {
@@ -389,7 +407,8 @@ body {
     font-family: var(--ff-mono);
 }
 
-.srch-bg {
+.srch-bg,
+.render-bg {
     position: fixed;
     height: 100vh;
     width: 100%;
@@ -567,9 +586,132 @@ body {
     border-radius: .3rem;
 }
 
+.render-card {
+    color: #111;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    width: 350px;
+    background: #afadad;
+    box-shadow: 0 10px 20px 0 rgba(0, 0, 0, .6);
+    transition: all .5s ease-in-out;
+    overflow: hidden;
+    border-radius: .3rem;
+}
+
+.render-card .render-main {
+    padding: .5rem 1rem;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.render-card iframe {
+    border: none;
+    outline: none;
+    height: 270px;
+    width: 100%;
+    border: 2px solid #4b494d;
+    border-radius: .3rem;
+    margin-top: .5rem;
+}
+
+.render-card .render-main .render-input {
+    width: 100%;
+    margin-top: .5rem;
+    margin-bottom: .5rem;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
+.render-input label {
+    font-size: 1.13rem;
+    width: 100%;
+    background: #ccc;
+    padding: .3rem .5rem;
+    border-top-left-radius: .3rem;
+    border-top-right-radius: .3rem;
+}
+
+.render-input select {
+    width: 100%;
+    font-size: 1.13rem;
+    padding: .3rem;
+    border: none;
+    font-family: var(--ff-mono);
+    background: #dedede;
+    color: #111;
+    cursor: pointer;
+    border-bottom-left-radius: .3rem;
+    border-bottom-right-radius: .3rem;
+}
+
+.render-btns {
+    margin-bottom: .5rem;
+    margin-top: .5rem;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-direction: column;
+    padding: .3rem;
+    gap: 5px;
+}
+
+.render-btns button {
+    width: 100%;
+    font-weight: 600;
+    font-size: 1.13rem;
+    padding: .5rem 1rem;
+    border: none;
+    border-radius: .3rem;
+    transition: all .1s ease-in-out;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    cursor: pointer;
+}
+
+.iframe-btn {
+    background: hsl(201, 86%, 39%);
+    color: #fff;
+}
+
+.render-btn {
+    color: #fff;
+    background: hsl(150, 83%, 30%);
+}
+
+.iframe-btn:hover {
+    background: hsl(195, 100%, 35%);
+}
+
+.iframe-btn:active {
+    background: hsl(195, 100%, 45%);
+}
+
+.render-btn:hover {
+    background: hsl(150, 83%, 35%);
+}
+
+.render-btn:active {
+    background: hsl(150, 83%, 40%);
+}
+
+.render-btn:active,
+.iframe-btn:active {
+    scale: .97;
+}
+
 .f-card .f-head,
 .fetch-card .fetch-head,
-.ai-card .ai-head {
+.ai-card .ai-head,
+.render-card .render-head {
     width: 100%;
     display: flex;
     align-items: center;
@@ -580,7 +722,8 @@ body {
 
 .f-head .f-close,
 .fetch-head .fetch-close,
-.ai-card .ai-close {
+.ai-card .ai-close,
+.render-card .render-close {
     font-size: 2rem;
     background: transparent;
     width: 40px;
@@ -597,7 +740,8 @@ body {
 .ai-head p,
 .fetch-head p,
 .srch-head p,
-.f-head p {
+.f-head p,
+.render-head p {
     display: flex;
     align-items: center;
     gap: 5px;
@@ -605,7 +749,8 @@ body {
 
 .f-head .f-close:hover,
 .fetch-head .fetch-close:hover,
-.ai-head .ai-close:hover {
+.ai-head .ai-close:hover,
+.render-card .render-close:hover {
     background: #908f8f;
 }
 
@@ -638,7 +783,8 @@ body {
 }
 
 .fetch-info,
-.ai-info {
+.ai-info,
+.render-info {
     background: #afadad;
     height: fit-content;
     width: 100%;
@@ -875,33 +1021,42 @@ body {
     line-height: 1.5;
     padding-right: 10px;
 
-    overflow-wrap: anywhere; 
+    overflow-wrap: anywhere;
     word-break: break-word;
     white-space: normal;
     font-family: var(--ff-mono);
+
+    font-variant-ligatures: no-common-ligatures;
+    text-rendering: optimizeLegibility;
 }
 
-.popup::-webkit-scrollbar {
-    width: 6px; /* Slimmer is more modern */
+.popup::-webkit-scrollbar,
+.render-card iframe::-webkit-scrollbar {
+    width: 6px;
+    /* Slimmer is more modern */
 }
 
-.popup::-webkit-scrollbar-track {
-    background: transparent; 
-    margin: 10px 0; 
+.popup::-webkit-scrollbar-track,
+.render-card iframe::-webkit-scrollbar-track {
+    background: transparent;
+    margin: 10px 0;
 }
 
-.popup::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.1); 
-    border-radius: 20px; 
-    border: 1px solid rgba(255, 255, 255, 0.05); 
+.popup::-webkit-scrollbar-thumb,
+.render-card iframe::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
     transition: background 0.3s ease;
 }
 
-.popup::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.25); 
+.popup::-webkit-scrollbar-thumb:hover,
+.render-card iframe::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.25);
 }
 
-.popup {
+.popup,
+.render-card iframe {
     scrollbar-width: thin;
     scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
 }
@@ -933,37 +1088,35 @@ body {
     align-items: center;
     justify-content: center;
     border-radius: 50%;
-    /* Added a slightly faster cubic-bezier for a snappier feel */
     transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     cursor: pointer;
     color: #888;
     background: rgba(255, 255, 255, 0.05);
-    border: 1px solid transparent; /* Prevents layout shift on hover */
+    border: 1px solid transparent;
+    user-select: none;
 }
 
 .popup-bg .popup .popup-close:hover {
-    background: rgba(255, 69, 58, 0.15); /* Subtle red tint for "close" action */
-    color: #ff453a; /* iOS-style vivid red */
-    transform: scale(1.1); /* Modern rotation effect */
-    box-shadow: 0 0 15px rgba(255, 69, 58, 0.3); /* Soft glow */
+    background: rgba(255, 69, 58, 0.15);
+    color: #ff453a;
+    transform: scale(1.1);
+    box-shadow: 0 0 15px rgba(255, 69, 58, 0.3);
     border: 1px solid rgba(255, 69, 58, 0.2);
 }
 
-/* Optional: Add a "click" effect */
 .popup-bg .popup .popup-close:active {
     transform: scale(1);
     background: rgba(255, 69, 58, 0.3);
 }
 
 mark.match {
-    background-color: #ffd700; /* Classic highlight yellow */
+    background-color: #ffd700;
     color: #000;
     border-radius: 2px;
     padding: 0 1px;
     box-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
 }
 
-/* Optional: Active match (if you add next/prev later) */
 mark.match.current {
     background-color: #ff8c00;
     outline: 2px solid #fff;
@@ -1092,7 +1245,8 @@ mark.match.current {
 .srch-card.dark,
 .f-card.dark,
 .fetch-card.dark,
-.ai-card.dark {
+.ai-card.dark,
+.render-card.dark {
     background: rgba(30, 30, 30);
     color: #fff;
 }
@@ -1100,20 +1254,23 @@ mark.match.current {
 .srch-card.dark .srch-head #close-srch:hover,
 .f-card.dark .f-head .f-close:hover,
 .fetch-card.dark .fetch-head .fetch-close:hover,
-.ai-card.dark .ai-head .ai-close:hover {
+.ai-card.dark .ai-head .ai-close:hover,
+.render-card.dark .render-head .render-close:hover {
     background: #4b494d;
 }
 
 .srch-card.dark .srch-main,
 .f-card.dark .f-main .f-info,
 .fetch-card.dark .fetch-main,
-.ai-card.dark .ai-main {
+.ai-card.dark .ai-main,
+.render-card.dark .render-main {
     background: #2a2d2e;
 }
 
 .srch-card.dark .srch-main .in,
 .fetch-card.dark .fetch-main .fetch-input,
-.ai-card.dark .ai-main .ai-input {
+.ai-card.dark .ai-main .ai-input,
+.render-card.dark .render-main .render-input {
     color: #fff;
 }
 
@@ -1121,13 +1278,15 @@ mark.match.current {
 .fetch-card.dark .fetch-main .fetch-input label,
 .fetch-card.dark .fetch-info,
 .ai-card.dark .ai-main .ai-input label,
-.ai-card.dark .ai-info {
+.ai-card.dark .ai-info,
+.render-card.dark .render-main .render-input label {
     background: rgba(30, 30, 30);
 }
 
 .srch-card.dark .srch-main .in input,
 .fetch-card.dark .fetch-main .fetch-input input,
-.ai-card.dark .ai-main .ai-input textarea {
+.ai-card.dark .ai-main .ai-input textarea,
+.render-card.dark .render-main .render-input textarea {
     background: #4b494d;
     color: #fff;
 }
@@ -1181,6 +1340,10 @@ mark.match.current {
 .no {
     opacity: .55;
     pointer-events: none;
+}
+
+.no-scroll {
+    overflow: hidden;
 }
 
 @keyframes pop {

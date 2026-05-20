@@ -16,7 +16,7 @@ const highlightMatches = (term) => {
 
     const text = textInput.innerText;
     const regex = new RegExp(`(${escapeRegExp(term)})`, 'gi');
-    
+
     // We use innerHTML to inject the <mark> tags for the glow effect
     textInput.innerHTML = text.replace(regex, '<mark class="match">$1</mark>');
 };
@@ -43,7 +43,7 @@ const openSearchMenu = () => {
 const closeSearchMenu = () => {
     searchCard.classList.add("down");
     searchCard.classList.add("anti-ani");
-    
+
     // CRITICAL: Remove highlights before closing so the text is clean
     textInput.innerHTML = textInput.innerText;
 
@@ -89,7 +89,7 @@ const replaceWord = (string, oldWord, newWord) => {
 
     const regex = new RegExp(escapeRegExp(oldWord), 'g');
     const matches = string.match(regex);
-    
+
     if (!matches) {
         throw new Error(`No matches found for '${oldWord}'`);
     }
@@ -145,7 +145,7 @@ let searchTimeout;
 
 searchWordInput.addEventListener("input", (e) => {
     const term = e.target.value;
-    
+
     if (term.length <= 0) {
         resultMatch.innerText = "";
         textInput.innerHTML = textInput.innerText;
@@ -185,3 +185,11 @@ textInput.addEventListener("focus", () => {
         textInput.innerHTML = textInput.innerText;
     }
 });
+
+
+searchBg.addEventListener("click", (e) => {
+    if (e.target === searchBg) {
+        setState("ready", "Ready", false);
+        return closeSearchMenu();
+    }
+})

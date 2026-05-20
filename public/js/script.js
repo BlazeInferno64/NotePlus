@@ -68,6 +68,8 @@ const resultMatch = document.querySelector(".res");
 
 const imageIcon = document.querySelector("#im");
 
+const shareBtn = document.querySelector("#share-txt");
+
 const isPWA = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone;
 
 // Hide noscript message and show app body
@@ -76,7 +78,102 @@ noScriptTag.style.display = "none";
 appBody.classList.remove("none");
 
 let hasUnsavedChanges = false;
+let hasSharedDocumentPayload = false;
+let sharedFilePayload = null;
 let fileType = "";
+let currentFileMetadata = {
+    name: null,
+    size: 0,
+    type: 'text/plain',
+    lastModified: Date.now()
+};
+
+const inferMimeType = (fileName) => {
+    const extension = fileName.split('.').pop().toLowerCase();
+    const map = {
+        js: 'text/javascript',
+        html: 'text/html',
+        css: 'text/css',
+        json: 'application/json',
+        py: 'text/x-python',
+        md: 'text/markdown',
+        txt: 'text/plain',
+        c: 'text/x-c',
+        cpp: 'text/x-c',
+        h: 'text/x-c',
+        ts: 'text/typescript',
+        java: 'text/x-java-source',
+        xml: 'application/xml',
+        yml: 'application/x-yaml',
+        yaml: 'application/x-yaml',
+        csv: 'text/csv',
+        env: 'text/plain',
+        sh: 'application/x-sh',
+        bat: 'application/x-bat',
+        ps1: 'application/x-powershell',
+        php: 'application/x-httpd-php'
+    };
+    return map[extension] || 'text/plain';
+};
+
+const formatBytes = (bytes) => {
+    if (bytes === 0) return '0 Bytes';
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(1024));
+    return `${(bytes / Math.pow(1024, i)).toFixed(2)} ${sizes[i]}`;
+};
+
+const calculateTimeAgo = (timestamp) => {
+    const now = new Date();
+    const lastModifiedDate = new Date(timestamp);
+    const timeDiff = Math.floor((now - lastModifiedDate) / 1000);
+
+    if (timeDiff < 60) return "just now";
+    if (timeDiff < 3600) {
+        const mins = Math.floor(timeDiff / 60);
+        return `${mins} minute${mins !== 1 ? 's' : ''} ago`;
+    }
+    if (timeDiff < 86400) {
+        const hrs = Math.floor(timeDiff / 3600);
+        return `${hrs} hour${hrs !== 1 ? 's' : ''} ago`;
+    }
+    if (timeDiff < 604800) {
+        const days = Math.floor(timeDiff / 86400);
+        return `${days} day${days !== 1 ? 's' : ''} ago`;
+    }
+    if (timeDiff < 2592000) {
+        const weeks = Math.floor(timeDiff / 604800);
+        return `${weeks} week${weeks !== 1 ? 's' : ''} ago`;
+    }
+    if (timeDiff < 5184000) return '1 month ago';
+    if (timeDiff < 31556952) {
+        const months = Math.floor(timeDiff / 2592000);
+        return `${months} month${months !== 1 ? 's' : ''} ago`;
+    }
+    const years = Math.floor(timeDiff / 31556952);
+    return `${years} year${years !== 1 ? 's' : ''} ago`;
+};
+
+const loadSharedFileMetadata = (payload) => {
+    const fileName = payload.name || 'Untitled Document';
+    const mimeType = payload.fileType || inferMimeType(fileName);
+    const size = payload.size || formatBytes(new TextEncoder().encode(payload.text || '').length);
+    const lastModified = payload.lastModified ? calculateTimeAgo(payload.lastModified) : 'Shared just now';
+    const lastModifiedDate = payload.lastModified ? new Date(payload.lastModified).toString() : new Date().toString();
+
+    fileType = mimeType;
+    encoding.innerText = mimeType;
+
+    if (typeof fileInfoViewer !== 'undefined' && fileInfoViewer) {
+        fileInfoViewer.textContent = `{
+    "Name": ${fileName},
+    "Size": ${size},
+    "File-Type": ${mimeType},
+    "Last-Modified": ${lastModified},
+    "Last-Modified-Date": ${lastModifiedDate}
+}`;
+    }
+};
 
 
 /**
@@ -268,7 +365,7 @@ const detectEnvironment = () => {
     } else if (host.endsWith(".github.io")) {
         platform = "GitHub Pages";
     } else if (host.endsWith(".vercel.app")) {
-        platform = "Vercel Serverless Platform";
+        platform = "Vercel";
     }
 
     return {
@@ -279,6 +376,68 @@ const detectEnvironment = () => {
     };
 };
 
+const openFileActionsList = () => {
+    fileBtn.classList.toggle("active");
+    helpBtn.classList.remove("active");
+    editBtn.classList.remove("active");
+
+    actionList.classList.toggle("hide");
+    setTimeout(() => {
+        actionList.classList.toggle("up");
+    }, 100);
+    editList.classList.add("hide");
+    setTimeout(() => {
+        editList.classList.add("up");
+    }, 100);
+
+    helpList.classList.add("hide");
+    setTimeout(() => {
+        helpList.classList.add("up");
+    }, 100);
+}
+
+
+const openEditOptionsList = () => {
+    fileBtn.classList.remove("active");
+    helpBtn.classList.remove("active");
+    editBtn.classList.toggle("active");
+
+    actionList.classList.add("hide");
+    setTimeout(() => {
+        actionList.classList.add("up");
+    }, 100);
+
+    editList.classList.toggle("hide");
+    setTimeout(() => {
+        editList.classList.toggle("up");
+    }, 100);
+
+    helpList.classList.add("hide");
+    setTimeout(() => {
+        helpList.classList.add("up");
+    }, 100);
+}
+
+const openHelpOptionsList = () => {
+    fileBtn.classList.remove("active");
+    helpBtn.classList.toggle("active");
+    editBtn.classList.remove("active");
+
+    actionList.classList.add("hide");
+    setTimeout(() => {
+        actionList.classList.add("up");
+    }, 100);
+
+    editList.classList.add("hide");
+    setTimeout(() => {
+        editList.classList.add("up");
+    }, 100);
+
+    helpList.classList.toggle("hide");
+    setTimeout(() => {
+        helpList.classList.toggle("up");
+    }, 100);
+}
 
 
 // Function to save file
@@ -315,7 +474,11 @@ const detectSearchQuery = () => {
         return;
     } else {
         if (text === "") {
-            alert(`Error: Text search query is present, but it doesn't have any value!`)
+            resetPopupMsg();
+            changePopupMsg(`Error: Text search query is present, but it doesn't have any value!`);
+            openPopup();
+
+            //alert(`Error: Text search query is present, but it doesn't have any value!`)
             console.log(`Text search query is present, but it doesn't have any value!`);
         }
         if (saveText === "") {
@@ -323,7 +486,11 @@ const detectSearchQuery = () => {
                 textInput.innerText = text;
                 hasUnsavedChanges = true;
             }
-            alert(`Error: Save query is present, but the value is empty!`)
+            resetPopupMsg();
+            changePopupMsg(`Error: Save query is present, but it doesn't have any value!`);
+            openPopup();
+
+            //alert(`Error: Save query is present, but the value is empty!`)
             console.log(`Save query is present, but the value is empty!`)
         }
         else if (text !== null && saveText === null) {
@@ -332,7 +499,9 @@ const detectSearchQuery = () => {
             return hasUnsavedChanges = true
         }
         else if (text === null && saveText !== null) {
-            alert(`Error: Save query is present, but failed to save file as there isn't any text query`);
+            resetPopupMsg();
+            changePopupMsg(`Error: Save query is present, but failed to save file as there isn't any text query`);
+            openPopup();
             return console.warn(`Save query is present, but failed to save file as there isn't any text query`)
         }
         else if (text !== null && saveText !== null) {
@@ -344,16 +513,22 @@ const detectSearchQuery = () => {
             else if (saveText === "false") {
                 hasUnsavedChanges = true;
                 if (text !== null) {
-                    alert(`Error: Text query is present, but didn't got saved as the save query is set to false`)
+                    resetPopupMsg();
+                    changePopupMsg(`Error: Text query is present, but didn't got saved as the save query is set to false`);
+                    openPopup();
                     console.warn(`Text query is present, but didn't got saved as the save query is set to false`);
                 }
                 else {
-                    alert(`Error: Text search query is absent`)
+                    resetPopupMsg();
+                    changePopupMsg(`Error: Text search query is absent`);
+                    openPopup();
                     return console.warn(`Text query is absent!`);
                 }
             }
             else {
-                alert(`Error: Invalid save query provided: ${saveText}`)
+                resetPopupMsg();
+                changePopupMsg(`Error: Invalid save query provided: ${saveText}`);
+                openPopup();
                 console.error(`Invalid save query provided: ${saveText}`)
                 return hasUnsavedChanges = true;
             }
@@ -363,8 +538,12 @@ const detectSearchQuery = () => {
 
 // Event listener when DOM content is loaded
 document.addEventListener("DOMContentLoaded", (e) => {
-    resetPopupMsg();
-    openPopup();
+    const urlParams = new URLSearchParams(window.location.search);
+    const sharedTextParam = urlParams.get("shared");
+    if (!sharedTextParam && !hasSharedDocumentPayload) {
+        resetPopupMsg();
+        openPopup();
+    }
     setState("ready", "Ready");
     const name = detectBrowser();
     browserName.innerText = name;
@@ -372,6 +551,10 @@ document.addEventListener("DOMContentLoaded", (e) => {
     setBrowserIcon(name);
     wordsCount.innerText = `Total Chars: ${textInput.innerText.length}`;
     textInput.focus();
+
+    if (hasSharedDocumentPayload && sharedFilePayload) {
+        loadSharedFileMetadata(sharedFilePayload);
+    }
 
     // Check if browser supports Web File System API
     if (!window.showSaveFilePicker) {
@@ -381,12 +564,15 @@ document.addEventListener("DOMContentLoaded", (e) => {
         //alert(`Your version of ${detectBrowser()} currently doesn't supports the Web File System API. Some features may not work as intended. Please check the browser console for more information regarding the Web File System API compatibility issue.`);
     }
 
-    fileInfoViewer.textContent = `
+    if (!hasSharedDocumentPayload && typeof fileInfoViewer !== 'undefined' && fileInfoViewer) {
+        fileInfoViewer.textContent = `
     No metadata available!
     Error: No file selected!
-    `
+    `;
+    }
     console.log(`Welcome to NotePlus text editor :)`);
     console.log(`NotePlus is a free open-source text editor based on Notepad. Visit https://github.com/blazeinferno64/NotePlus for more information.`);
+    
     return detectSearchQuery();
 });
 
@@ -409,7 +595,7 @@ textInput.addEventListener("input", (e) => {
 
 // Event listener for fileBtn click
 fileBtn.addEventListener("click", (e) => {
-    fileBtn.classList.toggle("active");
+    /*fileBtn.classList.toggle("active");
     helpBtn.classList.remove("active");
     editBtn.classList.remove("active");
 
@@ -425,12 +611,13 @@ fileBtn.addEventListener("click", (e) => {
     helpList.classList.add("hide");
     setTimeout(() => {
         helpList.classList.add("up");
-    }, 100);
+    }, 100);*/
+    return openFileActionsList();
 });
 
 // Event listener for editBtn click
 editBtn.addEventListener("click", (e) => {
-    fileBtn.classList.remove("active");
+    /*fileBtn.classList.remove("active");
     helpBtn.classList.remove("active");
     editBtn.classList.toggle("active");
 
@@ -447,12 +634,13 @@ editBtn.addEventListener("click", (e) => {
     helpList.classList.add("hide");
     setTimeout(() => {
         helpList.classList.add("up");
-    }, 100);
+    }, 100);*/
+    return openEditOptionsList();
 });
 
 // Event listener for helpBtn click
 helpBtn.addEventListener("click", (e) => {
-    fileBtn.classList.remove("active");
+    /*fileBtn.classList.remove("active");
     helpBtn.classList.toggle("active");
     editBtn.classList.remove("active");
 
@@ -469,7 +657,8 @@ helpBtn.addEventListener("click", (e) => {
     helpList.classList.toggle("hide");
     setTimeout(() => {
         helpList.classList.toggle("up");
-    }, 100);
+    }, 100);*/
+    return openHelpOptionsList();
 })
 
 // Event listener for close tab btn
@@ -520,7 +709,7 @@ document.addEventListener("click", (e) => {
             helpList.classList.add("up");
         }, 100);
 
-        if (searchBg.className == "srch-bg hide" && fileBg.className == "f-bg hide" && fetchBg.className == "fetch-bg hide" && aiBg.className == 'ai-bg hide') {
+        if (searchBg.className == "srch-bg hide" && fileBg.className == "f-bg hide" && fetchBg.className == "fetch-bg hide" && aiBg.className == 'ai-bg hide' && renderBg.className == "render-bg hide") {
             textInput.focus();
         }
         else {
@@ -815,6 +1004,12 @@ fileInput.onchange = async (e) => {
         readFile(file);
         activeFileName.innerText = file.name ? `${file.name} - NotePlus` : `Untitled - NotePlus`;
         fileType = file.type;
+        currentFileMetadata = {
+            name: file.name,
+            size: formatBytes(file.size),
+            type: file.type || 'text/plain',
+            lastModified: file.lastModified
+        };
         setState("ready", "File loaded", false);
     } catch (error) {
         setState("error", "Failed to open file", true);
@@ -947,7 +1142,8 @@ versionInfoBtn.addEventListener("click", (e) => {
     <hr style="border: 0; border-top: 4px solid #433e50; margin: 10px 0;">
     <b>Platform:</b> <span title="Detected via UserAgent">${about.Platform}</span><br>
     <b>OS:</b> <span>${about.OS}</span><br>
-    <b>Environment:</b> <code style="color: #f4f4f4; padding: 2px 4px;">${about.Hostname}:${about.Port}</code>
+    <b>Environment:</b> <code style="color: #f4f4f4; padding: 2px 4px;">${about.Hostname}</code><br>
+    <b>HTTP Port:</b> <code style="color: #f4f4f4; padding: 2px 4px;">${about.Port}</code>
     <br><br>
     <a href="https://github.com/blazeinferno64/NotePlus/blob/main/LICENSE" target="_blank" style="font-size: 0.8em;">View License</a>
     `, true);
@@ -1124,12 +1320,17 @@ const handleDrop = async (event) => {
 
 Body.addEventListener("dragover", (event) => {
     setState("info", "File detected", false);
+    resetPopupMsg();
+    changePopupMsg(`File detected! Drop it to open!`);
+    openPopup();
     textInput.focus();
     event.preventDefault();
 });
 
 Body.addEventListener("dragleave", (event) => {
     setState("ready", "Ready", false);
+    resetPopupMsg();
+    openPopup();
     event.preventDefault();
     textInput.blur();
 });
@@ -1138,12 +1339,17 @@ Body.addEventListener("drop", handleDrop);
 
 mainElement.addEventListener("dragover", (event) => {
     setState("info", "File detected", false);
+    resetPopupMsg();
+    changePopupMsg(`File detected! Drop it to open!`);
+    openPopup();
     textInput.focus();
     event.preventDefault();
 });
 
 mainElement.addEventListener("dragleave", (event) => {
     setState("ready", "Ready", false);
+    resetPopupMsg();
+    openPopup();
     event.preventDefault();
     textInput.blur();
 });
@@ -1152,12 +1358,18 @@ mainElement.addEventListener("drop", handleDrop);
 
 textInput.addEventListener("dragover", (event) => {
     setState("info", "File detected", false);
+    resetPopupMsg();
+    changePopupMsg(`File detected! Drop it to open!`);
+    openPopup();
     textInput.focus();
     event.preventDefault();
 });
 
 textInput.addEventListener("dragleave", (event) => {
     setState("info", "File detected", false);
+    resetPopupMsg();
+    changePopupMsg(`File detected! Drop it to open!`);
+    openPopup();
     event.preventDefault();
     textInput.blur();
 });
@@ -1237,6 +1449,244 @@ window.addEventListener("beforeunload", (e) => {
     }
 });
 
+// ── Notepad-style hover switching ──────────────────────────────────────────
+// When any menu is already open, hovering another button switches instantly.
+const isAnyMenuOpen = () =>
+    fileBtn.classList.contains("active") ||
+    editBtn.classList.contains("active") ||
+    helpBtn.classList.contains("active");
+
+fileBtn.addEventListener("mouseenter", () => {
+    if (isAnyMenuOpen() && !fileBtn.classList.contains("active")) {
+        openFileActionsList();
+    }
+});
+
+editBtn.addEventListener("mouseenter", () => {
+    if (isAnyMenuOpen() && !editBtn.classList.contains("active")) {
+        openEditOptionsList();
+    }
+});
+
+helpBtn.addEventListener("mouseenter", () => {
+    if (isAnyMenuOpen() && !helpBtn.classList.contains("active")) {
+        openHelpOptionsList();
+    }
+});
+
+// Force contenteditable to be completely empty when it only contains a browser ghost break tag
+textInput.addEventListener("input", () => {
+    if (textInput.innerHTML === "<br>" || textInput.innerHTML === "") {
+        textInput.innerHTML = "";
+    }
+});
+// ───────────────────────────────────────────────────────────────────────────
+
+const placeholders = [
+    // --- Developer & Tech Vibes ---
+    "Drop your code snippets or markdown docs here…",
+    "Spill your application architecture here…",
+    "Dump your thoughts or format your JSON payload…",
+    "Initialize your next big concept here…",
+    "Drafting a README, a scratchpad, or a masterpiece? Start here…",
+    "Code is poetry. Write something functional…",
+
+    // --- Cosmic & Deep Creative Prompts ---
+    "The universe is full of magical things, waiting for your wits. Write something brilliant…",
+    "Capture the fleeting spark before it fades into background noise…",
+    "A blank canvas is either a void or a playground. Make it yours…",
+    "Ideas are cheap, execution is everything. Begin drafting…",
+    "Ink remains, thoughts drift away. Secure them here…",
+    "Silence the world, let your fingers do the thinking…",
+
+    // --- Elegant & Minimalistic ---
+    "Write something amazing…",
+    "Start typing here…",
+    "Share your thoughts…",
+    "Write something fascinating…",
+    "What’s on your mind?",
+    "Tell your story…",
+    "Create something awesome…",
+    "Type here…",
+    "Begin your script…",
+    "Leave your footprint here…"
+];
+
+window.addEventListener("load", () => {
+    const randomText =
+        placeholders[Math.floor(Math.random() * placeholders.length)];
+
+    document.querySelector(".text")
+        .style.setProperty("--placeholder", `"${randomText}"`);
+});
+// ------------------------------------------------------------------------------
+
+async function shareNote() {
+    const textToShare = textInput.innerText || textInput.innerHTML;
+
+    if (!textToShare.trim()) {
+        if (typeof changePopupMsg === "function") {
+            changePopupMsg("Cannot share an empty document…");
+            openPopup();
+        } else {
+            alert("Cannot share an empty document…");
+        }
+        return;
+    }
+
+    const baseFileName = activeFileName.innerText.replace(/\s*-\s*NotePlus$/, "").trim() || "Untitled Document";
+    const payload = {
+        name: baseFileName,
+        text: textToShare,
+        fileType: currentFileMetadata.type,
+        size: currentFileMetadata.size,
+        lastModified: currentFileMetadata.lastModified,
+        sourceUrl: `${window.location.origin}${window.location.pathname}`
+    };
+
+    // Use safe UTF-8-aware Base64 encoder for arbitrary Unicode text
+    const base64EncodeUnicode = (str) => {
+        return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, (match, p1) => String.fromCharCode('0x' + p1)));
+    };
+
+    const encodedText = base64EncodeUnicode(JSON.stringify(payload));
+    const shareURL = `${window.location.origin}${window.location.pathname}?shared=${encodeURIComponent(encodedText)}`;
+
+    try {
+        // Only trigger native share if the API is explicitly supported by the device operating system
+        if (navigator.share) {
+            await navigator.share({
+                title: `${activeFileName.innerText || "Untitled Document"} - Shared from NotePlus`,
+                text: "Check out this document I created in NotePlus!",
+                url: shareURL,
+            });
+            changePopupMsg(`Sharing ${activeFileName.innerText || "Untitled Document"}...`);
+            openPopup();
+        } else {
+            // Perfect serverless fallback for all desktop browsers
+            await navigator.clipboard.writeText(shareURL);
+
+            if (typeof changePopupMsg === "function") {
+                resetPopupMsg();
+                changePopupMsg("Share link copied to clipboard successfully…");
+                openPopup();
+            } else {
+                alert("Share link copied to clipboard!");
+            }
+        }
+    } catch (error) {
+        // Prevent throwing errors if the user simply cancels or closes the native share tray share menu sheet
+        if (error.name === "AbortError") {
+            console.log("Sharing cancelled by user.");
+            if (typeof changePopupMsg === "function") {
+                changePopupMsg("Sharing cancelled.");
+                openPopup();
+            } else {
+                alert("Sharing cancelled.");
+            }
+            return;
+        }
+
+        // Detect the not allowed share error explicitly
+        if (error.name === "NotAllowedError") {
+            console.log("Native share failed: NotAllowedError - share permission denied or blocked.");
+            if (typeof changePopupMsg === "function") {
+                changePopupMsg("Native sharing is not allowed on this device or browser.\nIt might be due to privacy settings or browser restrictions!\nPlease try again later!\n");
+                openPopup();
+            } else {
+                alert("Native sharing is not allowed on this device or browser.");
+            }
+            return;
+        }
+
+        console.error("Sharing failed:", error);
+
+        if (typeof changePopupMsg === "function") {
+            changePopupMsg(`An error occurred while sharing: ${error.message}.`, true);
+            openPopup();
+        } else {
+            alert(`An error occurred while sharing: ${error.message}`);
+        }
+    }
+}
+
+shareBtn.addEventListener("click", shareNote);
+
+(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const sharedTextParam = urlParams.get("shared");
+
+    if (!sharedTextParam) return;
+
+    hasSharedDocumentPayload = true;
+
+    try {
+        // Decode the Base64-encoded text from the URL parameter using a UTF-8-aware decoder
+        const base64DecodeUnicode = (str) => {
+            return decodeURIComponent(atob(str).split('').map((c) => {
+                return '%' + c.charCodeAt(0).toString(16).padStart(2, '0');
+            }).join(''));
+        };
+
+        const decodedText = base64DecodeUnicode(sharedTextParam);
+        const payload = JSON.parse(decodedText);
+        sharedFilePayload = payload;
+        const sharedName = payload.name ? `${payload.name} - Shared Document - NotePlus` : `Shared Document - NotePlus`;
+
+        // Populate the text input with the shared content
+        textInput.innerText = payload.text || "";
+        activeFileName.innerText = sharedName;
+
+        // Load metadata from shared payload
+        if (typeof loadSharedFileMetadata === 'function') {
+            // Ensure size is calculated if not in payload
+            if (!payload.size) {
+                payload.size = formatBytes(new TextEncoder().encode(payload.text || '').length);
+            }
+            loadSharedFileMetadata(payload);
+        }
+        setState("ready", "Shared document loaded", false);
+        resetPopupMsg();
+        changePopupMsg(`Shared document loaded successfully! If any issues occur then please refresh this page and try again!`);
+        openPopup();
+
+        // Optionally, you can also update the word/character count if you have that feature implemented
+        const totalChars = decodedText.length;
+
+        hasUnsavedChanges = true;
+
+        // Trigger a word count refresh update routine if you have one tracking mutations
+        if (wordsCount) wordsCount.innerText = `Total Chars: ${totalChars}`;
+
+        // Clean URL by removing the shared parameter after loading the content
+        const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+        window.history.replaceState({ path: cleanUrl }, '', cleanUrl);
+
+        console.log("[NotePlus] Shared serverless document payload fetched and mounted perfectly.");
+
+
+        if (typeof changePopupMsg === "function") {
+            changePopupMsg(`Shared document loaded successfully! If any issues occur then please refresh this page and try again!`);
+            openPopup();
+        } else {
+            alert(`Shared document loaded successfully! If any issues occur then please refresh this page and try again!`);
+        }
+    } catch (error) {
+        console.error("Failed to load shared document:", error);
+        textInput.innerText = sharedTextParam; // Fallback: show the raw shared parameter in the text input for debugging
+        if (wordsCount) wordsCount.innerText = `Total Chars: ${sharedTextParam.length}`;
+        hasUnsavedChanges = true;
+
+        if (typeof changePopupMsg === "function") {
+            changePopupMsg(`Failed to load shared document: ${error.message}. Please try again or check the browser console for more details.`, true);
+            openPopup();
+        } else {
+            alert(`Failed to load shared document: ${error.message}`);
+        }
+    }
+})();
+
+// ------------------------------------------------------------------------------
 if ('launchQueue' in window) {
     window.launchQueue.setConsumer(async (launchParams) => {
         if (launchParams.files && launchParams.files.length > 0) {
@@ -1323,6 +1773,9 @@ installNotePlusBtn.addEventListener("click", async (e) => {
     if (deferredPrompt !== null) {
         deferredPrompt.prompt();
         const choiceResult = await deferredPrompt.userChoice;
+        Promise.allSettled([
+            showDownloads(),
+        ]);
         if (choiceResult.outcome === 'accepted') {
             console.log('User accepted the install prompt');
             isAppInstalled = true;
@@ -1523,3 +1976,29 @@ if ('serviceWorker' in navigator) {
         window.location.reload();
     });
 }
+
+
+async function showDownloads() {
+    try {
+        const downloadNum = document.querySelector("#downloads");
+
+        const myURI = 'https://counter-api-kappa.vercel.app/api/count';
+
+        const proxiedURL = `https://blaze-proxy-server.vercel.app/api/proxy?url=${myURI}`;
+
+        const response = await fetch(proxiedURL);
+
+        const jsonRes = await response.json();
+
+        downloadNum.innerText = jsonRes.data.data['up_count'] ? `${jsonRes.data.data['up_count']}+` : 'N/A';
+
+    } catch (error) {
+        console.error('Error fetching download count:', error);
+    }
+}
+
+document.addEventListener("DOMContentLoaded", async () => {
+    await Promise.allSettled([
+        showDownloads(),
+    ]);
+});
