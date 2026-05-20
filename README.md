@@ -5,7 +5,7 @@
 Free and open source browser based text editor
 |-----|
 
-# Test
+# Running NotePlus 👇
 Test NotePlus using vercel 
 
 <a href="https://note-plus-mu.vercel.app/">
