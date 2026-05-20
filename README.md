@@ -86,6 +86,12 @@ NotePlus Version 6.0 is here!!!
 11. **Read Aloud Feature**  
     Added a **Read** option that allows text to be read aloud for improved accessibility and convenience.
 
+12. **Text Rendering Feature**
+    Added a **Text Rendering** feature which allows users to render their current active document/texts as `HTML`, `MARKDOWN`, `LaTeX`, `JSON Tree Viewer`
+
+13. **Share feature**
+    Added a **Share Text** feature which allows users to share their current texts with other.
+
 # Info
 Please read the following point carefully -
 
