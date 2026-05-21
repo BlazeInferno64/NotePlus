@@ -1030,6 +1030,12 @@ body {
     text-rendering: optimizeLegibility;
 }
 
+.temp-down {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
 .popup::-webkit-scrollbar,
 .render-card iframe::-webkit-scrollbar {
     width: 6px;

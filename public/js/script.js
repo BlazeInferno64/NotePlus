@@ -70,6 +70,12 @@ const imageIcon = document.querySelector("#im");
 
 const shareBtn = document.querySelector("#share-txt");
 
+const downloadNum = document.querySelector("#downloads");
+
+const downloadCount = document.querySelector("#show-downloads");
+
+
+const downloadIcon = document.querySelector("#download-icon");
 const isPWA = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone;
 
 // Hide noscript message and show app body
@@ -572,7 +578,7 @@ document.addEventListener("DOMContentLoaded", (e) => {
     }
     console.log(`Welcome to NotePlus text editor :)`);
     console.log(`NotePlus is a free open-source text editor based on Notepad. Visit https://github.com/blazeinferno64/NotePlus for more information.`);
-    
+
     return detectSearchQuery();
 });
 
@@ -1747,6 +1753,17 @@ window.addEventListener("beforeinstallprompt", (e) => {
 });
 
 installNotePlusBtn.addEventListener("click", async (e) => {
+    // ─── PWA MODE CLICK INTERCEPT ───
+    if (isPWA || window.matchMedia('(display-mode: standalone)').matches) {
+        const downloads = downloadNum.innerText ? downloadNum.innerText : "N/A"; // Fallback if download count isn't available
+
+        // Display your requested alert
+        changePopupMsg(`NotePlus has total downloads of <span style="color: #28a75f; font-weight: 600;">${downloads}</span>!<br><span style="color: #6c757d; font-size: 0.9em;">Thank you for your support!</span>`, true);
+        openPopup();
+        //alert(`NotePlus has total downloads of ${downloads}`);
+        return; // Halt execution so it doesn't run installation/update checks
+    }
+
     if (isAppInstalled) {
         console.log("App is already installed! Checking for updates...");
 
@@ -1833,7 +1850,10 @@ let updateRefreshScheduled = false;
 // Check for updates when app loads
 window.addEventListener('load', () => {
     if (isPWA) {
-        installNotePlusBtn.style.display = 'none'; // Hide install button if already in PWA mode
+        console.log("✓ NotePlus is running in PWA mode!");
+        downloadCount.innerText = `Total Downloads`;
+        downloadIcon.innerText = `downloading`;
+        //installNotePlusBtn.style.display = 'none'; // Hide install button if already in PWA mode
     }
     // Register service worker if not already registered
     if ('serviceWorker' in navigator) {
@@ -1980,7 +2000,6 @@ if ('serviceWorker' in navigator) {
 
 async function showDownloads() {
     try {
-        const downloadNum = document.querySelector("#downloads");
 
         const myURI = 'https://counter-api-kappa.vercel.app/api/count';
 
