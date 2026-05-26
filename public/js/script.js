@@ -564,9 +564,14 @@ document.addEventListener("DOMContentLoaded", (e) => {
 
     // Check if browser supports Web File System API
     if (!window.showSaveFilePicker) {
-        changePopupMsg(`Your version of ${detectBrowser()} doesn't currently supports the Web File System API. Some features may not work as intended. Please check browser compatibility at <a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/showSaveFilePicker#browser_compatibility" target="_blank">MDN Web Docs</a>.`, true);
+        changePopupMsg(`
+            <strong class="popup-alert-title">⚠️ Browser support required ⚠️</strong>
+            Your version of ${detectBrowser()} doesn't currently support the Web File System API. Some features may not work as intended.
+            <span class="popup-alert-note">The 'Save as' feature relies on the browser's File System API.</span>
+            Check browser compatibility at <a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/showSaveFilePicker#browser_compatibility" target="_blank" rel="noreferrer" class="popup-alert-link">MDN Web Docs</a>.
+        `, true);
         openPopup();
-        console.warn(`Your version of ${detectBrowser()} doesn't currently supports the Web File System API. Please check browser compatibility at https://developer.mozilla.org/en-US/docs/Web/API/Window/showSaveFilePicker#browser_compatibility.`);
+        console.warn(`Your version of ${detectBrowser()} doesn't currently support the Web File System API. Please check browser compatibility at https://developer.mozilla.org/en-US/docs/Web/API/Window/showSaveFilePicker#browser_compatibility.`);
         //alert(`Your version of ${detectBrowser()} currently doesn't supports the Web File System API. Some features may not work as intended. Please check the browser console for more information regarding the Web File System API compatibility issue.`);
     }
 
@@ -983,7 +988,12 @@ const saveAsFile = async () => {
             //alert(`Saving failed: You aborted the request.`);
         } else if (err.name === 'TypeError') {
             resetPopupMsg();
-            changePopupMsg(`Please use a supported browser that implements the Web File System API to use the saving feature of NotePlus. Check browser compatibility at <a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/showSaveFilePicker#browser_compatibility" target="_blank">MDN Web Docs</a>.`);
+            changePopupMsg(`
+                <strong class="popup-alert-title">⚠️ Unsupported browser detected ⚠️</strong>
+                ${detectBrowser()} doesn't support the Web File System API. Please use a supported browser to save files directly from NotePlus.
+                <span class="popup-alert-note">This feature relies on the browser's File System Access API.</span>
+                Check browser compatibility at <a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/showSaveFilePicker#browser_compatibility" target="_blank" rel="noreferrer" class="popup-alert-link">MDN Web Docs</a>.
+            `, true);
             openPopup();
             setState("error", "Unsupported browser", false);
             //alert(`Please use a supported browser!`);
