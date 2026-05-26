@@ -3,7 +3,6 @@
 <img src="https://img.shields.io/badge/NotePlus%20Text%20Editor-grey?style=for-the-badge&logo=javascript" />
 
 Free and open-source browser-based text editor with AI integration and more!
-
 |-----|
 
 # Running NotePlus 👇
