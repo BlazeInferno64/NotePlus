@@ -994,6 +994,19 @@ body {
     /* Prevents blocking clicks behind the popup */
 }
 
+#custom-progress-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 2px;
+    width: 0%; /* Starts at 0 */
+    background-color: #45caff; /* Your custom color (e.g., vibrant orange) */
+    z-index: 9999;
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
+    transition: width 0.4s ease; /* Makes the movement smooth */
+  }
+
 .popup-bg .popup {
     width: 90%;
     max-width: 500px;
@@ -1015,11 +1028,12 @@ body {
 }
 
 .popup-msg {
-    color: #efefef;
+    color: #f3f6ff;
     margin: 0;
-    font-size: 0.9rem;
-    line-height: 1.5;
+    font-size: 0.95rem;
+    line-height: 1.55;
     padding-right: 10px;
+    letter-spacing: 0.01em;
 
     overflow-wrap: anywhere;
     word-break: break-word;
@@ -1028,6 +1042,22 @@ body {
 
     font-variant-ligatures: no-common-ligatures;
     text-rendering: optimizeLegibility;
+}
+
+.popup-msg-title {
+    display: block;
+    margin-bottom: 0.4rem;
+    font-size: 1.05rem;
+    font-weight: 700;
+    background: linear-gradient(90deg, #7be3ff, #45caff, #8686ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 1px 4px rgba(38, 90, 167, 0.25);
+}
+
+.popup-msg-highlight {
+    color: #45caff;
+    font-weight: 600;
 }
 
 .temp-down {

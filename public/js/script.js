@@ -74,6 +74,7 @@ const downloadNum = document.querySelector("#downloads");
 
 const downloadCount = document.querySelector("#show-downloads");
 
+const progressBar = document.getElementById('custom-progress-bar');
 
 const downloadIcon = document.querySelector("#download-icon");
 const isPWA = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone;
@@ -2031,3 +2032,31 @@ document.addEventListener("DOMContentLoaded", async () => {
         showDownloads(),
     ]);
 });
+
+
+
+const updateProgress = () => {
+    if (!progressBar) return;
+
+    if (document.readyState === 'loading') {
+        progressBar.style.width = '25%';
+    } 
+    else if (document.readyState === 'interactive') {
+        progressBar.style.width = '50%';
+    } 
+    else if (document.readyState === 'complete') {
+        progressBar.style.width = '100%';
+
+        // Handle the fade-out and removal seamlessly once complete
+        setTimeout(() => {
+            progressBar.style.opacity = '0';
+            setTimeout(() => progressBar.remove(), 400);
+        }, 400);
+    }
+};
+
+// Listen for lifecycle transitions (interactive & complete)
+document.addEventListener('readystatechange', updateProgress);
+
+// Catch whatever state the browser is in right now on execution (e.g. loading)
+updateProgress();
