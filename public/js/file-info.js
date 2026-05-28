@@ -151,3 +151,10 @@ fileMetaDataDownloadBtn.addEventListener("click", (e) => {
     const metadataFile = fileInput.files[0] || { name: 'shared-document' };
     return downloadData(fileInfoViewer.textContent, metadataFile);
 })
+
+fileBg.addEventListener("click", (e) => {
+    if (e.target === fileBg) {
+        setState("ready", "Ready", false);
+        return closeFileMenu();
+    }
+});

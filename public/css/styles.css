@@ -223,7 +223,10 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    transition: background .1s ease-in-out;
+    transition: background-color 250ms cubic-bezier(0.2, 0, 0, 1);
+
+    position: relative;
+    overflow: hidden;
 }
 
 .action-list ul li:hover,
@@ -241,6 +244,8 @@ body {
 .action-list ul li span,
 .help-list ul li span,
 .edit-list ul li span {
+    position: relative;
+    z-index: 2;
     display: flex;
     width: 100%;
     align-items: center;
@@ -248,6 +253,60 @@ body {
     gap: 5px;
     padding: .5rem;
     font-size: .95rem;
+
+    pointer-events: none;
+    /* Allows the click event to pass directly to the parent LI */
+}
+
+/* The optimized M3 dynamic ink layer */
+.ripple-span {
+    position: absolute !important;
+    border-radius: 50%;
+    transform: scale(0.2);
+    pointer-events: none;
+    z-index: 1;
+    will-change: transform, opacity;
+
+    /* Dual-timing optimization: scale is crisp while fade remains soft */
+    animation: 
+        ripple-scale 460ms cubic-bezier(0.4, 0, 0.2, 1) forwards,
+        ripple-fade 820ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        
+    /* Slightly stronger ink for better material feel */
+    background-color: rgba(230, 218, 218); 
+}
+
+/* Translucent soft-neon illumination accent for dark mode layers */
+.action-list.dark .ripple-span,
+.edit-list.dark .ripple-span,
+.help-list.dark .ripple-span {
+    background-color: rgba(230, 218, 218);
+}
+
+/* Phase 1: Snappy geometric containment scale expansion */
+@keyframes ripple-scale {
+    0% {
+        transform: scale(0.2);
+    }
+    60% {
+        transform: scale(1.03);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Phase 2: Professional, premium gradient melting bleed */
+@keyframes ripple-fade {
+    0% {
+        opacity: 0.32;
+    }
+    45% {
+        opacity: 0.18;
+    }
+    100% {
+        opacity: 0;
+    }
 }
 
 .action-list ul li span p,
@@ -324,7 +383,7 @@ body {
 }
 
 .text {
-    scrollbar-width:auto;
+    scrollbar-width: auto;
     scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
     position: relative;
 }
@@ -999,13 +1058,16 @@ body {
     top: 0;
     left: 0;
     height: 2px;
-    width: 0%; /* Starts at 0 */
-    background-color: #45caff; /* Your custom color (e.g., vibrant orange) */
+    width: 0%;
+    /* Starts at 0 */
+    background-color: #45caff;
+    /* Your custom color (e.g., vibrant orange) */
     z-index: 9999;
     border-top-right-radius: 3px;
     border-bottom-right-radius: 3px;
-    transition: width 0.4s ease; /* Makes the movement smooth */
-  }
+    transition: width 0.4s ease;
+    /* Makes the movement smooth */
+}
 
 .popup-bg .popup {
     width: 90%;

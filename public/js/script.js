@@ -465,96 +465,175 @@ const saveFile = () => {
     setState("ready", "Ready", false);
 }
 
-// Function to detect search query 
-const detectSearchQuery = () => {
-    const urlParams = new URLSearchParams(window.location.search);
+// Function to detect and handle shared payloads and search query data from URL
+const loadSharedPayloadFromUrl = (urlParams = new URLSearchParams(window.location.search)) => {
+    if (!urlParams || !urlParams.has('shared')) return false;
+
+    const sharedTextParam = urlParams.get('shared');
+    if (!sharedTextParam) return false;
+
+    hasSharedDocumentPayload = true;
+
+    const base64DecodeUnicode = (str) => {
+        return decodeURIComponent(atob(str).split('').map((c) => {
+            return '%' + c.charCodeAt(0).toString(16).padStart(2, '0');
+        }).join(''));
+    };
+
+    try {
+        let decodedText = null;
+
+        if (typeof LZString !== 'undefined' && typeof LZString.decompressFromEncodedURIComponent === 'function') {
+            decodedText = LZString.decompressFromEncodedURIComponent(sharedTextParam);
+        }
+
+        if (!decodedText && typeof atob === 'function') {
+            decodedText = base64DecodeUnicode(sharedTextParam);
+        }
+
+        if (!decodedText) {
+            throw new Error('Decompression returned null content (corrupted or unsupported URL token)');
+        }
+
+        const payload = JSON.parse(decodedText);
+        sharedFilePayload = payload;
+
+        const sharedName = payload.name ? `${payload.name} - Shared Document - NotePlus` : `Shared Document - NotePlus`;
+        textInput.innerText = payload.text || "";
+        activeFileName.innerText = sharedName;
+
+        // Preserve shared payload metadata for save-as naming and type handling
+        currentFileMetadata = {
+            name: payload.name || currentFileMetadata.name,
+            size: payload.size || formatBytes(new TextEncoder().encode(payload.text || '').length),
+            type: payload.fileType || currentFileMetadata.type,
+            lastModified: payload.lastModified || currentFileMetadata.lastModified
+        };
+
+        if (typeof loadSharedFileMetadata === 'function') {
+            if (!payload.size) {
+                payload.size = formatBytes(new TextEncoder().encode(payload.text || '').length);
+            }
+            loadSharedFileMetadata(payload);
+        }
+
+        setState('ready', 'Shared document loaded', true);
+        resetPopupMsg();
+        changePopupMsg('Shared document loaded successfully! If any issues occur then please refresh this page and try again!');
+        openPopup();
+
+        const totalChars = textInput.innerText.length;
+        hasUnsavedChanges = true;
+        if (wordsCount) wordsCount.innerText = `Total Chars: ${totalChars}`;
+
+        const cleanUrl = window.location.protocol + '//' + window.location.host + window.location.pathname;
+        window.history.replaceState({ path: cleanUrl }, '', cleanUrl);
+
+        console.log('[NotePlus] Shared serverless document payload fetched and mounted perfectly.');
+        return true;
+    } catch (error) {
+        console.error('Failed to load shared document:', error);
+        textInput.innerText = sharedTextParam;
+        if (wordsCount) wordsCount.innerText = `Total Chars: ${sharedTextParam.length}`;
+        if (typeof fileInfoViewer !== 'undefined' && fileInfoViewer) {
+            fileInfoViewer.textContent = `
+    No metadata available!
+    Error: No file selected!
+    `;
+        }
+        hasUnsavedChanges = true;
+        setState('error', 'Error loading shared payload', true);
+        resetPopupMsg();
+        changePopupMsg(`Failed to load shared document: ${error.message}. Please try again or check the browser console for more details.`, true);
+        openPopup();
+        return true;
+    }
+};
+
+const detectSearchQuery = (urlParams = new URLSearchParams(window.location.search)) => {
+    if (urlParams.has('shared')) {
+        return;
+    }
+
+    if (!urlParams.has('text') && !urlParams.has('save') && !urlParams.has('newtab')) {
+        return;
+    }
+
     const text = urlParams.get('text');
     const saveText = urlParams.get('save');
+    const newTab = urlParams.get('newtab');
 
-    if (urlParams.has('newtab') && urlParams.get('newtab') === "true") {
+    if (newTab === 'true') {
         resetPopupMsg();
-        changePopupMsg(`Successfully created a new tab with an untitled NotePlus window!`);
+        changePopupMsg('Successfully created a new tab with an untitled NotePlus window!');
         openPopup();
     }
 
-    if (!urlParams.has('text') && urlParams.toString() === "" && !urlParams.has('save')) {
+    if (urlParams.has('text') && text === '') {
+        resetPopupMsg();
+        changePopupMsg(`Error: Text search query is present, but it doesn't have any value!`);
+        openPopup();
+        console.log(`Text search query is present, but it doesn't have any value!`);
         return;
-    } else {
-        if (text === "") {
-            resetPopupMsg();
-            changePopupMsg(`Error: Text search query is present, but it doesn't have any value!`);
-            openPopup();
+    }
 
-            //alert(`Error: Text search query is present, but it doesn't have any value!`)
-            console.log(`Text search query is present, but it doesn't have any value!`);
-        }
-        if (saveText === "") {
-            if (text !== null) {
-                textInput.innerText = text;
-                hasUnsavedChanges = true;
-            }
-            resetPopupMsg();
-            changePopupMsg(`Error: Save query is present, but it doesn't have any value!`);
-            openPopup();
-
-            //alert(`Error: Save query is present, but the value is empty!`)
-            console.log(`Save query is present, but the value is empty!`)
-        }
-        else if (text !== null && saveText === null) {
-            console.log(`Found text query: ${text}`);
-            textInput.innerText = text;
-            return hasUnsavedChanges = true
-        }
-        else if (text === null && saveText !== null) {
-            resetPopupMsg();
-            changePopupMsg(`Error: Save query is present, but failed to save file as there isn't any text query`);
-            openPopup();
-            return console.warn(`Save query is present, but failed to save file as there isn't any text query`)
-        }
-        else if (text !== null && saveText !== null) {
+    if (urlParams.has('save') && saveText === '') {
+        if (text !== null) {
             textInput.innerText = text;
             hasUnsavedChanges = true;
-            if (saveText === "true") {
-                saveFile();
-            }
-            else if (saveText === "false") {
-                hasUnsavedChanges = true;
-                if (text !== null) {
-                    resetPopupMsg();
-                    changePopupMsg(`Error: Text query is present, but didn't got saved as the save query is set to false`);
-                    openPopup();
-                    console.warn(`Text query is present, but didn't got saved as the save query is set to false`);
-                }
-                else {
-                    resetPopupMsg();
-                    changePopupMsg(`Error: Text search query is absent`);
-                    openPopup();
-                    return console.warn(`Text query is absent!`);
-                }
-            }
-            else {
-                resetPopupMsg();
-                changePopupMsg(`Error: Invalid save query provided: ${saveText}`);
-                openPopup();
-                console.error(`Invalid save query provided: ${saveText}`)
-                return hasUnsavedChanges = true;
-            }
+        }
+        resetPopupMsg();
+        changePopupMsg('Error: Save query is present, but it doesn\'t have any value!');
+        openPopup();
+        console.log('Save query is present, but the value is empty!');
+        return;
+    }
+
+    if (text !== null && saveText === null) {
+        console.log(`Found text query: ${text}`);
+        textInput.innerText = text;
+        return hasUnsavedChanges = true;
+    }
+
+    if (text === null && saveText !== null) {
+        resetPopupMsg();
+        changePopupMsg('Error: Save query is present, but failed to save file as there isn\'t any text query');
+        openPopup();
+        return console.warn('Save query is present, but failed to save file as there isn\'t any text query');
+    }
+
+    if (text !== null && saveText !== null) {
+        textInput.innerText = text;
+        hasUnsavedChanges = true;
+        if (saveText === 'true') {
+            saveFile();
+        } else if (saveText === 'false') {
+            resetPopupMsg();
+            changePopupMsg('Error: Text query is present, but didn\'t get saved as the save query is set to false');
+            openPopup();
+            console.warn('Text query is present, but didn\'t get saved as the save query is set to false');
+        } else {
+            resetPopupMsg();
+            changePopupMsg(`Error: Invalid save query provided: ${saveText}`);
+            openPopup();
+            console.error(`Invalid save query provided: ${saveText}`);
         }
     }
-}
+};
 
 // Event listener when DOM content is loaded
-document.addEventListener("DOMContentLoaded", (e) => {
+document.addEventListener('DOMContentLoaded', (e) => {
     const urlParams = new URLSearchParams(window.location.search);
-    const sharedTextParam = urlParams.get("shared");
-    if (!sharedTextParam && !hasSharedDocumentPayload) {
+    const handledShared = loadSharedPayloadFromUrl(urlParams);
+
+    if (!handledShared && !hasSharedDocumentPayload) {
         resetPopupMsg();
         openPopup();
     }
-    setState("ready", "Ready");
+
+    setState('ready', 'Ready');
     const name = detectBrowser();
     browserName.innerText = name;
-    // Set browser icons
     setBrowserIcon(name);
     wordsCount.innerText = `Total Chars: ${textInput.innerText.length}`;
     textInput.focus();
@@ -563,7 +642,6 @@ document.addEventListener("DOMContentLoaded", (e) => {
         loadSharedFileMetadata(sharedFilePayload);
     }
 
-    // Check if browser supports Web File System API
     if (!window.showSaveFilePicker) {
         changePopupMsg(`
             <strong class="popup-alert-title">⚠️ Browser support required ⚠️</strong>
@@ -573,7 +651,6 @@ document.addEventListener("DOMContentLoaded", (e) => {
         `, true);
         openPopup();
         console.warn(`Your version of ${detectBrowser()} doesn't currently support the Web File System API. Please check browser compatibility at https://developer.mozilla.org/en-US/docs/Web/API/Window/showSaveFilePicker#browser_compatibility.`);
-        //alert(`Your version of ${detectBrowser()} currently doesn't supports the Web File System API. Some features may not work as intended. Please check the browser console for more information regarding the Web File System API compatibility issue.`);
     }
 
     if (!hasSharedDocumentPayload && typeof fileInfoViewer !== 'undefined' && fileInfoViewer) {
@@ -585,7 +662,7 @@ document.addEventListener("DOMContentLoaded", (e) => {
     console.log(`Welcome to NotePlus text editor :)`);
     console.log(`NotePlus is a free open-source text editor based on Notepad. Visit https://github.com/blazeinferno64/NotePlus for more information.`);
 
-    return detectSearchQuery();
+    return detectSearchQuery(urlParams);
 });
 
 // Event listener for mainElement clicks
@@ -890,6 +967,11 @@ const saveAsFile = async () => {
     // Check if it's the default "Untitled" state
     if (filename === "Untitled - NotePlus" || filename === "" || !filename) {
         filename = "Untitled - NotePlus.txt"; // Provide a clean default filename with extension
+    } else if (hasSharedDocumentPayload) {
+        // Preserve the full shared payload display name and ensure a .txt suffix
+        if (!filename.toLowerCase().endsWith('.txt')) {
+            filename = `${filename}.txt`;
+        }
     }
 
     setState("saving", "Saving…", false);
@@ -1538,8 +1620,28 @@ window.addEventListener("load", () => {
 });
 // ------------------------------------------------------------------------------
 
+// Add a function to handle generating the shareable URL
+const generateShareableUrl = (text) => {
+    const rawText = typeof text === 'string' ? text : textInput.innerText;
+
+    if (!rawText.trim()) {
+        resetPopupMsg();
+        changePopupMsg("There's nothing to share!");
+        openPopup();
+        return;
+    }
+
+    // Compress the text safely for URL parameters
+    const compressedText = LZString.compressToEncodedURIComponent(rawText);
+
+    // Construct the final sharing URL
+    const shareUrl = `${window.location.origin}${window.location.pathname}?shared=${compressedText}`;
+
+    return shareUrl;
+};
+
 async function shareNote() {
-    const textToShare = textInput.innerText || textInput.innerHTML;
+    const textToShare = textInput.innerText || textInput.innerHTML || "";
 
     if (!textToShare.trim()) {
         if (typeof changePopupMsg === "function") {
@@ -1561,13 +1663,29 @@ async function shareNote() {
         sourceUrl: `${window.location.origin}${window.location.pathname}`
     };
 
+    /*
     // Use safe UTF-8-aware Base64 encoder for arbitrary Unicode text
     const base64EncodeUnicode = (str) => {
         return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, (match, p1) => String.fromCharCode('0x' + p1)));
     };
 
     const encodedText = base64EncodeUnicode(JSON.stringify(payload));
-    const shareURL = `${window.location.origin}${window.location.pathname}?shared=${encodeURIComponent(encodedText)}`;
+    const shareURL = `${window.location.origin}${window.location.pathname}?shared=${encodeURIComponent(encodedText)}`;*/
+
+    // 3. Compress using LZ-String instead of plain base64EncodeUnicode
+    let shareURL;
+    try {
+        const jsonString = JSON.stringify(payload);
+        // Generates an incredibly optimized, URI-safe compressed string
+        const compressedData = generateShareableUrl(jsonString);
+        //shareURL = `${window.location.origin}${window.location.pathname}?shared=${compressedData}`;
+        shareURL = compressedData; // generateShareableUrl already returns the full URL
+    } catch (compressionError) {
+        console.error("Compression processing failed:", compressionError);
+        changePopupMsg("Failed to compress note content for sharing.");
+        openPopup();
+        return;
+    }
 
     try {
         // Only trigger native share if the API is explicitly supported by the device operating system
@@ -1628,80 +1746,6 @@ async function shareNote() {
 }
 
 shareBtn.addEventListener("click", shareNote);
-
-(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const sharedTextParam = urlParams.get("shared");
-
-    if (!sharedTextParam) return;
-
-    hasSharedDocumentPayload = true;
-
-    try {
-        // Decode the Base64-encoded text from the URL parameter using a UTF-8-aware decoder
-        const base64DecodeUnicode = (str) => {
-            return decodeURIComponent(atob(str).split('').map((c) => {
-                return '%' + c.charCodeAt(0).toString(16).padStart(2, '0');
-            }).join(''));
-        };
-
-        const decodedText = base64DecodeUnicode(sharedTextParam);
-        const payload = JSON.parse(decodedText);
-        sharedFilePayload = payload;
-        const sharedName = payload.name ? `${payload.name} - Shared Document - NotePlus` : `Shared Document - NotePlus`;
-
-        // Populate the text input with the shared content
-        textInput.innerText = payload.text || "";
-        activeFileName.innerText = sharedName;
-
-        // Load metadata from shared payload
-        if (typeof loadSharedFileMetadata === 'function') {
-            // Ensure size is calculated if not in payload
-            if (!payload.size) {
-                payload.size = formatBytes(new TextEncoder().encode(payload.text || '').length);
-            }
-            loadSharedFileMetadata(payload);
-        }
-        setState("ready", "Shared document loaded", false);
-        resetPopupMsg();
-        changePopupMsg(`Shared document loaded successfully! If any issues occur then please refresh this page and try again!`);
-        openPopup();
-
-        // Optionally, you can also update the word/character count if you have that feature implemented
-        const totalChars = decodedText.length;
-
-        hasUnsavedChanges = true;
-
-        // Trigger a word count refresh update routine if you have one tracking mutations
-        if (wordsCount) wordsCount.innerText = `Total Chars: ${totalChars}`;
-
-        // Clean URL by removing the shared parameter after loading the content
-        const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
-        window.history.replaceState({ path: cleanUrl }, '', cleanUrl);
-
-        console.log("[NotePlus] Shared serverless document payload fetched and mounted perfectly.");
-
-
-        if (typeof changePopupMsg === "function") {
-            changePopupMsg(`Shared document loaded successfully! If any issues occur then please refresh this page and try again!`);
-            openPopup();
-        } else {
-            alert(`Shared document loaded successfully! If any issues occur then please refresh this page and try again!`);
-        }
-    } catch (error) {
-        console.error("Failed to load shared document:", error);
-        textInput.innerText = sharedTextParam; // Fallback: show the raw shared parameter in the text input for debugging
-        if (wordsCount) wordsCount.innerText = `Total Chars: ${sharedTextParam.length}`;
-        hasUnsavedChanges = true;
-
-        if (typeof changePopupMsg === "function") {
-            changePopupMsg(`Failed to load shared document: ${error.message}. Please try again or check the browser console for more details.`, true);
-            openPopup();
-        } else {
-            alert(`Failed to load shared document: ${error.message}`);
-        }
-    }
-})();
 
 // ------------------------------------------------------------------------------
 if ('launchQueue' in window) {
@@ -2040,10 +2084,10 @@ const updateProgress = () => {
 
     if (document.readyState === 'loading') {
         progressBar.style.width = '25%';
-    } 
+    }
     else if (document.readyState === 'interactive') {
         progressBar.style.width = '50%';
-    } 
+    }
     else if (document.readyState === 'complete') {
         progressBar.style.width = '100%';
 
@@ -2060,3 +2104,48 @@ document.addEventListener('readystatechange', updateProgress);
 
 // Catch whatever state the browser is in right now on execution (e.g. loading)
 updateProgress();
+
+
+document.addEventListener("DOMContentLoaded", () => {
+    const menuItems = document.querySelectorAll(".action-list li, .edit-list li, .help-list li");
+
+    menuItems.forEach(item => {
+        item.addEventListener("pointerdown", function (e) {
+            // Get accurate bounding box of the target list item element
+            const rect = this.getBoundingClientRect();
+            
+            // Map the cursor input relative to item edges
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            // Generate the optimized ink node
+            const ripple = document.createElement("span");
+            ripple.classList.add("ripple-span");
+
+            // Calculate max diagonal distance to ensure corner-to-corner filling coverage
+            const distX = Math.max(x, rect.width - x);
+            const distY = Math.max(y, rect.height - y);
+            const radius = Math.sqrt(distX * distX + distY * distY);
+            const diameter = radius * 2;
+
+            // Setup bounding circle size values
+            ripple.style.width = `${diameter}px`;
+            ripple.style.height = `${diameter}px`;
+            
+            // Anchor coordinates so expansion radiates outward cleanly from the mouse tip position
+            ripple.style.left = `${x - radius}px`;
+            ripple.style.top = `${y - radius}px`;
+
+            // Append directly to structural view context
+            this.appendChild(ripple);
+
+            // Clean up: Automatically prune nodes from the DOM tree memory space when the exit fade completes
+            ripple.addEventListener("animationend", (event) => {
+                // Ensure it triggers destruction only after the longer fading sequence finishes
+                if (event.animationName === 'ripple-fade') {
+                    ripple.remove();
+                }
+            });
+        }, { passive: true });
+    });
+});
