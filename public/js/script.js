@@ -1100,7 +1100,7 @@ fileInput.onchange = async (e) => {
             return;
         }
         await parseFile(file);
-        readFile(file);
+        await readFile(file);
         activeFileName.innerText = file.name ? `${file.name} - NotePlus` : `Untitled - NotePlus`;
         fileType = file.type;
         currentFileMetadata = {
@@ -1109,6 +1109,8 @@ fileInput.onchange = async (e) => {
             type: file.type || 'text/plain',
             lastModified: file.lastModified
         };
+        //updateLocalStorageWithText();
+        await saveToIndexedDB(file.name, textInput.innerText);
         setState("ready", "File loaded", false);
     } catch (error) {
         setState("error", "Failed to open file", true);
@@ -1399,6 +1401,8 @@ const handleDrop = async (event) => {
             changePopupMsg(`File reading completed successfully! If any issues occur then please refresh this page and try to open the file again!`);
             await parseFile(droppedFile);
             activeFileName.innerText = droppedFile.name ? `${droppedFile.name} - NotePlus` : `Untitled - NotePlus`;
+            //updateLocalStorageWithText();
+            await saveToIndexedDB(droppedFile.name, textInput.innerText);
             setState("ready", "File loaded", false);
 
         } catch (streamError) {
@@ -2149,3 +2153,127 @@ document.addEventListener("DOMContentLoaded", () => {
         }, { passive: true });
     });
 });
+
+function initDB() {
+    return new Promise((resolve, reject) => {
+        const request = indexedDB.open("NotePlusDB", 1);
+
+        // Setup the schema if it's the first time running
+        request.onupgradeneeded = (event) => {
+            const db = event.target.result;
+            if (!db.objectStoreNames.contains("documents")) {
+                db.createObjectStore("documents", { keyPath: "id" });
+            }
+        };
+
+        request.onsuccess = (event) => resolve(event.target.result);
+        request.onerror = (event) => reject(event.target.error);
+    });
+}
+
+
+async function saveToIndexedDB() {
+    try {
+        const textToSave = textInput.innerText || "";
+        const currentFileName = activeFileName.innerText.trim() || "Untitled Document";
+        
+        // Match the structure you had before
+        const dataToStore = {
+            id: "current-session", // Fixed key so we overwrite the active autosave slot
+            name: currentFileName,
+            metadata: fileInfoViewer.innerText || "No file metadata available", // Use your structured currentFileMetadata object
+            content: textToSave,
+            updatedAt: Date.now()
+        };
+
+        const db = await initDB();
+        const transaction = db.transaction("documents", "readwrite");
+        const store = transaction.objectStore("documents");
+        
+        store.put(dataToStore);
+
+        transaction.oncomplete = () => {
+            // Optional: update UI state to "Autosaved" if needed
+            console.log("Session auto-saved to IndexedDB seamlessly.");
+            hasUnsavedChanges = true; // Mark as having unsaved changes since we're saving the current state
+        };
+    } catch (error) {
+        console.error("Error saving to IndexedDB:", error);
+    }
+}
+
+async function loadFromIndexedDB() {
+    try {
+        const db = await initDB();
+        const transaction = db.transaction("documents", "readonly");
+        const store = transaction.objectStore("documents");
+        const request = store.get("current-session");
+
+        request.onsuccess = () => {
+            const parsedData = request.result;
+            if (parsedData) {
+                textInput.innerText = parsedData.content || "";
+                activeFileName.innerText = parsedData.name ? `${parsedData.name} - NotePlus` : `Untitled - NotePlus`;
+
+                if (parsedData.metadata) {
+                    if (typeof parsedData.metadata === 'string') {
+                        fileInfoViewer.innerText = parsedData.metadata;
+                    } else {
+                        fileInfoViewer.innerText = JSON.stringify(parsedData.metadata, null, 4);
+                    }
+                }
+
+                hasUnsavedChanges = true;
+                wordsCount.innerText = `Total Chars: ${textInput.innerText.length}`;
+                setState("ready", "Restored last session");
+            }
+        };
+    } catch (error) {
+        console.error("Error loading from IndexedDB:", error);
+    }
+}
+
+/*
+function updateLocalStorageWithText() {
+    try {
+        const textToSave = textInput.innerText || textInput.innerHTML || "";
+        const currentFileName = activeFileName.innerText.replace(/\s*-\s*NotePlus$/, "").trim() || "Untitled Document";
+        const fileMetaData = fileInfoViewer.innerText || "No file metadata available";
+
+        const dataToStore = {
+            name: currentFileName,
+            metadata: fileMetaData,
+            content: textToSave
+        };
+
+        localStorage.setItem("noteplus-document", JSON.stringify(dataToStore));
+    } catch (error) {
+        console.error("Error saving to localStorage:", error);
+    }
+}
+
+function loadFromLocalStorage() {
+    try {
+        const data = localStorage.getItem("noteplus-document");
+        if (data) {
+            const parsedData = JSON.parse(data);
+            textInput.innerText = parsedData.content;
+            activeFileName.innerText = parsedData.name ? `${parsedData.name} - NotePlus` : `Untitled - NotePlus`;
+            fileInfoViewer.innerText = parsedData.metadata || "No file metadata available";
+            hasUnsavedChanges = true; // Mark as having unsaved changes since we're loading from a previous state
+        }
+    } catch (error) {
+        console.error("Error loading from localStorage:", error);
+    }
+}
+    */
+
+window.addEventListener("DOMContentLoaded", async () => {
+    //loadFromLocalStorage();
+    await loadFromIndexedDB();
+});
+
+textInput.addEventListener("input", async(e) => {
+    //`console.log("Input event detected. Current content length:", textInput.innerText.length);
+    await saveToIndexedDB();
+})
