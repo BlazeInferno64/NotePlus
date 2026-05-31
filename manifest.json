@@ -1,22 +1,37 @@
 {
   "name": "NotePlus",
   "short_name": "NotePlus",
-  "description": "A free online text editor similar to Notepad",
+  "description": "NotePlus is a free, online, browser-based text editor with AI integration and more that provides an experience similar to Windows Notepad",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
   "background_color": "#000000",
   "theme_color": "#000000",
+  "categories": [
+    "productivity",
+    "utilities"
+  ],
   "icons": [
     {
-      "src": "/public/img/icon512.png",
+      "src": "./public/img/icon512.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
-      "src": "/public/img/icon512.png",
+      "src": "./public/img/icon512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "./public/img/banner.jpg",
+      "sizes": "1280x720",
+      "type": "image/jpeg",
+      "form_factor": "wide",
+      "label": "NotePlus Loading Screen"
     }
   ],
   "file_handlers": [
