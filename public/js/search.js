@@ -73,8 +73,8 @@ searchBtn.addEventListener("click", (e) => {
         setState("searching", "Searching started...", false);
     } catch (error) {
         resetPopupMsg();
-        changePopupMsg(error.message);
-        openPopup();
+        changePopupMsg(`<h1 style="color: red;">Search Error</h1> ${error.message}`, true);
+        openPopup('alert');
         console.error(error);
     }
 });
@@ -136,7 +136,9 @@ replaceBtn.addEventListener("click", async (e) => {
         textInput.innerText = replaceWord(text, searchVal, replaceVal);
         setState("ready", "Text replaced", false);
     } catch (error) {
-        alert(error.message);
+        resetPopupMsg();
+        changePopupMsg(`<h1 style="color: red;">Search Error</h1> ${error.message}`, true);
+        openPopup('alert');
         console.error(error);
     }
 });

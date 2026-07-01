@@ -1,5 +1,5 @@
 // Define a cache name with version
-const VERSION = 'v7.5'; // Increment this to force cache update (v1, v2, v3, etc.)
+const VERSION = 'v8.0'; // Increment this to force cache update (v1, v2, v3, etc.)
 const CACHE_NAME = `NotePlus ${VERSION}`;
 
 // List of files to cache
@@ -8,15 +8,21 @@ const FILES_TO_CACHE = [
     '/index.html',
     '/public/css/styles.css',
     '/public/js/file-info.js',
+    '/public/js/api.js',
     '/public/js/script.js',
     '/public/js/search.js',
     '/public/js/themes.js',
     '/public/js/fetch.js',
     '/public/js/popup.js',
     '/public/js/render-engine.js',
+    '/public/js/sound-fx.js',
     '/public/js/ai.js',
     '/manifest.json',
     '/public/img/icon.png',
+    '/public/sound/alert.mp3',
+    '/public/sound/pop.wav',
+    '/public/sound/click.mp3',
+    '/public/sound/beep.mp3',
     '/public/css/cartograph-regular-italic.woff2',
     'https://kit.fontawesome.com/f3220d5256.js' // Consider replacing this with a local copy
 ];

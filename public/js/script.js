@@ -545,7 +545,7 @@ const loadSharedPayloadFromUrl = (urlParams = new URLSearchParams(window.locatio
         setState('error', 'Error loading shared payload', true);
         resetPopupMsg();
         changePopupMsg(`Failed to load shared document: ${error.message}. Please try again or check the browser console for more details.`, true);
-        openPopup();
+        openPopup('alert');
         return true;
     }
 };
@@ -1278,10 +1278,13 @@ copyAllBtn.addEventListener("click", async () => {
         return;
     }
     try {
-        if (textInput.innerText.length === 0) {
+        if (textInput.innerText.trim() === "") {
             resetPopupMsg();
-            changePopupMsg(`There's nothing to copy!\nTry entering some text for this to work!`);
-            return openPopup();
+            changePopupMsg(`<h1 style="color: yellow;">Empty Document</h1> There's nothing to copy!<br>Try entering some text for this to work!`, true);
+            setTimeout(() => {
+                openPopup('alert');                          // ← moved AFTER changePopupMsg
+            }, 500);
+            return console.warn(`There's nothing to copy! Try entering some text for this to work!`);
             //return alert(`There's nothing to copy!\nTry entering some text for this to work!`);
         }
         await navigator.clipboard.writeText(textInput.innerText);
@@ -1293,7 +1296,7 @@ copyAllBtn.addEventListener("click", async () => {
     } catch (error) {
         resetPopupMsg();
         changePopupMsg(`An error occurred while copying to clipboard: ${error.message}. Please try again or check the browser console for more details.`, true);
-        openPopup();
+        openPopup('alert');
         console.error(error);
         alert(error);
     }
@@ -1302,7 +1305,9 @@ copyAllBtn.addEventListener("click", async () => {
 // Event listener for selectAllBtn click to select all text in textInput
 selectAllBtn.addEventListener("click", () => {
     if (textInput.innerText === "") {
-        return alert(`Cannot select as there isn't any text!\nTry entering some text for this to work!`);
+        changePopupMsg(`<h1 style="color: yellow;">Empty Document</h1> Cannot select as there isn't any text!<br>Try entering some text for this to work!`, true);
+        return openPopup('alert');
+        //return alert(`Cannot select as there isn't any text!\nTry entering some text for this to work!`);
     } else {
         const selection = window.getSelection();
         const range = document.createRange();
@@ -1317,7 +1322,7 @@ pasteAllBtn.addEventListener("click", async () => {
     if (!navigator.clipboard) {
         resetPopupMsg();
         changePopupMsg(`Your browser doesn't support clipboard pasting! Please check browser compatibility at <a href="https://developer.mozilla.org/en-US/docs/Web/API/Clipboard#browser_compatibility" target="_blank">MDN Web Docs</a>.`, true);
-        openPopup();
+        openPopup('alert');
         alert(`Sorry, but your browser doesn't support clipboard pasting!`);
         return;
     }
@@ -1327,30 +1332,37 @@ pasteAllBtn.addEventListener("click", async () => {
         changePopupMsg(`Pasting from clipboard...`);
         openPopup();
         const text = await navigator.clipboard.readText();
-        if (!text) {
+        if (text.trim() === "") {
             resetPopupMsg();
-            changePopupMsg(`NotePlus wasn't able to find any text present on your clipboard as it was empty! Please copy some text and try again!`, true);
-            openPopup();
+            changePopupMsg(`<h1 style="color: yellow;">Clipboard Empty</h1> NotePlus wasn't able to find any text present on your clipboard as it was empty! Please copy some text and try again!`, true);
+            setTimeout(() => {
+                openPopup('alert');                          // ← moved AFTER changePopupMsg
+            }, 500);
             setState("info", "Clipboard is empty", false);
-            console.warn(`Seems like your clipboard is empty!`);
+            return console.warn(`Seems like your clipboard is empty!`);
             //return alert(`Error: NotePlus wasn't able to find any text present on your clipboard as it was empty!`);
+        }
+
+        if (typeof textInput !== 'undefined') {
+            textInput.value += text;
         }
         resetPopupMsg();
         changePopupMsg(`NotePlus successfully pasted text from clipboard!`);
         openPopup();
-        textInput.innerText = text;
     } catch (error) {
-        if (error.name = "NotAllowedError") {
+        if (error.name === "NotAllowedError") {          // ← === not =
             resetPopupMsg();
-            changePopupMsg(`Permission Error: You didn't allowed NotePlus to read and write text from your clipboard!`);
-            openPopup();
+            changePopupMsg(`<h1 style="color: red;">Permission Error</h1> You didn't allowed NotePlus to read and write text from your clipboard!`, true);
+            setTimeout(() => {
+                openPopup('alert');                          // ← moved AFTER changePopupMsg
+            }, 500);
+            
             setState("error", "Clipboard reading not allowed", false);
             console.error(`Permission Error: You didn't allowed NotePlus to read and write text from your clipboard!`);
-            //return alert(`Permission Error: You didn't allowed NotePlus to read and write text from your clipboard!`)
         } else {
             resetPopupMsg();
-            changePopupMsg(`An unexpected error occurred while accessing the clipboard: ${error.message}. Please try again or check the browser console for more details.`);
-            openPopup();
+            changePopupMsg(`<h1 style="color: red;">Unexpected Error</h1> An unexpected error occurred while accessing the clipboard: ${error.message}. Please try again or check the browser console for more details.`, true);
+            openPopup('alert');
             setState("error", "There was an error", false);
             console.error(error);
             return alert(`An error occured: ${error}`);
@@ -1411,6 +1423,7 @@ const handleDrop = async (event) => {
             folderDrop = true;
 
             changePopupMsg(`Folder dropping isn't yet supported! Please drop a file instead.`, true);
+            openPopup('alert');
             setState("error", "Folder detected", false);
             //alert(`Folder dropping isn't yet supported by NotePlus`);
         }
@@ -1425,7 +1438,7 @@ Body.addEventListener("dragover", (event) => {
     setState("info", "File detected", false);
     resetPopupMsg();
     changePopupMsg(`File detected! Drop it to open!`);
-    openPopup();
+    openPopup(false, true);
     textInput.focus();
     event.preventDefault();
 });
@@ -1433,7 +1446,7 @@ Body.addEventListener("dragover", (event) => {
 Body.addEventListener("dragleave", (event) => {
     setState("ready", "Ready", false);
     resetPopupMsg();
-    openPopup();
+    openPopup(false, true);
     event.preventDefault();
     textInput.blur();
 });
@@ -1444,7 +1457,7 @@ mainElement.addEventListener("dragover", (event) => {
     setState("info", "File detected", false);
     resetPopupMsg();
     changePopupMsg(`File detected! Drop it to open!`);
-    openPopup();
+    openPopup(false, true);
     textInput.focus();
     event.preventDefault();
 });
@@ -1452,7 +1465,7 @@ mainElement.addEventListener("dragover", (event) => {
 mainElement.addEventListener("dragleave", (event) => {
     setState("ready", "Ready", false);
     resetPopupMsg();
-    openPopup();
+    openPopup(false, true);
     event.preventDefault();
     textInput.blur();
 });
@@ -1463,7 +1476,7 @@ textInput.addEventListener("dragover", (event) => {
     setState("info", "File detected", false);
     resetPopupMsg();
     changePopupMsg(`File detected! Drop it to open!`);
-    openPopup();
+    openPopup(false, true);
     textInput.focus();
     event.preventDefault();
 });
@@ -1472,7 +1485,7 @@ textInput.addEventListener("dragleave", (event) => {
     setState("info", "File detected", false);
     resetPopupMsg();
     changePopupMsg(`File detected! Drop it to open!`);
-    openPopup();
+    openPopup(false, true);
     event.preventDefault();
     textInput.blur();
 });
@@ -1649,8 +1662,8 @@ async function shareNote() {
 
     if (!textToShare.trim()) {
         if (typeof changePopupMsg === "function") {
-            changePopupMsg("Cannot share an empty document…");
-            openPopup();
+            changePopupMsg(`<h1 style="color: yellow;">Empty Document</h1> Cannot share an empty document!<br>Try entering some text for this to work!`, true);
+            openPopup('alert');
         } else {
             alert("Cannot share an empty document…");
         }
@@ -1731,7 +1744,7 @@ async function shareNote() {
             console.log("Native share failed: NotAllowedError - share permission denied or blocked.");
             if (typeof changePopupMsg === "function") {
                 changePopupMsg("Native sharing is not allowed on this device or browser.\nIt might be due to privacy settings or browser restrictions!\nPlease try again later!\n");
-                openPopup();
+                openPopup('alert');
             } else {
                 alert("Native sharing is not allowed on this device or browser.");
             }
@@ -1742,7 +1755,7 @@ async function shareNote() {
 
         if (typeof changePopupMsg === "function") {
             changePopupMsg(`An error occurred while sharing: ${error.message}.`, true);
-            openPopup();
+            openPopup('alert');
         } else {
             alert(`An error occurred while sharing: ${error.message}`);
         }
@@ -2114,10 +2127,16 @@ document.addEventListener("DOMContentLoaded", () => {
     const menuItems = document.querySelectorAll(".action-list li, .edit-list li, .help-list li");
 
     menuItems.forEach(item => {
+        item.addEventListener("pointerdown", (e) => {
+            playSound('click');
+        })
+    })
+
+    menuItems.forEach(item => {
         item.addEventListener("pointerdown", function (e) {
             // Get accurate bounding box of the target list item element
             const rect = this.getBoundingClientRect();
-            
+
             // Map the cursor input relative to item edges
             const x = e.clientX - rect.left;
             const y = e.clientY - rect.top;
@@ -2135,7 +2154,7 @@ document.addEventListener("DOMContentLoaded", () => {
             // Setup bounding circle size values
             ripple.style.width = `${diameter}px`;
             ripple.style.height = `${diameter}px`;
-            
+
             // Anchor coordinates so expansion radiates outward cleanly from the mouse tip position
             ripple.style.left = `${x - radius}px`;
             ripple.style.top = `${y - radius}px`;
@@ -2176,7 +2195,7 @@ async function saveToIndexedDB() {
     try {
         const textToSave = textInput.innerText || "";
         const currentFileName = activeFileName.innerText.trim() || "Untitled Document";
-        
+
         // Match the structure you had before
         const dataToStore = {
             id: "current-session", // Fixed key so we overwrite the active autosave slot
@@ -2189,7 +2208,7 @@ async function saveToIndexedDB() {
         const db = await initDB();
         const transaction = db.transaction("documents", "readwrite");
         const store = transaction.objectStore("documents");
-        
+
         store.put(dataToStore);
 
         transaction.oncomplete = () => {
@@ -2273,7 +2292,7 @@ window.addEventListener("DOMContentLoaded", async () => {
     await loadFromIndexedDB();
 });
 
-textInput.addEventListener("input", async(e) => {
+textInput.addEventListener("input", async (e) => {
     //`console.log("Input event detected. Current content length:", textInput.innerText.length);
     await saveToIndexedDB();
 })

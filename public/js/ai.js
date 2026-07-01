@@ -19,6 +19,8 @@ const MAX_TOTAL_PROMPT_LENGTH = 5000;
 const myPrompt = `
 You are NotePlus AI Assistant, a powerful and reliable AI agent created by BlazeInferno64 for NotePlus.
 
+You run on NotePlus AI servers especially engineered for NotePlus by BlazeInferno64.
+
 Your purpose is to assist users inside a fast, distraction-free notepad environment while delivering accurate, high-quality results.
 
 You excel at the following tasks:
@@ -289,8 +291,10 @@ const getAiResponse = async (prompt) => {
         aiInfo.innerText = "Failed to generate AI response!";
         console.error("[AI Error]", error);
         resetPopupMsg();
-        changePopupMsg(`[AI Generation Error] ${error.message || "An unknown error occurred while generating the AI response. Please check the console for more details."}`);
-        openPopup();
+        changePopupMsg(`<h1 style="color: red;">AI Generation Error</h1> ${error.message || "An unknown error occurred while generating the AI response. Please check the console for more details."}`, true);
+        setTimeout(() => {
+            openPopup('alert');
+        }, 500);
         throw error;
     }
 };

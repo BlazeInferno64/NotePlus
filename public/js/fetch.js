@@ -165,24 +165,30 @@ const fetchText = async (url) => {
             if (!navigator.onLine) {
                 fetchInfo.innerText = "You are currently offline. Please check your internet connection!";
                 resetPopupMsg();
-                changePopupMsg(`You are currently offline. Please check your internet connection!`);
-                openPopup();
+                changePopupMsg(`<h1 style="color: red;">Offline</h1> You are currently offline. Please check your internet connection!`, true);
+                setTimeout(() => {
+                    openPopup('alert');
+                }, 500)
                 return console.warn(`HTTP request to ${url} failed you're offline!`)
             } else {
                 fetchInfo.innerText =
                     "Network request failed (possible CORS, DNS, or server issue). Check console for more info!";
                 console.error(`Fetch failed due to a network-level error (CORS policy, DNS resolution, server unavailability, or connection interruption)!`);
                 resetPopupMsg();
-                changePopupMsg(`Network request failed (possible CORS, DNS, or server issue). Please check the console for more information!`);
-                openPopup();
+                changePopupMsg(`<h1 style="color: red;">Network Error</h1> Network request failed (possible CORS, DNS, or server issue). Please check the console for more information!`, true);
+                setTimeout(() => {
+                    openPopup('alert');
+                }, 500);
                 console.error(error);
                 return;
             }
         }
         fetchInfo.innerText = error.message || String(error);
         resetPopupMsg();
-        changePopupMsg(`Error fetching from '${url}': \n\n${error.message || String(error)}. \n\nPlease check the console for more details!`, false);
-        openPopup();
+        changePopupMsg(`<h1 style="color: red;">Fetch Error</h1> Error fetching from '${url}': \n\n${error.message || String(error)}. \n\nPlease check the console for more details!`, true);
+        setTimeout(() => {
+            openPopup('alert');
+        }, 500);
         throw error;
     }
 };
